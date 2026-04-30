@@ -177,7 +177,7 @@ export default function AdminDashboard() {
     .toUpperCase()
     .substring(0, 2) || "AD";
 
-  console.log(adminUser);
+  
   return (
     <>
       <style>{`

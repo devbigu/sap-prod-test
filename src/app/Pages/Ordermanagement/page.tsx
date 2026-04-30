@@ -76,6 +76,8 @@ function resolveSession(): UserSession | null {
       const p = JSON.parse(userRaw)
       if (p?.Dealer_Id) return { role: 'dealer', id: p.Dealer_Id, name: p.Dealer_Name || '', viewRoute: '/orders' }
       if (p?.staff_id)  return { role: p.staff_roletype === '0' ? 'admin' : 'staff', id: p.staff_id, name: p.staff_name || '', roletype: p.staff_roletype, viewRoute: '/orders' }
+      if (localStorage.getItem('roletype') === '3' && p && Object.keys(p).length > 0)
+        return { role: 'admin', id: p.id || p.admin_id || p.Admin_Id || '', name: p.name || p.email || 'Admin', roletype: '0', viewRoute: '/orders' }
     }
     const adminRaw = localStorage.getItem('AdminData') || localStorage.getItem('admin')
     if (adminRaw) {

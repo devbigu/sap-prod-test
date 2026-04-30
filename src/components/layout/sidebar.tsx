@@ -43,7 +43,13 @@ function resolveUser() {
   if (typeof window === "undefined") return null;
   try {
     const d = localStorage.getItem("UserData");
-    if (d) { const p = JSON.parse(d); if (p?.Dealer_Id) return { role: "dealer" as Role, ...p }; }
+    if (d) {
+      const p = JSON.parse(d);
+      if (p?.Dealer_Id) return { role: "dealer" as Role, ...p };
+      if (p?.staff_id) return { role: (p.staff_roletype === "0" ? "admin" : "staff") as Role, ...p };
+      if (localStorage.getItem("roletype") === "3" && p && Object.keys(p).length > 0)
+        return { role: "admin" as Role, ...p };
+    }
     const s = localStorage.getItem("staffData");
     if (s) { const p = JSON.parse(s); if (p?.staff_id) return { role: "staff" as Role, ...p }; }
     const a = localStorage.getItem("AdminData") || localStorage.getItem("admin");

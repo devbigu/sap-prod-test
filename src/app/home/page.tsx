@@ -20,48 +20,16 @@ const BACKEND = "https://mirisoft.co.in/sas/dealerapi/api";
 const PLACEHOLDER_IMAGE =
   "https://omsonslabs.com/wp-content/uploads/Pycnometers-Class-A-Individual-Work-Certificate-product-image.webp";
 
-// ─── Hot products — static for now, swap with API later ──────────────────────
-
-const HOT_PRODUCTS = [
-  {
-    SKU: "PYC-25-A",
-    name: "Pycnometer Class A 25ml",
-    image: PLACEHOLDER_IMAGE,
-    badge: "🔥 Bestseller",
-  },
-  {
-    SKU: "VF-100",
-    name: "Volumetric Flask 100ml",
-    image: PLACEHOLDER_IMAGE,
-    badge: "⚡ Fast moving",
-  },
-  {
-    SKU: "BUR-50-A",
-    name: "Burette Class A 50ml",
-    image: PLACEHOLDER_IMAGE,
-    badge: "🔥 Trending",
-  },
-  {
-    SKU: "CF-250",
-    name: "Conical Flask 250ml",
-    image: PLACEHOLDER_IMAGE,
-    badge: "⚡ Popular",
-  },
-  {
-    SKU: "PP-10",
-    name: "Pipette 10ml Grade A",
-    image: PLACEHOLDER_IMAGE,
-    badge: "🔥 Top rated",
-  },
-  {
-    SKU: "RB-500",
-    name: "Round Bottom Flask 500ml",
-    image: PLACEHOLDER_IMAGE,
-    badge: "⚡ Hot pick",
-  },
-];
+const HOT_BADGES = ["🔥 Bestseller", "⚡ Fast moving", "🔥 Trending", "⚡ Popular", "🔥 Top rated", "⚡ Hot pick"];
 
 // ─── Types ────────────────────────────────────────────────────────────────────
+
+interface JsonProduct {
+  SKU: number | string;
+  Name: string;
+  Images: string[];
+  Categories?: string[];
+}
 
 interface Product {
   SKU: string;
@@ -205,8 +173,8 @@ function ProductCardSkeleton() {
 export default function Page() {
   const router = useRouter();
   const [navOpen, setNavOpen] = useState(false);
-  const [allData, setAllData] = useState<Product[]>([]);
-  const [productsLoading, setProductsLoading] = useState(true);
+  const [hotItems, setHotItems] = useState<JsonProduct[]>([]);
+  const [hotLoading, setHotLoading] = useState(true);
   const [dealerId, setDealerId] = useState("225");
   const [recentlyViewed, setRecentlyViewed] = useState<RecentlyViewedItem[]>([]);
   const year = new Date().getFullYear();
@@ -224,12 +192,16 @@ export default function Page() {
     return () => window.removeEventListener("recentlyViewedUpdated", refresh);
   }, []);
 
-  // Fetch category products
+  // Fetch products for "Hot Right Now" section
   useEffect(() => {
     axios
-      .get("data/nested_products.json")
-      .then((res) => { setAllData(res.data); setProductsLoading(false); })
-      .catch((e) => { console.error("FETCH ERROR:", e); setProductsLoading(false); });
+      .get<JsonProduct[]>("/data/products.json")
+      .then((res) => {
+        const withImages = res.data.filter((p) => p.Images?.length > 0).slice(0, 6);
+        setHotItems(withImages);
+        setHotLoading(false);
+      })
+      .catch(() => setHotLoading(false));
   }, []);
 
   // Fetch real orders
@@ -293,35 +265,27 @@ export default function Page() {
           action={{ label: "All categories", href: "/Products" }}
         />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {CATEGORY_CARDS.map((cat: any) => {
-            const previewItems = allData.slice(0, 4);
-            return (
+          {CATEGORY_CARDS.map((cat: any) => (
               <div key={cat.title}
                 className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 flex flex-col hover:shadow-md transition-shadow">
                 <h3 className="text-base font-bold text-slate-800 mb-3">{cat.title}</h3>
                 <div className="grid grid-cols-2 gap-2 flex-1">
-                  {productsLoading
-                    ? Array.from({ length: 4 }).map((_, i) => (
-                      <div key={i} className="aspect-square bg-gray-100 rounded animate-pulse" />
-                    ))
-                    : previewItems.map((item) => (
-                      <a key={item.SKU} href={cat.link} className="group"
-                        onClick={() => goToProduct(item.SKU, item.Name, item.image)}>
-                        <img src={item.image ?? PLACEHOLDER_IMAGE} alt={item.Name} loading="lazy"
-                          className="w-full aspect-square object-cover rounded group-hover:opacity-90 transition-opacity" />
-                        <span className="text-[11px] mt-1 block text-slate-600 leading-tight line-clamp-2">
-                          {item.label ?? item.Name}
-                        </span>
-                      </a>
-                    ))}
+                  {cat.items.map((item: { label: string; imageUrl: string }) => (
+                    <a key={item.label} href={cat.link} className="group">
+                      <img src={item.imageUrl} alt={item.label} loading="lazy"
+                        className="w-full aspect-square object-cover rounded group-hover:opacity-90 transition-opacity" />
+                      <span className="text-[11px] mt-1 block text-slate-600 leading-tight line-clamp-2">
+                        {item.label}
+                      </span>
+                    </a>
+                  ))}
                 </div>
                 <Link href={"/Products"}
                   className="mt-4 text-sm font-medium text-slate-700 hover:text-slate-900 hover:underline transition-colors">
                   See all →
                 </Link>
               </div>
-            );
-          })}
+          ))}
         </div>
       </section>
 
@@ -486,25 +450,26 @@ export default function Page() {
           action={{ label: "Shop all", href: "/Products" }}
         />
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-          {HOT_PRODUCTS.map((product) => (
+          {hotLoading
+            ? Array.from({ length: 6 }).map((_, i) => <ProductCardSkeleton key={i} />)
+            : hotItems.map((product, idx) => (
             <button
               key={product.SKU}
-              onClick={() => goToProduct(product.SKU, product.name, product.image)}
+              onClick={() => goToProduct(String(product.SKU), product.Name, product.Images[0])}
               className="group bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-all hover:-translate-y-0.5 text-left w-full"
             >
               <div className="relative bg-gray-50 flex items-center justify-center p-3 aspect-square">
                 <img
-                  src={product.image}
-                  alt={product.name}
+                  src={product.Images[0]}
+                  alt={product.Name}
                   className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
                 />
-                {/* Badge */}
                 <span className="absolute top-2 left-2 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-rose-500 text-white shadow-sm">
-                  {product.badge}
+                  {HOT_BADGES[idx % HOT_BADGES.length]}
                 </span>
               </div>
               <div className="p-2">
-                <p className="text-xs font-medium text-slate-700 line-clamp-2 leading-tight">{product.name}</p>
+                <p className="text-xs font-medium text-slate-700 line-clamp-2 leading-tight">{product.Name}</p>
                 <span className="mt-1.5 inline-block text-xs text-rose-500 font-semibold group-hover:text-rose-600 transition-colors">
                   Shop now →
                 </span>

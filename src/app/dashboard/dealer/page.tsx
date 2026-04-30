@@ -117,14 +117,14 @@ export default function DealerDashboard() {
 
         // Run all three fetches in parallel
         const [ordersData, valuesData] = await Promise.allSettled([
-          safeFetch("https://mirisoft.co.in/sas/dealerapi/api/getMonthlyreporttotalorderdealer", { method: "POST", body: fd }),
-          safeFetch("https://mirisoft.co.in/sas/dealerapi/api/getMonthlyreporttotalvaluedealer", { method: "POST", body: fd }),
-          safeFetch(`https://mirisoft.co.in/sas/dealerapi/api/getfunnel?id=${dealerId}`),
+          safeFetch("https://localhost/dealerapi/api/getMonthlyreporttotalorderdealer", { method: "POST", body: fd }),
+          safeFetch("https://localhost/dealerapi/api/getMonthlyreporttotalvaluedealer", { method: "POST", body: fd }),
+          safeFetch(`https://localhost/dealerapi/api/getfunnel?id=${dealerId}`),
         ]);
 
         if (ordersData.status === "fulfilled") {
           const rows = normaliseMonthlyResponse(ordersData.value, "orders");
-          console.log("[orders] parsed rows:", rows);
+          
           setMonthlyOrders(rows);
         } else {
           console.error("[orders] fetch failed:", ordersData.reason);
@@ -132,7 +132,7 @@ export default function DealerDashboard() {
 
         if (valuesData.status === "fulfilled") {
           const rows = normaliseMonthlyResponse(valuesData.value, "value");
-          console.log("[values] parsed rows:", rows);
+         
           setMonthlyValues(rows);
         } else {
           console.error("[values] fetch failed:", valuesData.reason);

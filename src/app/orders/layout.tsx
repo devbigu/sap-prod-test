@@ -18,6 +18,8 @@ function resolveUser() {
       const p = JSON.parse(userData);
       if (p?.Dealer_Id) return { role: "dealer" as Role, ...p };
       if (p?.staff_id) return { role: (p.staff_roletype === "0" ? "admin" : "staff") as Role, ...p };
+      if (localStorage.getItem("roletype") === "3" && p && Object.keys(p).length > 0)
+        return { role: "admin" as Role, ...p };
     }
     const adminRaw = localStorage.getItem("AdminData") || localStorage.getItem("admin");
     if (adminRaw) {

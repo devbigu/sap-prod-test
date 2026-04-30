@@ -31,7 +31,7 @@ export default function AddDealerPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(form);
+   
   };
 
   return (

@@ -77,11 +77,10 @@ export function userName() {
   useEffect(() => {
     try {
       const raw = localStorage.getItem("UserData")
-      console.log(raw)
       if (!raw) return
       const data = JSON.parse(raw)
       setValue(data?.Dealer_Name ?? data?.city ?? data?.District ?? data?.district ?? null)
-  
+
     } catch { /* ignore */ }
   }, [])
   return <div className='font-bold uppercase'>{value}</div>;

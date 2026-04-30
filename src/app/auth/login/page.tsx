@@ -59,6 +59,9 @@ export default function Login() {
         localStorage.setItem("status", "true")
         localStorage.setItem("UserData", JSON.stringify(userData))
         localStorage.setItem("roletype", roletype)
+        if (roletype === "3") {
+          localStorage.setItem("AdminData", JSON.stringify(userData))
+        }
 
         setEmail("")
         setPassword("")
