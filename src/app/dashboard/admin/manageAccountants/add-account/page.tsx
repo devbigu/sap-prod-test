@@ -6,7 +6,7 @@ import {
   createAccountant,
   updateAccountant,
   deleteAccountant,
-} from "@/lib/us ";
+} from "@/lib/accountantauth";
 import {
   UserPlus, Pencil, Trash2, X, Check, Eye, EyeOff,
   Users, Mail, Phone, ShieldCheck, Loader2, RefreshCw,
