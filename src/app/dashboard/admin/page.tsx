@@ -1,9 +1,15 @@
 "use client";
 
+import Link from "next/link";
 import { LayoutDashboard, UserRoundPlus, Users, SquareUser, Plus, ClipboardList } from 'lucide-react';
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQueries,
+} from "@tanstack/react-query";
 import {
   BarChart,
   Bar,
@@ -38,6 +44,29 @@ type AdminUser = {
   email?: string;
   role?: string;
   name?: string;
+};
+
+type DealerSummary = {
+  Dealer_Id: string;
+  Dealer_Name: string;
+  Dealer_City: string;
+  status: string;
+  currentlimit: string;
+};
+
+type StaffSummary = {
+  staff_roletype: string;
+};
+
+type LedgerSummary = {
+  Dealer_Id: string;
+  Dealer_Name: string;
+  netBalance: number;
+  walletBalance: number;
+};
+
+type DiscountApproval = {
+  status: string;
 };
 
 const logoImage = "https://omsonsapp.vercel.app/headicon.png";
@@ -91,7 +120,31 @@ const STAT_CONFIG = [
   { key: "staffCount", label: "Total Staff", color: "#8b5cf6" },
 ];
 
+const dashboardQueryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 30_000,
+      refetchOnWindowFocus: true,
+      retry: 2,
+    },
+  },
+});
+
+async function fetchJson<T>(url: string): Promise<T> {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
 export default function AdminDashboard() {
+  return (
+    <QueryClientProvider client={dashboardQueryClient}>
+      <AdminDashboardInner />
+    </QueryClientProvider>
+  );
+}
+
+function AdminDashboardInner() {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -153,6 +206,63 @@ export default function AdminDashboard() {
 
     fetchData();
   }, []);
+
+  const [
+    outstandingOrdersQ,
+    discountApprovalsQ,
+    ledgerQ,
+    dealersQ,
+    staffQ,
+  ] = useQueries({
+    queries: [
+      {
+        queryKey: ["adminSidebarSummary", "outstandingOrders"],
+        queryFn: () => fetchJson<{ data: any[] }>(`${BACKEND_URL}/orderpeginationnew?page=1&search=`),
+      },
+      {
+        queryKey: ["adminSidebarSummary", "discountApprovals"],
+        queryFn: () => fetchJson<{ data: DiscountApproval[] }>("/api/custom-discount-requests?limit=200"),
+      },
+      {
+        queryKey: ["adminSidebarSummary", "ledger"],
+        queryFn: () => fetchJson<{ data: LedgerSummary[] }>("/api/ledger"),
+      },
+      {
+        queryKey: ["adminSidebarSummary", "dealers"],
+        queryFn: () => fetchJson<{ data: DealerSummary[]; total?: number }>(`${BACKEND_URL}/dealerpegination?page=1&limit=1000&search=`),
+      },
+      {
+        queryKey: ["adminSidebarSummary", "staff"],
+        queryFn: () => fetchJson<{ data: StaffSummary[]; count?: number }>(`${BACKEND_URL}/staffpegination?page=1&limit=200&search=`),
+      },
+    ],
+  });
+
+  const summaryLoading = [outstandingOrdersQ, discountApprovalsQ, ledgerQ, dealersQ, staffQ].some(q => q.isLoading);
+  const summaryError = [outstandingOrdersQ, discountApprovalsQ, ledgerQ, dealersQ, staffQ].find(q => q.isError);
+  const retrySummary = () => {
+    outstandingOrdersQ.refetch();
+    discountApprovalsQ.refetch();
+    ledgerQ.refetch();
+    dealersQ.refetch();
+    staffQ.refetch();
+  };
+
+  const outstandingOrders = (outstandingOrdersQ.data?.data ?? []).filter((o: any) => o.order_status === "0" || o.accept_order === "0");
+  const pendingApprovals = (discountApprovalsQ.data?.data ?? []).filter(r => r.status === "pending").length;
+  const dealerRows = dealersQ.data?.data ?? [];
+  const activeDealers = dealerRows.filter(d => Number(d.status) === 1).length;
+  const inactiveDealers = dealerRows.filter(d => Number(d.status) !== 1).length;
+  const staffRows = staffQ.data?.data ?? [];
+  const roleCounts = staffRows.reduce((acc, s) => {
+    acc[s.staff_roletype || "unknown"] = (acc[s.staff_roletype || "unknown"] ?? 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+  const ledgerRows = ledgerQ.data?.data ?? [];
+  const outstandingExposure = dealerRows.reduce((sum, row) => sum + Math.max(0, Number(row.currentlimit) || 0), 0);
+  const highExposureDealers = [...dealerRows]
+    .sort((a, b) => (Number(b.currentlimit) || 0) - (Number(a.currentlimit) || 0))
+    .slice(0, 5);
 
   const chartData = data.map((item) => ({
     name: `${item.order_id}`,
@@ -250,6 +360,14 @@ export default function AdminDashboard() {
         .badge-green  { background: #d1fae5; color: #059669; }
         .badge-blue   { background: #dbeafe; color: #1d4ed8; }
         .badge-purple { background: #ede9fe; color: #7c3aed; }
+        .badge-red    { background: #fee2e2; color: #b91c1c; }
+        .pulse-amber { box-shadow: 0 0 0 0 rgba(245,158,11,0.7); animation: pulseAmber 1.6s infinite; }
+        @keyframes pulseAmber { 0%{box-shadow:0 0 0 0 rgba(245,158,11,0.7)} 70%{box-shadow:0 0 0 8px rgba(245,158,11,0)} 100%{box-shadow:0 0 0 0 rgba(245,158,11,0)} }
+        .quick-action-btn { display: inline-flex; align-items: center; justify-content: center; margin-top: 10px; padding: 6px 10px; border-radius: 8px; background: #f9fafb; border: 1px solid #e5e7eb; color: #4f46e5; font-size: 11.5px; font-weight: 700; text-decoration: none; transition: background .15s, border-color .15s; }
+        .quick-action-btn:hover { background: #ede9fe; border-color: #ddd6fe; }
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin-bottom: 20px; }
+        .exposure-list { display: flex; flex-direction: column; gap: 7px; margin-top: 10px; }
+        .exposure-row { display: flex; justify-content: space-between; gap: 10px; font-size: 11.5px; color: #374151; }
 
         /* ── Charts row ──────────────────────────── */
         .charts-row { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 16px; }
@@ -374,6 +492,63 @@ export default function AdminDashboard() {
               <div className="stat-card"><div className="stat-lbl">Today's Sale</div>
                 <div className="font-sans font-bold">₹0</div>
                 <div className="stat-badge badge-green">0</div></div>
+            </div>
+
+            {/* ── Sidebar Summary Widgets ── */}
+            {summaryError && (
+              <div style={{ display: "flex", alignItems: "center", gap: 10, background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 12, padding: "12px 16px", marginBottom: 16, fontSize: 13, color: "#dc2626" }}>
+                Some summary data failed to load.
+                <button className="quick-action-btn" style={{ marginTop: 0, marginLeft: "auto", color: "#dc2626" }} onClick={retrySummary}>Retry</button>
+              </div>
+            )}
+            <div className="summary-grid">
+              <div className="stat-card">
+                <div className="stat-lbl">Pending Orders</div>
+                <div className="stat-val">{summaryLoading ? "—" : outstandingOrders.length}</div>
+                <div className="stat-badge badge-amber pulse-amber">{outstandingOrders.length} pending</div>
+                <Link href="/Pages/Ordermanagement/outstandingorders" className="quick-action-btn">+ Review orders</Link>
+              </div>
+              <div className="stat-card">
+                <div className="stat-lbl">Dealer Accounts</div>
+                <div className="stat-val">{summaryLoading ? "—" : (adminData.dealerCount || dealersQ.data?.total || dealerRows.length)}</div>
+                <div className="stat-badge badge-green">{activeDealers} active</div>
+                <div className="stat-badge badge-red" style={{ marginLeft: 6 }}>{inactiveDealers} inactive</div>
+                <Link href="/dashboard/admin/dealer/DealerList" className="quick-action-btn">+ Open dealers</Link>
+              </div>
+              <div className="stat-card">
+                <div className="stat-lbl">Staff Roles</div>
+                <div className="stat-val">{summaryLoading ? "—" : (adminData.staffCount || staffQ.data?.count || staffRows.length)}</div>
+                <div className="stat-badge badge-purple">{roleCounts["1"] ?? 0} executive</div>
+                <div className="stat-badge badge-blue" style={{ marginLeft: 6 }}>{roleCounts["2"] ?? 0} field</div>
+                <Link href="/dashboard/admin/staff/stafflist" className="quick-action-btn">+ View staff</Link>
+              </div>
+              <div className="stat-card">
+                <div className="stat-lbl">Discount Approvals</div>
+                <div className="stat-val">{summaryLoading ? "—" : pendingApprovals}</div>
+                <div className={`stat-badge ${pendingApprovals > 0 ? "badge-amber pulse-amber" : "badge-green"}`}>{pendingApprovals} pending</div>
+                <Link href="/dashboard/admin/custom-discount-approvals" className="quick-action-btn">+ Review discounts</Link>
+              </div>
+              <div className="stat-card">
+                <div className="stat-lbl">Credit Exposure</div>
+                <div className="font-sans font-bold">{summaryLoading ? "—" : `₹${outstandingExposure.toLocaleString("en-IN")}`}</div>
+                <div className="stat-badge badge-blue">{ledgerRows.length} ledgers</div>
+                <Link href="/dashboard/admin/ledger" className="quick-action-btn">+ Open ledger</Link>
+              </div>
+              <div className="stat-card">
+                <div className="stat-lbl">Top Exposure</div>
+                <div className="exposure-list">
+                  {summaryLoading ? (
+                    <div className="stat-val">—</div>
+                  ) : highExposureDealers.length > 0 ? highExposureDealers.map(d => (
+                    <div className="exposure-row" key={d.Dealer_Id}>
+                      <span>{d.Dealer_Name}</span>
+                      <strong>₹{Number(d.currentlimit || 0).toLocaleString("en-IN")}</strong>
+                    </div>
+                  )) : (
+                    <div className="stat-badge badge-green">No exposure</div>
+                  )}
+                </div>
+              </div>
             </div>
 
             {/* ── Charts ── */}

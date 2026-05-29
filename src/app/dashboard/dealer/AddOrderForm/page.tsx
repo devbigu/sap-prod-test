@@ -27,7 +27,7 @@ type ProductRow = {
   displayName: string;
   variantCode: string;
   producQuanity: number;
-  price: number;
+  price: number; // rupees per unit
   packSize: number;
   isPriority?: boolean;
 };
@@ -97,9 +97,29 @@ function payloadAmount(amount: number): string {
   return String(Math.round((amount + Number.EPSILON) * 100) / 100);
 }
 
+function roundRupees(amount: number): number {
+  if (!Number.isFinite(amount) || amount <= 0) return 0;
+  return Math.round((amount + Number.EPSILON) * 100) / 100;
+}
+
 function safePositiveNumber(value: unknown): number {
   const n = Number(value);
   return Number.isFinite(n) && n > 0 ? n : 0;
+}
+
+function cartPriceToRupees(rawPrice: unknown, apiPrice: unknown = 0): number {
+  const cartPrice = safePositiveNumber(rawPrice);
+  const fallbackPrice = safePositiveNumber(apiPrice);
+  if (!cartPrice) return fallbackPrice;
+
+  const cartPriceAsRupees = roundRupees(cartPrice / 100);
+  if (!fallbackPrice) return cartPriceAsRupees;
+
+  if (Math.abs(cartPriceAsRupees - fallbackPrice) <= Math.max(0.01, fallbackPrice * 0.01)) {
+    return fallbackPrice;
+  }
+
+  return cartPrice >= fallbackPrice * 20 ? cartPriceAsRupees : cartPrice;
 }
 
 function rowSubtotalPaise(row: ProductRow): number {
@@ -123,7 +143,7 @@ function buildOrderSignature(rows: ProductRow[], subtotalAmount: number): string
     .map((r) => ({
       productname: r.productname,
       quantity: safePositiveNumber(r.producQuanity),
-      price: safePositiveNumber(r.price/100),
+      price: safePositiveNumber(r.price),
       packSize: safePositiveNumber(r.packSize) || 1,
       priority: !!r.isPriority,
     }));
@@ -312,7 +332,7 @@ function AddOrderPageInner() {
               displayName: match ? (match.product_name ?? item.productName) : item.productName,
               variantCode: item.variantCode,
               producQuanity: item.quantity,
-              price: item.unitPrice,
+              price: cartPriceToRupees(item.unitPrice, match?.product_price),
               packSize: item.packSize ?? 1,
               isPriority: item.isPriority ?? item.priority ?? false,
             };
@@ -350,7 +370,7 @@ function AddOrderPageInner() {
       const packSize = localMeta?.packSize ?? (item as any).packSize ?? 1;
       const cartPrice = Number(item.price);
       const apiPrice = match ? Number(match.product_price) : 0;
-      const price = cartPrice > 0 ? cartPrice : apiPrice;
+      const price = cartPriceToRupees(cartPrice, apiPrice);
 
       return {
         key: i + 1,

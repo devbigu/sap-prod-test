@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import { Suspense } from 'react';
-
+import { SIDEBAR_CATEGORIES } from '@/lib/categories';
 // ─────────────────────────────────────────────────────────────
 // TYPES
 // ─────────────────────────────────────────────────────────────
@@ -40,7 +40,7 @@ type Product = {
 // ─────────────────────────────────────────────────────────────
 // SIDEBAR CATEGORIES — sourced from shared lib
 // ─────────────────────────────────────────────────────────────
-import { SIDEBAR_CATEGORIES } from '@/lib/categories';
+
 export { SIDEBAR_CATEGORIES };
 
 // ─────────────────────────────────────────────────────────────

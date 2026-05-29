@@ -220,6 +220,20 @@ function ExecutiveDashboard() {
     myDealers:     dealers.length,
   }), [orders, dealers])
 
+  const activeDealers = useMemo(
+    () => dealers.filter(d => Number(d.status) === 1).length,
+    [dealers]
+  )
+
+  const nearCreditLimitDealers = useMemo(
+    () => dealers.filter(d => {
+      const current = Number(d.currentlimit) || 0
+      const target = Number(d.annualtarget) || 0
+      return target > 0 && current / target > 0.8
+    }),
+    [dealers]
+  )
+
   // Any query still loading the very first time
   const globalLoading = !authChecked || [ordersQ, dealersQ].some(q => q.isLoading)
   // Any hard error
@@ -387,6 +401,11 @@ function ExecutiveDashboard() {
         .badge-green  { background: #d1fae5; color: #059669; }
         .badge-blue   { background: #dbeafe; color: #1d4ed8; }
         .badge-purple { background: #ede9fe; color: #7c3aed; }
+        .badge-red    { background: #fee2e2; color: #b91c1c; }
+        .pulse-amber { box-shadow: 0 0 0 0 rgba(245,158,11,0.7); animation: pulseAmber 1.6s infinite; }
+        @keyframes pulseAmber { 0%{box-shadow:0 0 0 0 rgba(245,158,11,0.7)} 70%{box-shadow:0 0 0 8px rgba(245,158,11,0)} 100%{box-shadow:0 0 0 0 rgba(245,158,11,0)} }
+        .quick-action-btn { display: inline-flex; align-items: center; justify-content: center; margin-top: 10px; padding: 6px 10px; border-radius: 8px; background: #f9fafb; border: 1px solid #e5e7eb; color: #4f46e5; font-size: 11.5px; font-weight: 700; text-decoration: none; transition: background .15s, border-color .15s; }
+        .quick-action-btn:hover { background: #ede9fe; border-color: #ddd6fe; }
 
         /* ── Panels / Charts ── */
         .charts-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
@@ -536,6 +555,47 @@ function ExecutiveDashboard() {
                   <div className={`stat-badge ${s.badge}`}>{s.badgeLabel}</div>
                 </div>
               ))}
+            </div>
+
+            {/* ── Sidebar Summary Widgets ── */}
+            <div className="stat-grid">
+              <div className="stat-card">
+                <div className="stat-lbl">Assigned Dealers</div>
+                <div className="stat-val">
+                  {dealersQ.isLoading
+                    ? <span className="shimmer" style={{ display: "inline-block", width: 60, height: 26 }} />
+                    : stats.myDealers}
+                </div>
+                <div className="panel-sub">Dealers mapped to your staff ID</div>
+                <div className="stat-badge badge-green">{activeDealers} active</div>
+                <Link href="/Dashboard/admin/dealer/DealerList" className="quick-action-btn">+ View dealers</Link>
+              </div>
+
+              <div className="stat-card">
+                <div className="stat-lbl">Pending Orders</div>
+                <div className="stat-val">
+                  {ordersQ.isLoading
+                    ? <span className="shimmer" style={{ display: "inline-block", width: 60, height: 26 }} />
+                    : stats.pendingOrders}
+                </div>
+                <div className="panel-sub">Orders awaiting action from assigned dealers</div>
+                <div className={`stat-badge badge-amber${stats.pendingOrders > 0 ? " pulse-amber" : ""}`}>{stats.pendingOrders} pending</div>
+                <Link href="/Pages/Ordermanagement/outstandingorders" className="quick-action-btn">+ Review orders</Link>
+              </div>
+
+              <div className="stat-card">
+                <div className="stat-lbl">Credit Watch</div>
+                <div className="stat-val">
+                  {dealersQ.isLoading
+                    ? <span className="shimmer" style={{ display: "inline-block", width: 60, height: 26 }} />
+                    : nearCreditLimitDealers.length}
+                </div>
+                <div className="panel-sub">Dealers using over 80% of annual target</div>
+                <div className={`stat-badge ${nearCreditLimitDealers.length > 0 ? "badge-red" : "badge-blue"}`}>
+                  {nearCreditLimitDealers.length} near limit
+                </div>
+                <Link href="/dashboard/admin/ledger" className="quick-action-btn">+ Open ledger</Link>
+              </div>
             </div>
 
             {/* ── Charts Row 1 ── */}

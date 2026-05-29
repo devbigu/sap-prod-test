@@ -3,7 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQueries,
+} from "@tanstack/react-query";
 import { CiSearch } from "react-icons/ci";
+import { useCartStore } from "@/Store/store";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 type DealerData = {
@@ -16,6 +22,8 @@ type DealerData = {
 
 type MonthlyData = { month: string; totalorders: number; totalvalue: number };
 type FunnelStage = { label: string; value: number; pct: number; color: string };
+type DraftRow = { producQuanity?: number; price?: number; packSize?: number };
+type OrderHistoryItem = { order_status?: string; status?: string; accept_order?: string };
 
 const EMPTY_DEALER: DealerData = {
   Dealer_Id: "", Dealer_Name: "", Dealer_Email: "", Dealer_Number: "",
@@ -40,6 +48,22 @@ function fmtNum(n: number) {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
   if (n >= 1_000)     return `${(n / 1_000).toFixed(0)}K`;
   return String(n);
+}
+
+const dashboardQueryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 30_000,
+      refetchOnWindowFocus: true,
+      retry: 2,
+    },
+  },
+});
+
+async function fetchJson<T>(url: string): Promise<T> {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
 }
 
 async function safeFetch(url: string, options: RequestInit = {}) {
@@ -83,8 +107,17 @@ function normaliseMonthlyResponse(data: any, valueKey: "orders" | "value"): Mont
 }
 
 export default function DealerDashboard() {
+  return (
+    <QueryClientProvider client={dashboardQueryClient}>
+      <DealerDashboardInner />
+    </QueryClientProvider>
+  );
+}
+
+function DealerDashboardInner() {
   const router   = useRouter();
   const pathname = usePathname();
+  const cartItems = useCartStore((s) => s.cart);
 
   // Chart refs — one per canvas, one per Chart.js instance
   const barRef   = useRef<HTMLCanvasElement | null>(null);
@@ -275,6 +308,47 @@ export default function DealerDashboard() {
 
   const handleLogout = () => { localStorage.clear(); router.push("/auth/login"); };
 
+  const [
+    draftsQ,
+    ordersQ,
+  ] = useQueries({
+    queries: [
+      {
+        queryKey: ["dealerSidebarSummary", "drafts", dealer.Dealer_Id],
+        queryFn: () => fetchJson<{ data: Array<{ rows?: DraftRow[] }> }>(`/api/drafts?dealer_id=${encodeURIComponent(dealer.Dealer_Id)}`),
+        enabled: !!dealer.Dealer_Id,
+      },
+      {
+        queryKey: ["dealerSidebarSummary", "orders", dealer.Dealer_Id],
+        queryFn: () => fetchJson<{ data: OrderHistoryItem[] }>(`https://mirisoft.co.in/sas/dealerapi/api/orderhispegination?page=1&search=&id=${encodeURIComponent(dealer.Dealer_Id)}`),
+        enabled: !!dealer.Dealer_Id,
+      },
+    ],
+  });
+
+  const summaryLoading = [draftsQ, ordersQ].some(q => q.isLoading);
+  const summaryError = [draftsQ, ordersQ].find(q => q.isError);
+  const retrySummary = () => {
+    draftsQ.refetch();
+    ordersQ.refetch();
+  };
+  const cartTotalPaise = cartItems.reduce((sum, item) => sum + item.price * item.quantity * (item.packSize ?? 1), 0);
+  const draftRows = draftsQ.data?.data ?? [];
+  const draftTotal = draftRows.reduce((sum, draft) => {
+    return sum + (draft.rows ?? []).reduce((rowSum, row) => {
+      const qty = Number(row.producQuanity) || 0;
+      const pack = Number(row.packSize) || 1;
+      const price = Number(row.price) || 0;
+      return rowSum + qty * pack * price;
+    }, 0);
+  }, 0);
+  const orderRows = ordersQ.data?.data ?? [];
+  const pendingOrders = orderRows.filter(o => o.order_status === "0" || o.status === "pending").length;
+  const shippedOrders = orderRows.filter(o => o.order_status === "2" || o.status === "shipped").length;
+  const processingOrders = Math.max(0, orderRows.length - pendingOrders - shippedOrders);
+  const creditDaysRemaining = Math.max(0, creditDays);
+  const paymentAlert = currentLimit > 0 || creditDaysRemaining <= 7;
+
   return (
     <>
       <style>{`
@@ -325,6 +399,11 @@ export default function DealerDashboard() {
         .badge-green  { background: #d1fae5; color: #059669; }
         .badge-amber  { background: #fef3c7; color: #b45309; }
         .badge-blue   { background: #dbeafe; color: #1d4ed8; }
+        .badge-red    { background: #fee2e2; color: #b91c1c; }
+        .pulse-amber { box-shadow: 0 0 0 0 rgba(245,158,11,0.7); animation: pulseAmber 1.6s infinite; }
+        @keyframes pulseAmber { 0%{box-shadow:0 0 0 0 rgba(245,158,11,0.7)} 70%{box-shadow:0 0 0 8px rgba(245,158,11,0)} 100%{box-shadow:0 0 0 0 rgba(245,158,11,0)} }
+        .quick-action-btn { display: inline-flex; align-items: center; justify-content: center; margin-top: 10px; padding: 6px 10px; border-radius: 8px; background: #f9fafb; border: 1px solid #e5e7eb; color: #4f46e5; font-size: 11.5px; font-weight: 700; text-decoration: none; transition: background .15s, border-color .15s; }
+        .quick-action-btn:hover { background: #ede9fe; border-color: #ddd6fe; }
 
         .charts-row { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 16px; }
         @media (min-width: 900px) { .charts-row { grid-template-columns: 1fr 1fr; } }
@@ -422,6 +501,47 @@ export default function DealerDashboard() {
                 <div className="font-sans font-bold">{discountPct}%</div>
                 <div className="icard-sub">Dealer discount rate</div>
                 <div className="icard-badge badge-green">Active</div>
+              </div>
+            </div>
+
+            {/* ── Sidebar Summary Widgets ── */}
+            {summaryError && (
+              <div className="panel" style={{ marginBottom: 16, borderColor: "#fecaca", color: "#dc2626", display: "flex", alignItems: "center", gap: 10 }}>
+                Some summary data failed to load.
+                <button className="quick-action-btn" style={{ marginTop: 0, marginLeft: "auto", color: "#dc2626" }} onClick={retrySummary}>Retry</button>
+              </div>
+            )}
+            <div className="info-cards font-sans">
+              <div className="icard">
+                <div className="icard-lbl">Active Cart</div>
+                <div className="font-sans font-bold">{cartItems.length}</div>
+                <div className="icard-sub">Items ready for checkout</div>
+                <div className="icard-badge badge-blue">₹{(cartTotalPaise / 100).toLocaleString("en-IN")}</div>
+                <Link href="/Pages/Cart" className="quick-action-btn">+ Open cart</Link>
+              </div>
+              <div className="icard">
+                <div className="icard-lbl">Saved Drafts</div>
+                <div className="font-sans font-bold">{summaryLoading ? "—" : draftRows.length}</div>
+                <div className="icard-sub">Stored order drafts</div>
+                <div className="icard-badge badge-purple">₹{draftTotal.toLocaleString("en-IN")}</div>
+                <Link href="/drafts" className="quick-action-btn">+ View drafts</Link>
+              </div>
+              <div className="icard">
+                <div className="icard-lbl">Order Status</div>
+                <div className="font-sans font-bold">{summaryLoading ? "—" : orderRows.length}</div>
+                <div className="icard-sub">Latest order history snapshot</div>
+                <div className={`icard-badge badge-amber${pendingOrders > 0 ? " pulse-amber" : ""}`}>{pendingOrders} pending</div>
+                <div className="icard-badge badge-blue" style={{ marginLeft: 6 }}>{processingOrders} processing</div>
+                <div className="icard-badge badge-green" style={{ marginLeft: 6 }}>{shippedOrders} shipped</div>
+              </div>
+              <div className="icard">
+                <div className="icard-lbl">Payment Due</div>
+                <div className="font-sans font-bold">{creditDaysRemaining}</div>
+                <div className="icard-sub">Credit days remaining</div>
+                <div className={`icard-badge ${paymentAlert ? "badge-amber pulse-amber" : "badge-green"}`}>
+                  ₹{currentLimit.toLocaleString("en-IN")} exposure
+                </div>
+                <Link href="/Pages/ledger" className="quick-action-btn">+ Open ledger</Link>
               </div>
             </div>
 

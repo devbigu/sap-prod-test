@@ -4,6 +4,11 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
+  QueryClient,
+  QueryClientProvider,
+  useQueries,
+} from "@tanstack/react-query";
+import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
 } from "recharts";
 import moment from "moment";
@@ -38,6 +43,8 @@ type PendingOrder = {
 type Stats = { dealerCount: number; staffCount: number; orderCount: number; PorderCount: number };
 type ChartOrder  = { order_id: string; total: string };
 type ChartDealer = { Dealer_Name: string; total: string };
+type LedgerSummary = { netBalance: number };
+type LedgerResponse = { data: LedgerSummary[] };
 
 // ─── CSV Export ───────────────────────────────────────────────────────────────
 function downloadCSV(rows: Record<string, any>[], filename: string) {
@@ -199,8 +206,32 @@ function Skeleton({ cols }: { cols: number }) {
   );
 }
 
+const dashboardQueryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 30_000,
+      refetchOnWindowFocus: true,
+      retry: 2,
+    },
+  },
+});
+
+async function fetchJson<T>(url: string): Promise<T> {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export default function AccountantDashboard() {
+  return (
+    <QueryClientProvider client={dashboardQueryClient}>
+      <AccountantDashboardInner />
+    </QueryClientProvider>
+  );
+}
+
+function AccountantDashboardInner() {
   const router = useRouter();
 
   const [chartOrders,   setChartOrders]   = useState<ChartOrder[]>([]);
@@ -249,10 +280,37 @@ export default function AccountantDashboard() {
     load();
   }, []);
 
+  const [
+    pendingVerificationQ,
+    ledgerQ,
+  ] = useQueries({
+    queries: [
+      {
+        queryKey: ["accountantSidebarSummary", "pendingVerification"],
+        queryFn: () => fetchJson<{ data: PendingOrder[] }>(`${BACKEND_URL}/orderpeginationnew?page=1&search=`),
+      },
+      {
+        queryKey: ["accountantSidebarSummary", "ledger"],
+        queryFn: () => fetchJson<LedgerResponse>("/api/ledger"),
+      },
+    ],
+  });
+
+  const summaryLoading = [pendingVerificationQ, ledgerQ].some(q => q.isLoading);
+  const summaryError = [pendingVerificationQ, ledgerQ].find(q => q.isError);
+  const retrySummary = () => {
+    pendingVerificationQ.refetch();
+    ledgerQ.refetch();
+  };
+
   // Derived
   const totalSale         = chartOrders.reduce((s, o) => s + Number(o.total), 0);
   const pendingPayment    = pendingOrders.reduce((s, o) => s + (Number(o.order_amount) - Number(o.order_discount)), 0);
   const pendingPayCount   = pendingOrders.filter(o => o.accept_order === "0" || o.order_status !== "1").length;
+  const pendingVerification = (pendingVerificationQ.data?.data ?? pendingOrders).filter(o => o.order_status === "0").length;
+  const ledgerRows = ledgerQ.data?.data ?? [];
+  const totalOutstandingValue = ledgerRows.reduce((sum, row) => sum + Math.max(0, Number(row.netBalance) || 0), 0);
+  const pendingInvoicesCount = ledgerRows.filter(row => Number(row.netBalance) > 0).length;
 
   const statCards = [
     { label: "Total Sale",       value: `₹${totalSale.toLocaleString("en-IN")}`,     icon: <DollarSign size={15}/>,   bg: "bg-emerald-50", text: "text-emerald-600", border: "border-l-emerald-400" },
@@ -267,6 +325,27 @@ export default function AccountantDashboard() {
 
   return (
     <div className="px-6 py-6 max-w-[1440px] mx-auto" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap');
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin-bottom: 24px; }
+        .icard { background: #fff; border: 1px solid #e5e7eb; border-radius: 18px; padding: 18px 20px; transition: box-shadow .2s, transform .2s; }
+        .icard:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.07); transform: translateY(-2px); }
+        .icard-lbl { font-size: 10px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 8px; }
+        .icard-val { font-size: 26px; font-weight: 700; color: #111827; font-family: 'DM Mono', monospace; line-height: 1; }
+        .icard-sub { font-size: 11.5px; color: #6b7280; margin-top: 7px; }
+        .icard-badge { display: inline-flex; align-items: center; gap: 3px; margin-top: 9px; padding: 2px 9px; border-radius: 20px; font-size: 10.5px; font-weight: 600; }
+        .badge-amber { background: #fef3c7; color: #b45309; }
+        .badge-green { background: #d1fae5; color: #059669; }
+        .badge-blue { background: #dbeafe; color: #1d4ed8; }
+        .badge-purple { background: #ede9fe; color: #7c3aed; }
+        .badge-red { background: #fee2e2; color: #b91c1c; }
+        .pulse-amber { box-shadow: 0 0 0 0 rgba(245,158,11,0.7); animation: pulseAmber 1.6s infinite; }
+        @keyframes pulseAmber { 0%{box-shadow:0 0 0 0 rgba(245,158,11,0.7)} 70%{box-shadow:0 0 0 8px rgba(245,158,11,0)} 100%{box-shadow:0 0 0 0 rgba(245,158,11,0)} }
+        .shimmer { background: linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 6px; }
+        @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+        .quick-action-btn { display: inline-flex; align-items: center; justify-content: center; margin-top: 10px; padding: 6px 10px; border-radius: 8px; background: #f9fafb; border: 1px solid #e5e7eb; color: #4f46e5; font-size: 11.5px; font-weight: 700; text-decoration: none; transition: background .15s, border-color .15s; }
+        .quick-action-btn:hover { background: #ede9fe; border-color: #ddd6fe; }
+      `}</style>
 
       {/* ── Stat Cards ── */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
@@ -283,6 +362,37 @@ export default function AccountantDashboard() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* ── Sidebar Summary Widgets ── */}
+      {summaryError && (
+        <div className="mb-4 flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-600">
+          Some accountant summary data failed to load.
+          <button className="quick-action-btn" style={{ marginTop: 0, marginLeft: "auto", color: "#dc2626" }} onClick={retrySummary}>Retry</button>
+        </div>
+      )}
+      <div className="summary-grid">
+        <div className="icard">
+          <div className="icard-lbl">Pending Verification</div>
+          <div className="icard-val">{summaryLoading ? <span className="shimmer" style={{ display: "inline-block", width: 60, height: 26 }} /> : pendingVerification}</div>
+          <div className="icard-sub">Orders waiting for verification</div>
+          <div className={`icard-badge badge-amber${pendingVerification > 0 ? " pulse-amber" : ""}`}>{pendingVerification} pending</div>
+          <Link href="/Pages/Ordermanagement/outstandingorders" className="quick-action-btn">+ Review orders</Link>
+        </div>
+        <div className="icard">
+          <div className="icard-lbl">Outstanding Value</div>
+          <div className="icard-val">{summaryLoading ? <span className="shimmer" style={{ display: "inline-block", width: 90, height: 26 }} /> : `₹${totalOutstandingValue.toLocaleString("en-IN")}`}</div>
+          <div className="icard-sub">Net open balance across dealers</div>
+          <div className="icard-badge badge-blue">{ledgerRows.length} ledgers</div>
+          <Link href="/dashboard/admin/ledger" className="quick-action-btn">+ Open ledger</Link>
+        </div>
+        <div className="icard">
+          <div className="icard-lbl">Pending Invoices</div>
+          <div className="icard-val">{summaryLoading ? <span className="shimmer" style={{ display: "inline-block", width: 60, height: 26 }} /> : pendingInvoicesCount}</div>
+          <div className="icard-sub">Dealer balances needing invoice follow-up</div>
+          <div className={`icard-badge ${pendingInvoicesCount > 0 ? "badge-red" : "badge-green"}`}>{pendingInvoicesCount} open</div>
+          <Link href="/dashboard/accountant/order-book" className="quick-action-btn">+ Open order book</Link>
+        </div>
       </div>
 
       {/* ── Recent Orders Table ── */}
