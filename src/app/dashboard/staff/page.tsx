@@ -547,7 +547,7 @@ function ExecutiveDashboard() {
               {STAT_CONFIG.map(s => (
                 <div key={s.label} className="stat-card">
                   <div className="stat-lbl">{s.label}</div>
-                  <div className="stat-val">
+                  <div className="font-sans font-bold">
                     {globalLoading
                       ? <span className="shimmer" style={{ display: "inline-block", width: 60, height: 26 }} />
                       : s.value}
@@ -567,13 +567,13 @@ function ExecutiveDashboard() {
                     : stats.myDealers}
                 </div>
                 <div className="panel-sub">Dealers mapped to your staff ID</div>
-                <div className="stat-badge badge-green">{activeDealers} active</div>
+                <div className="font-sans font-bold badge-green">{activeDealers} active</div>
                 <Link href="/Dashboard/admin/dealer/DealerList" className="quick-action-btn">+ View dealers</Link>
               </div>
 
               <div className="stat-card">
                 <div className="stat-lbl">Pending Orders</div>
-                <div className="stat-val">
+                <div className="font-sans font-bold">
                   {ordersQ.isLoading
                     ? <span className="shimmer" style={{ display: "inline-block", width: 60, height: 26 }} />
                     : stats.pendingOrders}
@@ -585,7 +585,7 @@ function ExecutiveDashboard() {
 
               <div className="stat-card">
                 <div className="stat-lbl">Credit Watch</div>
-                <div className="stat-val">
+                <div className="font-sans font-bold">
                   {dealersQ.isLoading
                     ? <span className="shimmer" style={{ display: "inline-block", width: 60, height: 26 }} />
                     : nearCreditLimitDealers.length}

@@ -504,27 +504,27 @@ function AdminDashboardInner() {
             <div className="summary-grid">
               <div className="stat-card">
                 <div className="stat-lbl">Pending Orders</div>
-                <div className="stat-val">{summaryLoading ? "—" : outstandingOrders.length}</div>
+                <div className="font-sans font-bold">{summaryLoading ? "—" : outstandingOrders.length}</div>
                 <div className="stat-badge badge-amber pulse-amber">{outstandingOrders.length} pending</div>
                 <Link href="/Pages/Ordermanagement/outstandingorders" className="quick-action-btn">+ Review orders</Link>
               </div>
               <div className="stat-card">
                 <div className="stat-lbl">Dealer Accounts</div>
-                <div className="stat-val">{summaryLoading ? "—" : (adminData.dealerCount || dealersQ.data?.total || dealerRows.length)}</div>
+                <div className="font-sans font-bold">{summaryLoading ? "—" : (adminData.dealerCount || dealersQ.data?.total || dealerRows.length)}</div>
                 <div className="stat-badge badge-green">{activeDealers} active</div>
                 <div className="stat-badge badge-red" style={{ marginLeft: 6 }}>{inactiveDealers} inactive</div>
                 <Link href="/dashboard/admin/dealer/DealerList" className="quick-action-btn">+ Open dealers</Link>
               </div>
               <div className="stat-card">
                 <div className="stat-lbl">Staff Roles</div>
-                <div className="stat-val">{summaryLoading ? "—" : (adminData.staffCount || staffQ.data?.count || staffRows.length)}</div>
+                <div className="font-sans font-bold">{summaryLoading ? "—" : (adminData.staffCount || staffQ.data?.count || staffRows.length)}</div>
                 <div className="stat-badge badge-purple">{roleCounts["1"] ?? 0} executive</div>
                 <div className="stat-badge badge-blue" style={{ marginLeft: 6 }}>{roleCounts["2"] ?? 0} field</div>
                 <Link href="/dashboard/admin/staff/stafflist" className="quick-action-btn">+ View staff</Link>
               </div>
               <div className="stat-card">
                 <div className="stat-lbl">Discount Approvals</div>
-                <div className="stat-val">{summaryLoading ? "—" : pendingApprovals}</div>
+                <div className="font-sans font-bold">{summaryLoading ? "—" : pendingApprovals}</div>
                 <div className={`stat-badge ${pendingApprovals > 0 ? "badge-amber pulse-amber" : "badge-green"}`}>{pendingApprovals} pending</div>
                 <Link href="/dashboard/admin/custom-discount-approvals" className="quick-action-btn">+ Review discounts</Link>
               </div>
@@ -538,7 +538,7 @@ function AdminDashboardInner() {
                 <div className="stat-lbl">Top Exposure</div>
                 <div className="exposure-list">
                   {summaryLoading ? (
-                    <div className="stat-val">—</div>
+                    <div className="font-sans font-bold">—</div>
                   ) : highExposureDealers.length > 0 ? highExposureDealers.map(d => (
                     <div className="exposure-row" key={d.Dealer_Id}>
                       <span>{d.Dealer_Name}</span>

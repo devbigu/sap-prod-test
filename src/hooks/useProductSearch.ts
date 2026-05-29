@@ -47,7 +47,7 @@ export function useProductSearch(options?: {
   const limit = options?.limit ?? 20
 
   const [query, setQuery] = useState('')
-  const debounceTimer = useRef<NodeJS.Timeout>()
+  const debounceTimer = useRef<NodeJS.Timeout | null>(null)
   const [debouncedQuery, setDebouncedQuery] = useState('')
 
   // Debounced search
