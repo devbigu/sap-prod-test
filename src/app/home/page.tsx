@@ -383,7 +383,7 @@ export default function Page() {
         <SectionHeading
           title="Recent Orders"
           subtitle={ordersData ? `${ordersData.count} total orders · showing last 4` : "Your latest purchases"}
-          action={{ label: "View all orders", href: "/Orders" }}
+          action={{ label: "View all orders", href: "/orders" }}
         />
 
         {ordersError && (
@@ -449,7 +449,7 @@ export default function Page() {
                       className="flex-1 text-center text-xs py-1.5 rounded border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors">
                       View
                     </button>
-                    <button onClick={() => router.push("/Orders")}
+                    <button onClick={() => router.push("/orders")}
                       className="flex-1 text-center text-xs py-1.5 rounded bg-slate-900 text-white hover:bg-slate-700 transition-colors">
                       Reorder
                     </button>

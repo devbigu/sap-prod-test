@@ -20,8 +20,6 @@ export async function GET(
 ) {
   try {
     const { dealerId } = await params;
-    const db = await getDb();
-
     const snapshot = await getLedgerSnapshot();
     let dealerLive = true;
     let dealer = await fetchExternalDealer(dealerId).catch((error) => {
@@ -42,11 +40,20 @@ export async function GET(
     }
 
     const dealerOrders = ordersForDealer(snapshot.orders, dealerId);
-    const transactions = await db
-      .collection("ledger_transactions")
-      .find({ Dealer_Id: dealerId })
-      .sort({ date: -1 })
-      .toArray();
+    let transactions: any[] = [];
+    let paymentsLive = true;
+
+    try {
+      const db = await getDb();
+      transactions = await db
+        .collection("ledger_transactions")
+        .find({ Dealer_Id: dealerId })
+        .sort({ date: -1 })
+        .toArray();
+    } catch (paymentError) {
+      paymentsLive = false;
+      console.error("[GET /api/ledger/[dealerId] payments]", paymentError);
+    }
 
     const accountBook = summarizeOrders(dealerOrders);
     const creditPaise = transactions.reduce((sum, tx) => sum + paymentCreditPaise(tx), 0);
@@ -66,6 +73,7 @@ export async function GET(
       orders: dealerOrders,
       transactionCount: transactions.length,
       isLive: snapshot.isLive && dealerLive,
+      paymentsLive,
       updatedAt: snapshot.updatedAt,
     });
   } catch (error: any) {

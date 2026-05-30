@@ -83,6 +83,15 @@ function cacheIsFresh() {
   return memorySnapshot && Date.now() - memorySnapshot.cachedAt < CACHE_TTL_MS;
 }
 
+async function getOptionalDb(): Promise<Db | null> {
+  try {
+    return await getDb();
+  } catch (error) {
+    console.error("[ledger mongo connection]", error);
+    return null;
+  }
+}
+
 async function fetchJson(url: string, init: RequestInit = {}) {
   const res = await fetch(url, { ...init, cache: "no-store" });
   if (!res.ok) throw new Error(`External API failed: ${res.status}`);
@@ -153,12 +162,11 @@ async function writeCachedSnapshot(db: Db, snapshot: LedgerSnapshot) {
 export async function getLedgerSnapshot(): Promise<SnapshotResult> {
   if (cacheIsFresh() && memorySnapshot) return memorySnapshot;
 
-  const db = await getDb();
-
   try {
     const live = await fetchLiveSnapshot();
     try {
-      await writeCachedSnapshot(db, live);
+      const db = await getOptionalDb();
+      if (db) await writeCachedSnapshot(db, live);
     } catch (cacheError) {
       console.error("[ledger cache write]", cacheError);
     }
@@ -173,10 +181,13 @@ export async function getLedgerSnapshot(): Promise<SnapshotResult> {
       return memorySnapshot;
     }
 
-    const cached = await readCachedSnapshot(db);
-    if (cached) {
-      memorySnapshot = { ...cached, isLive: false, cachedAt: Date.now() };
-      return memorySnapshot;
+    const db = await getOptionalDb();
+    if (db) {
+      const cached = await readCachedSnapshot(db);
+      if (cached) {
+        memorySnapshot = { ...cached, isLive: false, cachedAt: Date.now() };
+        return memorySnapshot;
+      }
     }
 
     throw liveError;

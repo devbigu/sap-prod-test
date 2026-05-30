@@ -53,18 +53,6 @@ export async function POST(
       .collection("ledger_transactions")
       .insertOne(transaction);
 
-    // Update dealer's wallet balance if mode is "Wallet"
-    if (paymentMode === "Wallet") {
-      await db
-        .collection("dealers")
-        .updateOne(
-          { Dealer_Id: dealerId },
-          {
-            $inc: { walletBalance: parseFloat(amount) },
-          }
-        );
-    }
-
     return NextResponse.json({
       success: true,
       message: "Payment recorded successfully",

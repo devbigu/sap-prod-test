@@ -12,14 +12,30 @@ import { useCartStore } from "@/Store/store"
 import { useRouter } from 'next/navigation'
 
 // ─────────────────────────────────────────────────────────────
-// TYPES
+// TYPES  (matches nested_omsons_products.json schema)
 // ─────────────────────────────────────────────────────────────
+type Variant = {
+  id: string
+  sku: string
+  name: string
+  specsText?: string
+  specs?: Record<string, string>
+  images?: string[]
+}
+
 type Product = {
-  SKU: string
-  Name: string
-  Description?: string
-  "Short description"?: string
-  image?: string
+  id: string
+  sku: string
+  slug: string
+  name: string
+  category: string
+  categories?: string[]
+  features?: string[]
+  descriptionHtml?: string
+  images?: string[]
+  variants?: Variant[]
+  /** Pre-computed search index — built once on load */
+  _searchIndex?: string
 }
 
 export type RecentlyViewedItem = {
@@ -106,16 +122,31 @@ function useLocationFromStorage() {
 
 // ─────────────────────────────────────────────────────────────
 // SCORE helper — ranks how well a product matches a query
+// Searches: SKU → variant SKUs → name → category → deep index
 // ─────────────────────────────────────────────────────────────
 function scoreProduct(product: Product, q: string): number {
-  const sku  = product.SKU.toLowerCase()
-  const name = product.Name.toLowerCase()
+  const sku  = (product.sku ?? '').toLowerCase()
+  const name = (product.name ?? '').toLowerCase()
 
-  if (sku === q)             return 100   // exact SKU
-  if (sku.startsWith(q))    return 80    // SKU prefix
-  if (sku.includes(q))      return 60    // SKU substring
-  if (name.startsWith(q))   return 40    // name prefix
-  if (name.includes(q))     return 20    // name substring
+  // Tier 1: SKU matches (highest priority)
+  if (sku === q)             return 100  // exact SKU
+  if (sku.startsWith(q))    return 90   // SKU prefix
+  if (sku.includes(q))      return 80   // SKU substring
+
+  // Tier 2: Check variant SKUs
+  if (product.variants?.some(v => (v.sku ?? '').toLowerCase().includes(q))) return 75
+
+  // Tier 3: Name matches
+  if (name.startsWith(q))   return 70   // name prefix
+  if (name.includes(q))     return 60   // name substring
+
+  // Tier 4: Category match
+  if ((product.category ?? '').toLowerCase().includes(q)) return 50
+
+  // Tier 5: Deep search via pre-computed index
+  // (features, specs, description, categories, variant specsText)
+  if (product._searchIndex?.includes(q)) return 30
+
   return 0
 }
 
@@ -142,37 +173,62 @@ const Header = () => {
 
   const { city, pincode } = useLocationFromStorage()
 
-  // ── Load products once ──────────────────────────────────────
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // ── Load products once & build search index ─────────────────
   useEffect(() => {
-    fetch("/data/products.json")
+    fetch("/data/nested_omsons_products.json")
       .then(r => r.json())
-      .then(setAllProducts)
+      .then((raw: Product[]) => {
+        const indexed = raw.map(p => {
+          const parts: string[] = [
+            p.name ?? '', p.sku ?? '', p.category ?? '',
+            ...(p.categories || []),
+            ...(p.features || []),
+            // Strip HTML tags from description before indexing
+            (p.descriptionHtml || '').replace(/<[^>]*>?/gm, ''),
+            // Flatten all variant SKUs, names, and specsText
+            ...(p.variants?.flatMap(v => [
+              v.sku ?? '', v.name ?? '', v.specsText ?? ''
+            ]) || [])
+          ]
+          return { ...p, _searchIndex: parts.join(' ').toLowerCase() }
+        })
+        setAllProducts(indexed)
+      })
       .catch(console.error)
   }, [])
 
-  // ── Filter & rank suggestions ───────────────────────────────
+  // ── Filter & rank suggestions (debounced) ───────────────────
   useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+
     const q = query.trim().toLowerCase()
     if (!q) { setSuggestions([]); setShowDropdown(false); return }
 
-    let pool = allProducts
-    if (selectedCategory !== "all") {
-      pool = pool.filter(p =>
-        p.Name.toLowerCase().includes(selectedCategory.toLowerCase()) ||
-        (p.Description ?? "").toLowerCase().includes(selectedCategory.toLowerCase())
-      )
-    }
+    debounceRef.current = setTimeout(() => {
+      let pool = allProducts
+      if (selectedCategory !== "all") {
+        const lowerCat = selectedCategory.toLowerCase()
+        pool = pool.filter(p =>
+          (p.category ?? '').toLowerCase().includes(lowerCat) ||
+          p.categories?.some(c => c.toLowerCase().includes(lowerCat))
+        )
+      }
 
-    const matched = pool
-      .map(p => ({ product: p, score: scoreProduct(p, q) }))
-      .filter(({ score }) => score > 0)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 8)
-      .map(({ product }) => product)
+      const matched = pool
+        .map(p => ({ product: p, score: scoreProduct(p, q) }))
+        .filter(({ score }) => score > 0)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 8)
+        .map(({ product }) => product)
 
-    setSuggestions(matched)
-    setShowDropdown(matched.length > 0)
-    setActiveIndex(-1)
+      setSuggestions(matched)
+      setShowDropdown(matched.length > 0)
+      setActiveIndex(-1)
+    }, 300)
+
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current) }
   }, [query, selectedCategory, allProducts])
 
   // ── Close on outside click ──────────────────────────────────
@@ -209,9 +265,9 @@ const Header = () => {
   // ── Navigate to product & store in recently viewed ──────────
   const goToProduct = (product: Product) => {
     setShowDropdown(false)
-    setQuery(product.Name)
-    pushRecentlyViewed({ SKU: product.SKU, Name: product.Name, image: product.image })
-    router.push(`/Products/${product.SKU}`)
+    setQuery(product.name)
+    pushRecentlyViewed({ SKU: product.sku, Name: product.name, image: product.images?.[0] })
+    router.push(`/Products/${product.sku}`)
   }
 
   // ── Full search → /Products?q= ──────────────────────────────
@@ -282,7 +338,7 @@ const Header = () => {
           <input
             ref={inputRef}
             type="text"
-            placeholder="Search by name or SKU…"
+            placeholder="Search products..."
             className="flex-1 px-3 text-black text-sm outline-none bg-white"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -310,7 +366,7 @@ const Header = () => {
             }}>
               {suggestions.map((product, idx) => (
                 <div
-                  key={product.SKU}
+                  key={product.sku}
                   onMouseDown={() => goToProduct(product)}
                   onMouseEnter={() => setActiveIndex(idx)}
                   style={{
@@ -323,7 +379,7 @@ const Header = () => {
                 >
                   <FaMagnifyingGlass style={{ color: "#94a3b8", flexShrink: 0, fontSize: 12 }} />
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <HighlightMatch text={product.Name} sku={product.SKU} query={query} />
+                    <HighlightMatch text={product.name} sku={product.sku} query={query} category={product.category} />
                   </div>
                   <span style={{ fontSize: 11, color: "#f59e0b", fontWeight: 600, flexShrink: 0 }}>
                     View →
@@ -389,8 +445,9 @@ const Header = () => {
 // HIGHLIGHT MATCH
 // Highlights the matched portion in both name and SKU.
 // SKU row is bold/dark when the query matched the SKU.
+// Category badge shown for context.
 // ─────────────────────────────────────────────────────────────
-function HighlightMatch({ text, sku, query }: { text: string; sku: string; query: string }) {
+function HighlightMatch({ text, sku, query, category }: { text: string; sku: string; query: string; category?: string }) {
   const q = query.trim()
 
   const highlight = (str: string) => {
@@ -421,13 +478,16 @@ function HighlightMatch({ text, sku, query }: { text: string; sku: string; query
       }}>
         {highlight(text)}
       </div>
-      {/* SKU row — highlighted when the query matched the SKU */}
+      {/* SKU + category row */}
       <div style={{
         fontSize: 11,
         marginTop: 1,
         overflow: "hidden",
         textOverflow: "ellipsis",
         whiteSpace: "nowrap",
+        display: "flex",
+        alignItems: "center",
+        gap: 6,
       }}>
         <span style={{ color: skuMatched ? "#1e3a5f" : "#94a3b8" }}>SKU: </span>
         <span style={{
@@ -436,6 +496,19 @@ function HighlightMatch({ text, sku, query }: { text: string; sku: string; query
         }}>
           {highlight(sku)}
         </span>
+        {category && (
+          <span style={{
+            fontSize: 10,
+            color: "#6366f1",
+            background: "#eef2ff",
+            padding: "1px 6px",
+            borderRadius: 4,
+            fontWeight: 500,
+            flexShrink: 0,
+          }}>
+            {category}
+          </span>
+        )}
       </div>
     </div>
   )

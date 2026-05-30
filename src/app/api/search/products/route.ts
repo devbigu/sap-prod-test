@@ -6,6 +6,8 @@ interface Product {
   sku: string
   name: string
   category: string
+  categories?: string[]
+  features?: string[]
   specsText?: string
   variants?: Array<{
     id: string
@@ -36,6 +38,8 @@ function flattenProducts(productList: any[]): Product[] {
       sku: p.sku,
       name: p.name,
       category: p.category,
+      categories: p.categories || [],
+      features: p.features || [],
       specsText: p.specsText || '',
     })
 
@@ -48,6 +52,8 @@ function flattenProducts(productList: any[]): Product[] {
             sku: v.sku,
             name: v.name,
             category: p.category,
+            categories: p.categories || [],
+            features: p.features || [],
             specsText: v.specsText || '',
           })
         }
@@ -112,6 +118,27 @@ function hybridSearch(query: string, productList: Product[]): SearchMatch[] {
           name: p.name,
           matchType: 'name',
           relevance: Math.round(wordRatio * 85),
+        })
+        seen.add(p.id)
+      }
+    }
+  })
+
+  // 3.5 FEATURES & CATEGORIES MATCH
+  productList.forEach((p) => {
+    if (!seen.has(p.id)) {
+      const searchable = [
+        ...(p.categories || []),
+        ...(p.features || [])
+      ].join(' ').toLowerCase()
+
+      if (searchable.includes(lowerQuery)) {
+        matches.push({
+          id: p.id,
+          sku: p.sku,
+          name: p.name,
+          matchType: 'name',
+          relevance: 55,
         })
         seen.add(p.id)
       }

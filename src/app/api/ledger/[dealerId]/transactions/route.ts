@@ -27,15 +27,22 @@ export async function GET(
 ) {
   try {
     const { dealerId } = await params;
-    const db = await getDb();
-
     const snapshot = await getLedgerSnapshot();
     const orders = ordersForDealer(snapshot.orders, dealerId);
-    const ledgerTransactions = await db
-      .collection("ledger_transactions")
-      .find({ Dealer_Id: dealerId })
-      .sort({ date: -1 })
-      .toArray();
+    let ledgerTransactions: any[] = [];
+    let paymentsLive = true;
+
+    try {
+      const db = await getDb();
+      ledgerTransactions = await db
+        .collection("ledger_transactions")
+        .find({ Dealer_Id: dealerId })
+        .sort({ date: -1 })
+        .toArray();
+    } catch (paymentError) {
+      paymentsLive = false;
+      console.error("[GET /api/ledger/[dealerId]/transactions payments]", paymentError);
+    }
 
     const orderTransactions = orders.map((order) => ({
       id: String(order.order_id || `${dealerId}-${order.order_date || ""}`),
@@ -68,6 +75,7 @@ export async function GET(
       data: allTransactions,
       count: allTransactions.length,
       isLive: snapshot.isLive,
+      paymentsLive,
       updatedAt: snapshot.updatedAt,
     });
   } catch (error: any) {

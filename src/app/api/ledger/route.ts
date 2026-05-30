@@ -16,9 +16,17 @@ import {
  */
 export async function GET(_req: NextRequest) {
   try {
-    const db = await getDb();
     const snapshot = await getLedgerSnapshot();
-    const payments = await db.collection("ledger_transactions").find({}).toArray();
+    let payments: any[] = [];
+    let paymentsLive = true;
+
+    try {
+      const db = await getDb();
+      payments = await db.collection("ledger_transactions").find({}).toArray();
+    } catch (paymentError) {
+      paymentsLive = false;
+      console.error("[GET /api/ledger payments]", paymentError);
+    }
 
     const paymentsByDealer = new Map<string, { creditPaise: number; debitPaise: number }>();
     for (const payment of payments) {
@@ -53,6 +61,7 @@ export async function GET(_req: NextRequest) {
       total: ledgerSummaries.length,
       isLive: snapshot.isLive,
       updatedAt: snapshot.updatedAt,
+      paymentsLive,
     });
   } catch (error: any) {
     console.error("[GET /api/ledger]", error);
