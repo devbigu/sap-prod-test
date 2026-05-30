@@ -37,6 +37,10 @@ type ApprovalRequest = {
   adminNote?: string;
   reviewedBy?: string;
   reviewedAt?: string | null;
+  allowReorder?: boolean;
+  reorderCount?: number;
+  lastReorderedAt?: string | null;
+  lastReorderedOrderId?: string;
   createdAt: string;
 };
 
@@ -127,6 +131,25 @@ export default function CustomDiscountApprovalsPage() {
       setRequests((prev) => prev.map((r) => r.id === request.id ? json.data : r));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not update approval");
+    } finally {
+      setUpdating(null);
+    }
+  };
+
+  const toggleReorder = async (request: ApprovalRequest) => {
+    const allowReorder = !request.allowReorder;
+    setUpdating(request.id);
+    try {
+      const res = await fetch(`/api/custom-discount-requests/${request.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ allowReorder }),
+      });
+      const json = await res.json();
+      if (!json.success) throw new Error(json.message ?? "Could not update reorder permission");
+      setRequests((prev) => prev.map((r) => r.id === request.id ? json.data : r));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not update reorder permission");
     } finally {
       setUpdating(null);
     }
@@ -297,9 +320,36 @@ export default function CustomDiscountApprovalsPage() {
                         </button>
                       </div>
                     ) : (
-                      <p className="mt-3 text-[12px] text-gray-500">
-                        Reviewed by {request.reviewedBy || "Admin"} {request.reviewedAt ? `on ${new Date(request.reviewedAt).toLocaleString("en-IN")}` : ""}
-                      </p>
+                      <>
+                        <p className="mt-3 text-[12px] text-gray-500">
+                          Reviewed by {request.reviewedBy || "Admin"} {request.reviewedAt ? `on ${new Date(request.reviewedAt).toLocaleString("en-IN")}` : ""}
+                        </p>
+                        {request.status === "approved" && (
+                          <div className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white px-3 py-2">
+                            <span className="text-[11px] text-gray-500">
+                              {(request.reorderCount || 0) > 0
+                                ? `Reordered ${request.reorderCount}x${request.lastReorderedAt ? ` - Last: ${new Date(request.lastReorderedAt).toLocaleString("en-IN")}` : ""}`
+                                : "Not yet reordered"}
+                            </span>
+                            <label className="inline-flex items-center gap-2">
+                              <span className="text-[11px] font-medium text-gray-600">Allow Reorder</span>
+                              <button
+                                type="button"
+                                onClick={() => toggleReorder(request)}
+                                disabled={updating === request.id}
+                                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors disabled:opacity-50 ${
+                                  request.allowReorder ? "bg-emerald-500" : "bg-gray-300"
+                                }`}
+                                title={request.allowReorder ? "Disable reorder" : "Allow reorder"}
+                              >
+                                <span className={`inline-block h-3.5 w-3.5 rounded-full bg-white transition-transform ${
+                                  request.allowReorder ? "translate-x-4" : "translate-x-0.5"
+                                }`} />
+                              </button>
+                            </label>
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>

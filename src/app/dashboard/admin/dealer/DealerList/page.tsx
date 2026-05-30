@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query'
 import axios from 'axios'
@@ -293,7 +294,12 @@ export default function DealerListPage() {
                           <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-semibold shrink-0">
                             {initials(dealer.Dealer_Name)}
                           </div>
-                          <span className="font-medium text-gray-800">{dealer.Dealer_Name || "—"}</span>
+                          <Link
+                            href={`/dashboard/admin/dealer/${dealer.Dealer_Id}/ledger`}
+                            className="font-medium text-gray-800 hover:text-indigo-700 transition-colors"
+                          >
+                            {dealer.Dealer_Name || "—"}
+                          </Link>
                         </div>
                       </td>
 

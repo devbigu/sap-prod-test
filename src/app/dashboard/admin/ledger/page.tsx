@@ -22,6 +22,8 @@ interface LedgerResponse {
   success: boolean
   data: LedgerSummary[]
   total: number
+  isLive?: boolean
+  updatedAt?: string
 }
 
 const ITEMS_PER_PAGE = 10
@@ -65,6 +67,8 @@ export default function CollectiveLedgerPage() {
         success: res.data.success,
         data: filtered.slice(start, end),
         total: filtered.length,
+        isLive: res.data.isLive,
+        updatedAt: res.data.updatedAt,
       }
     },
     staleTime: 5 * 60 * 1000,
@@ -72,6 +76,7 @@ export default function CollectiveLedgerPage() {
 
   const dealers = data?.data || []
   const total = data?.total || 0
+  const isLive = data?.isLive ?? true
   const totalPages = Math.ceil(total / ITEMS_PER_PAGE) || 1
 
   const startIndex = (page - 1) * ITEMS_PER_PAGE + 1
@@ -127,6 +132,12 @@ export default function CollectiveLedgerPage() {
               <p className="text-sm text-gray-500 mt-1">View all dealers account summaries</p>
             </div>
           </div>
+
+          {!isLive && (
+            <div className="mb-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800">
+              Showing offline cached ledger data. Connection to main billing system is temporarily unavailable.
+            </div>
+          )}
 
           <div className="relative w-72">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -198,11 +209,23 @@ export default function CollectiveLedgerPage() {
                 {/* Data rows */}
                 {!isLoading &&
                   dealers.map((dealer, idx) => (
-                    <tr key={dealer.Dealer_Id} className="hover:bg-gray-50 transition-colors">
+                    <tr
+                      key={dealer.Dealer_Id}
+                      onClick={() => router.push(`/dashboard/admin/dealer/${dealer.Dealer_Id}/ledger`)}
+                      className="cursor-pointer hover:bg-gray-50 transition-colors"
+                    >
                       <td className="px-6 py-4 text-gray-400 text-xs">{startIndex + idx}</td>
 
                       <td className="px-6 py-4">
-                        <p className="font-medium text-gray-900">{dealer.Dealer_Name}</p>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            router.push(`/dashboard/admin/dealer/${dealer.Dealer_Id}/ledger`)
+                          }}
+                          className="font-medium text-gray-900 hover:text-indigo-700"
+                        >
+                          {dealer.Dealer_Name}
+                        </button>
                         <p className="text-xs text-gray-500 mt-0.5">{dealer.Dealer_Email}</p>
                       </td>
 
@@ -239,9 +262,10 @@ export default function CollectiveLedgerPage() {
 
                       <td className="px-6 py-4">
                         <button
-                          onClick={() =>
+                          onClick={(e) => {
+                            e.stopPropagation()
                             router.push(`/dashboard/admin/dealer/${dealer.Dealer_Id}/ledger`)
-                          }
+                          }}
                           className="text-indigo-600 hover:text-indigo-700 font-medium text-sm transition-colors"
                         >
                           View Ledger →

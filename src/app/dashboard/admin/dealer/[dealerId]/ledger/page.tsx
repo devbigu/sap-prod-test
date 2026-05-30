@@ -7,6 +7,7 @@ import axios from 'axios'
 import { ChevronLeft, AlertCircle } from 'lucide-react'
 import DealerInfoCard from '@/components/ledger/DealerInfoCard'
 import LedgerSummary from '@/components/ledger/LedgerSummary'
+import AccountBookSummary, { AccountBookStats } from '@/components/ledger/AccountBookSummary'
 import TransactionTable from '@/components/ledger/TransactionTable'
 import PayMoneyModal, { PaymentData } from '@/components/ledger/PayMoneyModal'
 import { InvoiceModal } from '@/components/InvoiceModel'
@@ -43,7 +44,10 @@ interface DealerLedgerResponse {
   success: boolean
   dealer: Dealer
   summary: LedgerSummaryData
+  summaryStats: AccountBookStats
   transactionCount: number
+  isLive: boolean
+  updatedAt?: string
   message?: string
 }
 
@@ -142,6 +146,8 @@ export default function DealerLedgerPage() {
 
   const dealer = ledgerData?.dealer
   const summary = ledgerData?.summary || { totalDebit: 0, totalCredit: 0, netBalance: 0 }
+  const summaryStats = ledgerData?.summaryStats
+  const isLive = ledgerData?.isLive ?? true
   const transactions = transactionsData?.data || []
   const transactionCount = transactionsData?.count || 0
 
@@ -185,6 +191,12 @@ export default function DealerLedgerPage() {
       />
 
       <div className="p-6 max-w-7xl mx-auto">
+        {!isLive && (
+          <div className="mb-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800">
+            Showing offline cached ledger data. Connection to main billing system is temporarily unavailable.
+          </div>
+        )}
+
         {/* Back button */}
         <button
           onClick={() => router.back()}
@@ -206,6 +218,11 @@ export default function DealerLedgerPage() {
           totalDebit={summary.totalDebit}
           totalCredit={summary.totalCredit}
           netBalance={summary.netBalance}
+          isLoading={isLedgerLoading}
+        />
+
+        <AccountBookSummary
+          stats={summaryStats}
           isLoading={isLedgerLoading}
         />
 

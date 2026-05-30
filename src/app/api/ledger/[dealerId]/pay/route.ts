@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/mongodb";
+import { fetchExternalDealer, getLedgerSnapshot } from "@/lib/ledgerSystem";
 
 /**
  * POST /api/ledger/[dealerId]/pay
@@ -23,10 +24,10 @@ export async function POST(
 
     const db = await getDb();
 
-    // Verify dealer exists
-    const dealer = await db
-      .collection("dealers")
-      .findOne({ Dealer_Id: dealerId });
+    const dealer = await fetchExternalDealer(dealerId).catch(async () => {
+      const snapshot = await getLedgerSnapshot();
+      return snapshot.dealers.find((item) => String(item.Dealer_Id) === String(dealerId)) ?? null;
+    });
 
     if (!dealer) {
       return NextResponse.json(

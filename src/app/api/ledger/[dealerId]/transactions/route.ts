@@ -1,56 +1,64 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/mongodb";
+import {
+  classifyOrder,
+  getLedgerSnapshot,
+  orderNet,
+  ordersForDealer,
+  paymentCreditPaise,
+  paymentDebitPaise,
+} from "@/lib/ledgerSystem";
+
+function orderMode(order: any) {
+  const state = classifyOrder(order);
+  if (state === "SentAndSettled") return "Sent & Settled";
+  if (state === "SupposedToGo") return "Supposed to Go";
+  if (state === "Awaiting") return "Awaiting Confirm";
+  return "Cancelled";
+}
 
 /**
  * GET /api/ledger/[dealerId]/transactions
- * Get all transactions for a specific dealer
+ * Unified chronological transaction ledger: live order debits + local credits.
  */
 export async function GET(
-  req: NextRequest,
+  _req: NextRequest,
   { params }: { params: Promise<{ dealerId: string }> }
 ) {
   try {
     const { dealerId } = await params;
     const db = await getDb();
 
-    // Combine orders (debits) and ledger transactions (credits/payments)
-    const orders = await db
-      .collection("orders")
-      .find({ Dealer_Id: dealerId })
-      .sort({ order_date: -1 })
-      .toArray();
-
+    const snapshot = await getLedgerSnapshot();
+    const orders = ordersForDealer(snapshot.orders, dealerId);
     const ledgerTransactions = await db
       .collection("ledger_transactions")
       .find({ Dealer_Id: dealerId })
       .sort({ date: -1 })
       .toArray();
 
-    // Format orders as transactions
     const orderTransactions = orders.map((order) => ({
-      id: order._id?.toString() || "",
-      debit: parseFloat(order.order_amount) || 0,
+      id: String(order.order_id || `${dealerId}-${order.order_date || ""}`),
+      debit: orderNet(order),
       credit: 0,
-      narration: `Order ${order.order_id}`,
+      narration: `Order ${order.order_id || ""}`.trim(),
       date: order.order_date || "",
       invoice: order.order_id || "",
-      mode: "Order",
+      mode: orderMode(order),
       type: "debit",
     }));
 
-    // Format ledger transactions
-    const formattedLedgerTransactions = ledgerTransactions.map((lt) => ({
-      id: lt._id?.toString() || "",
-      debit: lt.type === "debit" ? parseFloat(lt.amount) || 0 : 0,
-      credit: lt.type === "payment" ? parseFloat(lt.amount) || 0 : 0,
-      narration: lt.narration || "",
-      date: lt.date || "",
-      invoice: lt.referenceId || "",
-      mode: lt.paymentMode || "",
-      type: lt.type,
+    const formattedLedgerTransactions = ledgerTransactions.map((tx) => ({
+      id: tx._id?.toString() || "",
+      debit: paymentDebitPaise(tx) / 100,
+      credit: paymentCreditPaise(tx) / 100,
+      narration: tx.narration || "",
+      date: tx.date || tx.createdAt || "",
+      invoice: tx.referenceId || "",
+      mode: tx.paymentMode || "",
+      type: tx.type,
     }));
 
-    // Combine and sort by date (newest first)
     const allTransactions = [...orderTransactions, ...formattedLedgerTransactions].sort(
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     );
@@ -59,6 +67,8 @@ export async function GET(
       success: true,
       data: allTransactions,
       count: allTransactions.length,
+      isLive: snapshot.isLive,
+      updatedAt: snapshot.updatedAt,
     });
   } catch (error: any) {
     console.error("[GET /api/ledger/[dealerId]/transactions]", error);

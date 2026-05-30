@@ -36,10 +36,16 @@ type OptionType = { value: string; label: string; price: number };
 
 type CustomDiscountRequest = {
   id: string;
+  dealerId?: string;
   status: "pending" | "approved" | "rejected";
   requestedDiscountPercent: number;
   currentDiscountPercent: number;
   orderSignature: string;
+  allowReorder?: boolean;
+  products?: any[];
+  shipto?: string;
+  refno?: string;
+  orderNote?: string;
   adminNote?: string;
   createdAt?: string;
   reviewedAt?: string | null;
@@ -205,6 +211,7 @@ function AddOrderPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const draftIdParam = searchParams.get("draft");
+  const reorderIdParam = searchParams.get("reorder");
 
   const cartItems = useCartStore((s) => s.cart);
   const clearCart = useCartStore((s) => s.clearCart);
@@ -213,6 +220,7 @@ function AddOrderPageInner() {
 
   const [loading, setLoading] = useState(false);
   const [draftSaving, setDraftSaving] = useState(false);
+  const [reorderLoading, setReorderLoading] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [products, setProducts] = useState<any[]>([]);
   const [variantLookup, setVariantLookup] = useState<Record<string, ProductMeta>>({});
@@ -242,6 +250,7 @@ function AddOrderPageInner() {
   const [customDiscountInput, setCustomDiscountInput] = useState("");
   const [customDiscountSubmitting, setCustomDiscountSubmitting] = useState(false);
   const [customDiscountRequests, setCustomDiscountRequests] = useState<CustomDiscountRequest[]>([]);
+  const [reorderRequest, setReorderRequest] = useState<CustomDiscountRequest | null>(null);
 
   const [arr1, setArr] = useState<ProductRow[]>([emptyRow()]);
 
@@ -287,6 +296,65 @@ function AddOrderPageInner() {
   );
 
   useEffect(() => {
+    if (!reorderIdParam || !user || products.length === 0) return;
+    if (seededRef.current) return;
+
+    setReorderLoading(true);
+    fetch(`/api/custom-discount-requests/${encodeURIComponent(reorderIdParam)}`)
+      .then((r) => {
+        if (r.status === 404) throw new Error("NOT_FOUND");
+        if (!r.ok) throw new Error("NETWORK");
+        return r.json();
+      })
+      .then((json) => {
+        if (!json.success) throw new Error("API_FAIL");
+        const req = json.data as CustomDiscountRequest;
+
+        if (String(req.dealerId) !== String(user.Dealer_Id)) throw new Error("WRONG_DEALER");
+        if (!req.allowReorder) throw new Error("REVOKED");
+        if (req.status !== "approved") throw new Error("NOT_APPROVED");
+
+        const rows: ProductRow[] = (req.products || []).map((p: any, i: number) => {
+          const match = products.find(
+            (prod: any) => String(prod.product_cat).trim() === String(p.productname).trim()
+          );
+          return {
+            key: i + 1,
+            productname: p.productname || match?.product_cat || "",
+            displayName: p.displayName || match?.product_name || p.productname || "",
+            variantCode: p.variantCode || p.productname || match?.product_cat || "",
+            producQuanity: safePositiveNumber(p.quantity) || 1,
+            price: safePositiveNumber(p.price) || safePositiveNumber(match?.product_price),
+            packSize: safePositiveNumber(p.packSize) || 1,
+            isPriority: !!(p.priority || p.isPriority),
+          };
+        });
+
+        seededRef.current = true;
+        setReorderRequest(req);
+        setArr(rows.length > 0 ? rows : [emptyRow()]);
+        if (req.shipto) setShipto(req.shipto);
+        if (req.refno) setRefno(req.refno);
+        if (req.orderNote) setOrderNote(req.orderNote);
+        setDraftBanner(null);
+      })
+      .catch((err) => {
+        seededRef.current = true;
+        const messages: Record<string, string> = {
+          NOT_FOUND: "This discount request no longer exists.",
+          WRONG_DEALER: "This discount request does not belong to your account.",
+          REVOKED: "Reorder permission has been revoked by admin.",
+          NOT_APPROVED: "This discount request is not approved.",
+          NETWORK: "Could not load reorder data. Please try again.",
+          API_FAIL: "Could not load reorder data.",
+        };
+        toast.error(messages[err?.message] || messages.NETWORK);
+        window.history.replaceState({}, "", "/dashboard/dealer/AddOrderForm");
+      })
+      .finally(() => setReorderLoading(false));
+  }, [reorderIdParam, user, products]);
+
+  useEffect(() => {
     if (!draftIdParam || !user || products.length === 0) return;
     if (seededRef.current) return;
     if (!cachedDraft && !draftError) return;        // still loading
@@ -313,6 +381,7 @@ function AddOrderPageInner() {
   // ── Seed rows from DraftCart (when navigated from Cart page) ─────────────
   useEffect(() => {
     if (!fromCart || !user || products.length === 0) return;
+    if (reorderIdParam) return;
     if (seededRef.current) return;
     seededRef.current = true;
 
@@ -345,13 +414,14 @@ function AddOrderPageInner() {
       })
       .catch(() => toast.error("Could not load cart draft."));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fromCart, user, products]);
+  }, [fromCart, user, products, reorderIdParam]);
 
   // ── Seed rows from cart ───────────────────────────────────────────────────
   useEffect(() => {
     if (seededRef.current) return;
     if (products.length === 0) return;
     if (draftIdParam) return;
+    if (reorderIdParam) return;
     if (fromCart) return;           // DraftCart takes priority when ?from=cart
     seededRef.current = true;
 
@@ -385,7 +455,7 @@ function AddOrderPageInner() {
     });
 
     setArr(cartRows);
-  }, [products, cartItems, variantLookup, draftIdParam]);
+  }, [products, cartItems, variantLookup, draftIdParam, reorderIdParam]);
 
   // ── Discount ──────────────────────────────────────────────────────────────
   const subtotalPaise = arr1.reduce((acc, row) => acc + rowSubtotalPaise(row), 0);
@@ -404,9 +474,12 @@ function AddOrderPageInner() {
   const pendingCustomRequest = matchingCustomRequests.find((r) => r.status === "pending");
   const rejectedCustomRequest = matchingCustomRequests.find((r) => r.status === "rejected");
   const visibleCustomRequest = approvedCustomRequest ?? pendingCustomRequest ?? rejectedCustomRequest ?? null;
-  const approvedCustomDiscountPercent = approvedCustomRequest
-    ? Math.min(100, Math.max(0, Number(approvedCustomRequest.requestedDiscountPercent) || 0))
+  const reorderDiscountPercent = reorderRequest
+    ? Math.min(100, Math.max(0, Number(reorderRequest.requestedDiscountPercent) || 0))
     : null;
+  const approvedCustomDiscountPercent = reorderDiscountPercent ?? (approvedCustomRequest
+    ? Math.min(100, Math.max(0, Number(approvedCustomRequest.requestedDiscountPercent) || 0))
+    : null);
   const discountPayload = approvedCustomDiscountPercent !== null
     ? {
       ...baseDiscountPayload,
@@ -657,10 +730,11 @@ function AddOrderPageInner() {
       fd.append("order_note", orderNote.trim());
       fd.append("Dealer_note", orderNote.trim());
     }
-    if (approvedCustomRequest) {
-      fd.append("customDiscountRequestId", approvedCustomRequest.id);
-      fd.append("customDiscountStatus", approvedCustomRequest.status);
-      fd.append("customDiscountPercent", String(approvedCustomRequest.requestedDiscountPercent));
+    const customDiscountSource = reorderRequest ?? approvedCustomRequest;
+    if (customDiscountSource) {
+      fd.append("customDiscountRequestId", customDiscountSource.id);
+      fd.append("customDiscountStatus", customDiscountSource.status);
+      fd.append("customDiscountPercent", String(customDiscountSource.requestedDiscountPercent));
     }
     if (refno) fd.append("refno", refno);
     if (appliedCoupon) fd.append("coupon_code", appliedCoupon.code);
@@ -671,6 +745,16 @@ function AddOrderPageInner() {
       );
       const placedOrderId = extractOrderIdFromResponse(data) || await fetchLatestOrderId();
       await saveOrderNoteForHistory(placedOrderId);
+      if (reorderRequest) {
+        fetch(`/api/custom-discount-requests/${reorderRequest.id}/reorder-log`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            orderId: placedOrderId,
+            dealerId: user.Dealer_Id,
+          }),
+        }).catch((err) => console.error("[reorder-log] failed:", err));
+      }
       toast.success(data.msg, { autoClose: 5000 });
       clearCart();
       seededRef.current = false;
@@ -679,6 +763,7 @@ function AddOrderPageInner() {
       handleRemoveCoupon();
       setActiveDraftId(null);
       setDraftBanner(null);
+      setReorderRequest(null);
       // Clear the DraftCart from MongoDB if this order originated from the cart page
       if (fromCart && user?.Dealer_Id) {
         fetch(`/api/draft-cart?dealer_id=${encodeURIComponent(user.Dealer_Id)}`, { method: "DELETE" }).catch(() => { });
@@ -775,12 +860,12 @@ function AddOrderPageInner() {
       )}
 
       {/* ── Busy overlay ──────────────────────────────────────────────────── */}
-      {(loading || draftSaving) && (
+      {(loading || draftSaving || reorderLoading) && (
         <div className="fixed inset-0 z-[999] bg-black/35 backdrop-blur-sm flex items-center justify-center">
           <div className="bg-white rounded-2xl px-10 py-7 flex flex-col items-center gap-3 shadow-2xl">
             <div className="w-9 h-9 border-[3px] border-gray-200 border-t-indigo-500 rounded-full animate-spin" />
             <span className="text-sm font-medium text-gray-600">
-              {draftSaving ? "Saving draft…" : "Processing…"}
+              {reorderLoading ? "Loading reorder data..." : draftSaving ? "Saving draft…" : "Processing…"}
             </span>
           </div>
         </div>
@@ -809,6 +894,33 @@ function AddOrderPageInner() {
                 </svg>
               </button>
             </div>
+          </div>
+        )}
+
+        {reorderRequest && (
+          <div className="flex items-center justify-between bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5 mb-5 text-[12.5px] text-emerald-700 font-medium">
+            <div className="flex items-center gap-2">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 12a9 9 0 0 1-15.4 6.4L3 16" />
+                <path d="M3 21v-5h5" />
+                <path d="M3 12a9 9 0 0 1 15.4-6.4L21 8" />
+                <path d="M21 3v5h-5" />
+              </svg>
+              Reorder from approved discount - {reorderRequest.requestedDiscountPercent}% discount locked
+            </div>
+            <button
+              onClick={() => {
+                setReorderRequest(null);
+                seededRef.current = false;
+                window.history.replaceState({}, "", "/dashboard/dealer/AddOrderForm");
+              }}
+              className="text-emerald-500 hover:text-emerald-700 cursor-pointer"
+              title="Clear reorder"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
           </div>
         )}
 

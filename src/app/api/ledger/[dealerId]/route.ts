@@ -1,22 +1,38 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/mongodb";
+import {
+  fetchExternalDealer,
+  getLedgerSnapshot,
+  normalizeDealer,
+  ordersForDealer,
+  paymentCreditPaise,
+  paymentDebitPaise,
+  summarizeOrders,
+} from "@/lib/ledgerSystem";
 
 /**
  * GET /api/ledger/[dealerId]
- * Get dealer info and ledger summary
+ * Dealer info, live external order debit summary, and local payment credits.
  */
 export async function GET(
-  req: NextRequest,
+  _req: NextRequest,
   { params }: { params: Promise<{ dealerId: string }> }
 ) {
   try {
     const { dealerId } = await params;
     const db = await getDb();
 
-    // Fetch dealer info
-    const dealer = await db
-      .collection("dealers")
-      .findOne({ Dealer_Id: dealerId });
+    const snapshot = await getLedgerSnapshot();
+    let dealerLive = true;
+    let dealer = await fetchExternalDealer(dealerId).catch((error) => {
+      dealerLive = false;
+      console.error("[ledger dealer live]", error);
+      return null;
+    });
+
+    if (!dealer) {
+      dealer = snapshot.dealers.find((item) => String(item.Dealer_Id) === String(dealerId)) ?? null;
+    }
 
     if (!dealer) {
       return NextResponse.json(
@@ -25,45 +41,32 @@ export async function GET(
       );
     }
 
-    // Get all orders for this dealer
-    const orders = await db
-      .collection("orders")
-      .find({ Dealer_Id: dealerId })
-      .toArray();
-
-    // Get all transactions (payments, etc.)
+    const dealerOrders = ordersForDealer(snapshot.orders, dealerId);
     const transactions = await db
       .collection("ledger_transactions")
       .find({ Dealer_Id: dealerId })
       .sort({ date: -1 })
       .toArray();
 
-    // Calculate totals
-    const totalDebit = orders.reduce((sum, o) => sum + (parseFloat(o.order_amount) || 0), 0);
-    const totalCredit = transactions.reduce(
-      (sum, t) => sum + (t.type === "payment" ? parseFloat(t.amount) || 0 : 0),
-      0
-    );
-    const netBalance = totalDebit - totalCredit;
+    const accountBook = summarizeOrders(dealerOrders);
+    const creditPaise = transactions.reduce((sum, tx) => sum + paymentCreditPaise(tx), 0);
+    const debitPaise = transactions.reduce((sum, tx) => sum + paymentDebitPaise(tx), 0);
+    const totalDebit = accountBook.booked + debitPaise / 100;
+    const totalCredit = creditPaise / 100;
 
     return NextResponse.json({
       success: true,
-      dealer: {
-        Dealer_Id: dealer.Dealer_Id,
-        Dealer_Name: dealer.Dealer_Name,
-        Dealer_Email: dealer.Dealer_Email,
-        Dealer_Number: dealer.Dealer_Number,
-        Dealer_Address: dealer.Dealer_Address,
-        Dealer_City: dealer.Dealer_City,
-        Dealer_Pincode: dealer.Dealer_Pincode,
-        walletBalance: dealer.walletBalance || 0,
-      },
+      dealer: normalizeDealer(dealer),
       summary: {
         totalDebit,
         totalCredit,
-        netBalance,
+        netBalance: totalDebit - totalCredit,
       },
+      summaryStats: accountBook,
+      orders: dealerOrders,
       transactionCount: transactions.length,
+      isLive: snapshot.isLive && dealerLive,
+      updatedAt: snapshot.updatedAt,
     });
   } catch (error: any) {
     console.error("[GET /api/ledger/[dealerId]]", error);

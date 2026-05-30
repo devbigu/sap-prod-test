@@ -23,12 +23,17 @@ export async function GET(req: NextRequest) {
   try {
     const dealerId = req.nextUrl.searchParams.get("dealer_id");
     const status = req.nextUrl.searchParams.get("status");
+    const reorderable = req.nextUrl.searchParams.get("reorderable");
     const limitParam = Number(req.nextUrl.searchParams.get("limit") || 100);
     const limit = Number.isFinite(limitParam) ? Math.min(200, Math.max(1, limitParam)) : 100;
 
     const query: Record<string, any> = {};
     if (dealerId) query.dealerId = dealerId;
     if (status) query.status = status;
+    if (reorderable === "true") {
+      query.status = "approved";
+      query.allowReorder = true;
+    }
 
     const db = await getDb();
     const docs = await db
@@ -83,6 +88,10 @@ export async function POST(req: NextRequest) {
         : {},
       products: Array.isArray(body.products) ? body.products.slice(0, 100) : [],
       status: "pending",
+      allowReorder: false,
+      reorderCount: 0,
+      lastReorderedAt: null,
+      lastReorderedOrderId: "",
       adminNote: "",
       reviewedBy: "",
       reviewedAt: null,

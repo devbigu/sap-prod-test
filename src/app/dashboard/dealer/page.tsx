@@ -472,7 +472,7 @@ function DealerDashboardInner() {
         </aside>
 
         <div className="main">
-          <div className="page-heading">Dealer Dashboard</div>
+          
 
           <main className="content">
 

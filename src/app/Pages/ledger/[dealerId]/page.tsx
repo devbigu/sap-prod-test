@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 import DealerInfoCard from '@/components/ledger/DealerInfoCard'
 import LedgerSummary from '@/components/ledger/LedgerSummary'
+import AccountBookSummary, { AccountBookStats } from '@/components/ledger/AccountBookSummary'
 import TransactionTable from '@/components/ledger/TransactionTable'
 import PayMoneyModal, { PaymentData } from '@/components/ledger/PayMoneyModal'
 import { InvoiceModal } from '@/components/InvoiceModel'
@@ -57,7 +58,11 @@ interface DealerLedgerResponse {
   success: boolean
   dealer: Dealer
   summary: LedgerSummaryData
+  summaryStats: AccountBookStats
+  orders: RawOrder[]
   transactionCount: number
+  isLive: boolean
+  updatedAt?: string
   message?: string
 }
 
@@ -73,6 +78,9 @@ type RawOrder = {
   order_date: string
   order_amount: string
   order_discount: string
+  order_dealer?: string
+  accept_order?: string
+  del_status?: string
   Dealer_Name: string
   orderdata_item_quantity: string
   mtstatus: string
@@ -84,6 +92,15 @@ type RawOrder = {
 type PayStatus = 'Paid' | 'Partial' | 'Unpaid' | 'Overdue'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
+function mtStatusValue(s: any) {
+  if (!s) return 'NoActionTaken'
+  const key = String(s).trim().toLowerCase().replace(/[\s_-]/g, '')
+  if (key === 'pending') return 'Pending'
+  if (key === 'inprocess') return 'InProcess'
+  if (key === 'completed') return 'Completed'
+  return 'NoActionTaken'
+}
+
 function resolveRole(): { role: Role; dealerId?: string; staffId?: string } {
   if (typeof window === 'undefined') return { role: 'admin' }
   try {
@@ -113,6 +130,7 @@ function resolveRole(): { role: Role; dealerId?: string; staffId?: string } {
 }
 
 function getPayStatus(o: RawOrder): PayStatus {
+  if (mtStatusValue(o.mtstatus) === 'Completed') return 'Paid'
   const ms = Number(o.mtstatus ?? 0)
   if (ms >= 2) return 'Paid'
   if (
@@ -332,28 +350,12 @@ export default function DealerLedgerPage() {
   })
 
   // ── Fetch all orders (for orders list + aging) ──
-  const {
-    data: allOrdersRaw,
-    isLoading: isOrdersLoading,
-  } = useQuery<RawOrder[]>({
-    queryKey: ['all-orders-for-ledger'],
-    queryFn: async () => {
-      const res = await fetch(`${BACKEND_URL}/orderpegination?page=1&limit=1000&search=`)
-      const json = await res.json()
-      return Array.isArray(json.data) ? json.data : []
-    },
-    enabled: !!dealerId && !accessDenied,
-    staleTime: 5 * 60 * 1000,
-  })
+  const isOrdersLoading = isLedgerLoading
 
-  // Filter orders for this dealer
   const dealerOrders = useMemo(() => {
-    if (!allOrdersRaw || !ledgerData?.dealer?.Dealer_Name) return []
-    const dealerName = ledgerData.dealer.Dealer_Name.toLowerCase()
-    return allOrdersRaw
-      .filter(o => o.Dealer_Name?.toLowerCase() === dealerName)
+    return [...(ledgerData?.orders || [])]
       .sort((a, b) => moment(b.order_date).valueOf() - moment(a.order_date).valueOf())
-  }, [allOrdersRaw, ledgerData?.dealer?.Dealer_Name])
+  }, [ledgerData?.orders])
 
   // Paginate orders
   const ordersTotalPages = Math.max(1, Math.ceil(dealerOrders.length / ORDERS_PAGE_SIZE))
@@ -431,6 +433,8 @@ export default function DealerLedgerPage() {
 
   const dealer = ledgerData?.dealer
   const summary = ledgerData?.summary || { totalDebit: 0, totalCredit: 0, netBalance: 0 }
+  const summaryStats = ledgerData?.summaryStats
+  const isLive = ledgerData?.isLive ?? true
   const transactions = transactionsData?.data || []
   const transactionCount = transactionsData?.count || 0
 
@@ -477,6 +481,12 @@ export default function DealerLedgerPage() {
       />
 
       <div className="p-6 max-w-7xl mx-auto">
+        {!isLive && (
+          <div className="mb-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800">
+            Showing offline cached ledger data. Connection to main billing system is temporarily unavailable.
+          </div>
+        )}
+
         {/* Back button */}
         <button
           onClick={() => router.push('/Pages/ledger')}
@@ -498,6 +508,11 @@ export default function DealerLedgerPage() {
           totalDebit={summary.totalDebit}
           totalCredit={summary.totalCredit}
           netBalance={summary.netBalance}
+          isLoading={isLedgerLoading}
+        />
+
+        <AccountBookSummary
+          stats={summaryStats}
           isLoading={isLedgerLoading}
         />
 

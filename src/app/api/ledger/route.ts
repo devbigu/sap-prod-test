@@ -1,71 +1,58 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/mongodb";
+import {
+  getLedgerSnapshot,
+  normalizeDealer,
+  orderMatchesDealer,
+  paymentCreditPaise,
+  paymentDebitPaise,
+  summarizeOrders,
+} from "@/lib/ledgerSystem";
 
 /**
  * GET /api/ledger
- * Get summary of all dealers' ledger accounts
- * Includes: dealer name, total debit, total credit, net balance, wallet balance
+ * Collective dealer ledger from the live billing API, with a single-document
+ * MongoDB snapshot fallback for offline resilience.
  */
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     const db = await getDb();
+    const snapshot = await getLedgerSnapshot();
+    const payments = await db.collection("ledger_transactions").find({}).toArray();
 
-    // Fetch all dealers
-    const dealers = await db
-      .collection("dealers")
-      .find({})
-      .project({
-        Dealer_Id: 1,
-        Dealer_Name: 1,
-        Dealer_Email: 1,
-        Dealer_Number: 1,
-        Dealer_Address: 1,
-        Dealer_City: 1,
-        Dealer_Pincode: 1,
-        walletBalance: 1,
-      })
-      .toArray();
+    const paymentsByDealer = new Map<string, { creditPaise: number; debitPaise: number }>();
+    for (const payment of payments) {
+      const dealerId = String(payment.Dealer_Id ?? "");
+      if (!dealerId) continue;
+      const current = paymentsByDealer.get(dealerId) ?? { creditPaise: 0, debitPaise: 0 };
+      current.creditPaise += paymentCreditPaise(payment);
+      current.debitPaise += paymentDebitPaise(payment);
+      paymentsByDealer.set(dealerId, current);
+    }
 
-    // Calculate ledger summary for each dealer
-    const ledgerSummaries = await Promise.all(
-      dealers.map(async (dealer) => {
-        // Get transactions (orders, payments, etc.)
-        const orders = await db
-          .collection("orders")
-          .find({ Dealer_Id: dealer.Dealer_Id })
-          .toArray();
+    const ledgerSummaries = snapshot.dealers.map((rawDealer) => {
+      const dealer = normalizeDealer(rawDealer);
+      const dealerOrders = snapshot.orders.filter((order) => orderMatchesDealer(order, dealer.Dealer_Id));
+      const accountBook = summarizeOrders(dealerOrders);
+      const paymentTotals = paymentsByDealer.get(dealer.Dealer_Id) ?? { creditPaise: 0, debitPaise: 0 };
+      const totalDebit = accountBook.booked + paymentTotals.debitPaise / 100;
+      const totalCredit = paymentTotals.creditPaise / 100;
 
-        const payments = await db
-          .collection("ledger_transactions")
-          .find({ Dealer_Id: dealer.Dealer_Id })
-          .toArray();
-
-        // Calculate totals
-        const totalDebit = orders.reduce((sum, o) => sum + (parseFloat(o.order_amount) || 0), 0);
-        const totalCredit = payments.reduce(
-          (sum, p) => sum + (p.type === "payment" ? parseFloat(p.amount) || 0 : 0),
-          0
-        );
-        const netBalance = totalDebit - totalCredit;
-
-        return {
-          Dealer_Id: dealer.Dealer_Id,
-          Dealer_Name: dealer.Dealer_Name,
-          Dealer_Email: dealer.Dealer_Email,
-          Dealer_Number: dealer.Dealer_Number,
-          Dealer_City: dealer.Dealer_City,
-          totalDebit,
-          totalCredit,
-          netBalance,
-          walletBalance: dealer.walletBalance || 0,
-        };
-      })
-    );
+      return {
+        ...dealer,
+        totalDebit,
+        totalCredit,
+        netBalance: totalDebit - totalCredit,
+        accountBook,
+      };
+    });
 
     return NextResponse.json({
       success: true,
       data: ledgerSummaries,
       total: ledgerSummaries.length,
+      isLive: snapshot.isLive,
+      updatedAt: snapshot.updatedAt,
     });
   } catch (error: any) {
     console.error("[GET /api/ledger]", error);

@@ -48,18 +48,34 @@ export async function PATCH(
   try {
     const body = await req.json();
     const status = safeText(body.status, 40);
-    if (!["approved", "rejected", "pending"].includes(status)) {
+    const isToggleOnly = status === "" && typeof body.allowReorder === "boolean";
+    if (!isToggleOnly && !["approved", "rejected", "pending"].includes(status)) {
       return NextResponse.json({ success: false, message: "Invalid status" }, { status: 400 });
     }
 
     const now = new Date().toISOString();
-    const set: Record<string, any> = {
-      status,
-      adminNote: safeText(body.adminNote ?? body.admin_note, 1500),
-      reviewedBy: safeText(body.reviewedBy, 160),
-      reviewedAt: status === "pending" ? null : now,
-      updatedAt: now,
-    };
+    const set: Record<string, any> = isToggleOnly
+      ? {
+        allowReorder: body.allowReorder,
+        updatedAt: now,
+      }
+      : {
+        status,
+        adminNote: safeText(body.adminNote ?? body.admin_note, 1500),
+        reviewedBy: safeText(body.reviewedBy, 160),
+        reviewedAt: status === "pending" ? null : now,
+        updatedAt: now,
+      };
+
+    if (!isToggleOnly) {
+      if (status === "approved") {
+        set.allowReorder = true;
+      } else if (status === "rejected") {
+        set.allowReorder = false;
+      } else if (typeof body.allowReorder === "boolean") {
+        set.allowReorder = body.allowReorder;
+      }
+    }
 
     const db = await getDb();
     const updated = await db.collection("custom_discount_requests").findOneAndUpdate(
