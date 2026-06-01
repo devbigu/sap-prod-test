@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import { ChevronLeft, AlertCircle } from 'lucide-react'
 import DealerInfoCard from '@/components/ledger/DealerInfoCard'
@@ -11,6 +11,8 @@ import AccountBookSummary, { AccountBookStats } from '@/components/ledger/Accoun
 import TransactionTable from '@/components/ledger/TransactionTable'
 import PayMoneyModal, { PaymentData } from '@/components/ledger/PayMoneyModal'
 import { InvoiceModal } from '@/components/InvoiceModel'
+
+const TRANSACTIONS_PAGE_SIZE = 10
 
 interface Dealer {
   Dealer_Id: string
@@ -55,18 +57,25 @@ interface TransactionsResponse {
   success: boolean
   data: Transaction[]
   count: number
+  page: number
+  pageSize: number
+  totalPages: number
+  hasNextPage: boolean
+  hasPreviousPage: boolean
   message?: string
 }
 
 export default function DealerLedgerPage() {
   const params = useParams()
   const router = useRouter()
+  const queryClient = useQueryClient()
   const dealerId = params.dealerId as string
 
   const [payModalOpen, setPayModalOpen] = useState(false)
   const [payLoading, setPayLoading] = useState(false)
   const [invoiceModalOpen, setInvoiceModalOpen] = useState(false)
   const [toast, setToast] = useState<{ text: string; type: 'success' | 'error' } | null>(null)
+  const [transactionsPage, setTransactionsPage] = useState(1)
 
   // Fetch dealer info and summary
   const {
@@ -88,17 +97,39 @@ export default function DealerLedgerPage() {
   const {
     data: transactionsData,
     isLoading: isTransactionsLoading,
+    isFetching: isTransactionsFetching,
     error: transactionsError,
-    refetch: refetchTransactions,
   } = useQuery<TransactionsResponse>({
-    queryKey: ['dealer-transactions', dealerId],
+    queryKey: ['dealer-transactions', dealerId, transactionsPage],
     queryFn: async () => {
-      const res = await axios.get(`/api/ledger/${dealerId}/transactions`)
+      const res = await axios.get(`/api/ledger/${dealerId}/transactions`, {
+        params: { page: transactionsPage, limit: TRANSACTIONS_PAGE_SIZE },
+      })
       return res.data
     },
     enabled: !!dealerId,
+    placeholderData: keepPreviousData,
     staleTime: 5 * 60 * 1000,
   })
+
+  useEffect(() => {
+    setTransactionsPage(1)
+  }, [dealerId])
+
+  useEffect(() => {
+    if (!dealerId || !transactionsData?.hasNextPage) return
+
+    queryClient.prefetchQuery({
+      queryKey: ['dealer-transactions', dealerId, transactionsPage + 1],
+      queryFn: async () => {
+        const res = await axios.get(`/api/ledger/${dealerId}/transactions`, {
+          params: { page: transactionsPage + 1, limit: TRANSACTIONS_PAGE_SIZE },
+        })
+        return res.data
+      },
+      staleTime: 5 * 60 * 1000,
+    })
+  }, [dealerId, queryClient, transactionsData?.hasNextPage, transactionsPage])
 
   // Toast auto-dismiss
   useEffect(() => {
@@ -114,7 +145,10 @@ export default function DealerLedgerPage() {
       if (response.data.success) {
         setToast({ text: 'Payment recorded successfully', type: 'success' })
         // Refetch data
-        await Promise.all([refetchLedger(), refetchTransactions()])
+        await Promise.all([
+          refetchLedger(),
+          queryClient.invalidateQueries({ queryKey: ['dealer-transactions', dealerId] }),
+        ])
       }
     } catch (error: any) {
       setToast({
@@ -150,6 +184,9 @@ export default function DealerLedgerPage() {
   const isLive = ledgerData?.isLive ?? true
   const transactions = transactionsData?.data || []
   const transactionCount = transactionsData?.count || 0
+  const transactionPage = transactionsData?.page || transactionsPage
+  const transactionPageSize = transactionsData?.pageSize || TRANSACTIONS_PAGE_SIZE
+  const transactionTotalPages = transactionsData?.totalPages || 1
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -230,7 +267,14 @@ export default function DealerLedgerPage() {
         <TransactionTable
           transactions={transactions}
           isLoading={isTransactionsLoading}
+          isFetching={isTransactionsFetching}
           count={transactionCount}
+          page={transactionPage}
+          pageSize={transactionPageSize}
+          totalPages={transactionTotalPages}
+          hasNextPage={transactionsData?.hasNextPage}
+          hasPreviousPage={transactionsData?.hasPreviousPage}
+          onPageChange={setTransactionsPage}
           onInvoiceClick={() => setInvoiceModalOpen(true)}
         />
       </div>

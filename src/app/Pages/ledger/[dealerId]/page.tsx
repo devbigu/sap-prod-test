@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import moment from 'moment'
 import {
@@ -22,6 +22,7 @@ const BACKEND_URL = 'https://mirisoft.co.in/sas/dealerapi/api'
 const YEAR = new Date().getFullYear()
 const TODAY = moment().startOf('day')
 const ORDERS_PAGE_SIZE = 20
+const TRANSACTIONS_PAGE_SIZE = 10
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type Role = 'admin' | 'dealer' | 'staff' | 'accountant'
@@ -70,6 +71,11 @@ interface TransactionsResponse {
   success: boolean
   data: Transaction[]
   count: number
+  page: number
+  pageSize: number
+  totalPages: number
+  hasNextPage: boolean
+  hasPreviousPage: boolean
   message?: string
 }
 
@@ -279,6 +285,7 @@ function OrdersSkeleton() {
 export default function DealerLedgerPage() {
   const params = useParams()
   const router = useRouter()
+  const queryClient = useQueryClient()
   const dealerId = params.dealerId as string
 
   const [payModalOpen, setPayModalOpen] = useState(false)
@@ -289,6 +296,7 @@ export default function DealerLedgerPage() {
   const [userRole, setUserRole] = useState<Role>('admin')
   const [staffId, setStaffId] = useState<string | undefined>()
   const [ordersPage, setOrdersPage] = useState(1)
+  const [transactionsPage, setTransactionsPage] = useState(1)
 
   // ── Access control: dealers can only see their own ledger ──
   useEffect(() => {
@@ -338,16 +346,38 @@ export default function DealerLedgerPage() {
   const {
     data: transactionsData,
     isLoading: isTransactionsLoading,
-    refetch: refetchTransactions,
+    isFetching: isTransactionsFetching,
   } = useQuery<TransactionsResponse>({
-    queryKey: ['dealer-transactions', dealerId],
+    queryKey: ['dealer-transactions', dealerId, transactionsPage],
     queryFn: async () => {
-      const res = await axios.get(`/api/ledger/${dealerId}/transactions`)
+      const res = await axios.get(`/api/ledger/${dealerId}/transactions`, {
+        params: { page: transactionsPage, limit: TRANSACTIONS_PAGE_SIZE },
+      })
       return res.data
     },
     enabled: !!dealerId && !accessDenied,
+    placeholderData: keepPreviousData,
     staleTime: 5 * 60 * 1000,
   })
+
+  useEffect(() => {
+    setTransactionsPage(1)
+  }, [dealerId])
+
+  useEffect(() => {
+    if (!dealerId || accessDenied || !transactionsData?.hasNextPage) return
+
+    queryClient.prefetchQuery({
+      queryKey: ['dealer-transactions', dealerId, transactionsPage + 1],
+      queryFn: async () => {
+        const res = await axios.get(`/api/ledger/${dealerId}/transactions`, {
+          params: { page: transactionsPage + 1, limit: TRANSACTIONS_PAGE_SIZE },
+        })
+        return res.data
+      },
+      staleTime: 5 * 60 * 1000,
+    })
+  }, [accessDenied, dealerId, queryClient, transactionsData?.hasNextPage, transactionsPage])
 
   // ── Fetch all orders (for orders list + aging) ──
   const isOrdersLoading = isLedgerLoading
@@ -375,7 +405,10 @@ export default function DealerLedgerPage() {
       const response = await axios.post(`/api/ledger/${dealerId}/pay`, data)
       if (response.data.success) {
         setToast({ text: 'Payment recorded successfully', type: 'success' })
-        await Promise.all([refetchLedger(), refetchTransactions()])
+        await Promise.all([
+          refetchLedger(),
+          queryClient.invalidateQueries({ queryKey: ['dealer-transactions', dealerId] }),
+        ])
       }
     } catch (error: any) {
       setToast({
@@ -437,6 +470,9 @@ export default function DealerLedgerPage() {
   const isLive = ledgerData?.isLive ?? true
   const transactions = transactionsData?.data || []
   const transactionCount = transactionsData?.count || 0
+  const transactionPage = transactionsData?.page || transactionsPage
+  const transactionPageSize = transactionsData?.pageSize || TRANSACTIONS_PAGE_SIZE
+  const transactionTotalPages = transactionsData?.totalPages || 1
 
   // Hide pay button for dealers
   const showPayButton = userRole !== 'dealer'
@@ -644,7 +680,14 @@ export default function DealerLedgerPage() {
         <TransactionTable
           transactions={transactions}
           isLoading={isTransactionsLoading}
+          isFetching={isTransactionsFetching}
           count={transactionCount}
+          page={transactionPage}
+          pageSize={transactionPageSize}
+          totalPages={transactionTotalPages}
+          hasNextPage={transactionsData?.hasNextPage}
+          hasPreviousPage={transactionsData?.hasPreviousPage}
+          onPageChange={setTransactionsPage}
           onInvoiceClick={() => setInvoiceModalOpen(true)}
         />
       </div>

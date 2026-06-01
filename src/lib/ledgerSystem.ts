@@ -4,7 +4,7 @@ import { getDb } from "@/lib/mongodb";
 const BACKEND_URL = "https://mirisoft.co.in/sas/dealerapi/api";
 const CACHE_ID = "collective_ledger_snapshot";
 const CACHE_TTL_MS = 60 * 1000;
-const FETCH_TIMEOUT_MS = 5 * 1000;
+const FETCH_TIMEOUT_MS = Number(process.env.LEDGER_FETCH_TIMEOUT_MS ?? 30_000);
 const MAX_PAGES = 10;
 const PAGE_SIZE = 100;
 
@@ -58,6 +58,7 @@ type SnapshotResult = LedgerSnapshot & {
 };
 
 let memorySnapshot: (SnapshotResult & { cachedAt: number }) | null = null;
+let snapshotRequest: Promise<SnapshotResult> | null = null;
 
 function asArray(value: any): any[] {
   if (Array.isArray(value)) return value;
@@ -161,8 +162,9 @@ async function writeCachedSnapshot(db: Db, snapshot: LedgerSnapshot) {
 
 export async function getLedgerSnapshot(): Promise<SnapshotResult> {
   if (cacheIsFresh() && memorySnapshot) return memorySnapshot;
+  if (snapshotRequest) return snapshotRequest;
 
-  try {
+  snapshotRequest = (async () => {
     const live = await fetchLiveSnapshot();
     try {
       const db = await getOptionalDb();
@@ -173,6 +175,10 @@ export async function getLedgerSnapshot(): Promise<SnapshotResult> {
 
     memorySnapshot = { ...live, isLive: true, cachedAt: Date.now() };
     return memorySnapshot;
+  })();
+
+  try {
+    return await snapshotRequest;
   } catch (liveError) {
     console.error("[ledger live snapshot]", liveError);
 
@@ -191,6 +197,8 @@ export async function getLedgerSnapshot(): Promise<SnapshotResult> {
     }
 
     throw liveError;
+  } finally {
+    snapshotRequest = null;
   }
 }
 
@@ -257,8 +265,53 @@ export function orderMatchesDealer(order: ExternalOrder, dealerId: string) {
   return String(order.order_dealer) === String(dealerId);
 }
 
+function hasValue(value: unknown) {
+  return value !== undefined && value !== null && value !== "";
+}
+
+function orderDedupeKey(order: ExternalOrder) {
+  const dealerId = String(order.order_dealer ?? "");
+  const orderId = String(order.order_id ?? "").trim();
+  if (orderId) return `${dealerId}:${orderId}`;
+
+  return [
+    dealerId,
+    order.order_date ?? "",
+    order.order_amount ?? "",
+    order.order_discount ?? "",
+    order.accept_order ?? "",
+    order.mtstatus ?? "",
+  ].map(String).join(":");
+}
+
+export function uniqueLedgerOrders(orders: ExternalOrder[]) {
+  const byOrder = new Map<string, ExternalOrder>();
+
+  for (const order of orders) {
+    const key = orderDedupeKey(order);
+    const existing = byOrder.get(key);
+
+    if (!existing) {
+      byOrder.set(key, order);
+      continue;
+    }
+
+    // The external order API can return one row per item. Keep one ledger row
+    // per order, while filling any blank fields from later duplicate rows.
+    for (const [field, value] of Object.entries(order)) {
+      if (!hasValue(existing[field]) && hasValue(value)) {
+        existing[field] = value;
+      }
+    }
+  }
+
+  return Array.from(byOrder.values());
+}
+
 export function ordersForDealer(orders: ExternalOrder[], dealerId: string) {
-  return orders.filter((order) => orderMatchesDealer(order, dealerId) && isLedgerOrder(order));
+  return uniqueLedgerOrders(
+    orders.filter((order) => orderMatchesDealer(order, dealerId) && isLedgerOrder(order))
+  );
 }
 
 export function summarizeOrders(orders: ExternalOrder[]): AccountBookSummary {

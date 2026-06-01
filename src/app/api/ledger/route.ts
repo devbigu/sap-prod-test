@@ -3,7 +3,7 @@ import { getDb } from "@/lib/mongodb";
 import {
   getLedgerSnapshot,
   normalizeDealer,
-  orderMatchesDealer,
+  ordersForDealer,
   paymentCreditPaise,
   paymentDebitPaise,
   summarizeOrders,
@@ -40,7 +40,7 @@ export async function GET(_req: NextRequest) {
 
     const ledgerSummaries = snapshot.dealers.map((rawDealer) => {
       const dealer = normalizeDealer(rawDealer);
-      const dealerOrders = snapshot.orders.filter((order) => orderMatchesDealer(order, dealer.Dealer_Id));
+      const dealerOrders = ordersForDealer(snapshot.orders, dealer.Dealer_Id);
       const accountBook = summarizeOrders(dealerOrders);
       const paymentTotals = paymentsByDealer.get(dealer.Dealer_Id) ?? { creditPaise: 0, debitPaise: 0 };
       const totalDebit = accountBook.booked + paymentTotals.debitPaise / 100;

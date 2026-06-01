@@ -44,9 +44,21 @@ function resolveNonAccountantUser(): any {
   return null;
 }
 
+let ledgerWarmupStarted = false;
+
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    if (ledgerWarmupStarted) return;
+    ledgerWarmupStarted = true;
+
+    void fetch("/api/ledger", { cache: "no-store" }).catch((error) => {
+      console.error("[dashboard ledger preload]", error);
+      ledgerWarmupStarted = false;
+    });
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem("accountant_token");
