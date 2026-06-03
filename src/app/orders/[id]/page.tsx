@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import moment from "moment";
 import * as XLSX from "xlsx";
@@ -99,6 +99,32 @@ function extractOrderNote(orders: OrderData[], overlayNote: string) {
     if (fromRemark) return fromRemark;
   }
   return "";
+}
+
+// Parse PACK OF / pack size from product description HTML table: returns { catNo → packSize }
+function parsePackSizes(html: string): Record<string, number> {
+  const result: Record<string, number> = {};
+  if (!html) return result;
+
+  const theadMatch = html.match(/<thead>([\s\S]*?)<\/thead>/i);
+  if (!theadMatch) return result;
+  const headers = [...theadMatch[1].matchAll(/<td>([\s\S]*?)<\/td>/gi)]
+    .map(m => m[1].replace(/<[^>]*>/g, "").trim());
+  const packIdx = headers.findIndex(h => /pack|qty|quantity/i.test(h));
+  if (packIdx === -1) return result;
+
+  const tbodyMatch = html.match(/<tbody>([\s\S]*?)<\/tbody>/i);
+  if (!tbodyMatch) return result;
+
+  [...tbodyMatch[1].matchAll(/<tr>([\s\S]*?)<\/tr>/gi)].forEach(tr => {
+    const cells = [...tr[1].matchAll(/<td>([\s\S]*?)<\/td>/gi)]
+      .map(m => m[1].replace(/<[^>]*>/g, "").trim());
+    const catNo = cells[0];
+    const packStr = cells[packIdx] ?? "1";
+    const n = parseInt(packStr, 10);
+    if (catNo) result[catNo] = isNaN(n) ? 1 : n;
+  });
+  return result;
 }
 
 // ─── Tracking Modal ────────────────────────────────────────────────────────────
@@ -305,6 +331,7 @@ export default function ViewOrderDealerPage() {
   const [viewMode,  setViewMode ] = useState<ViewMode>("table");
   const [dealer,    setDealer   ] = useState<DealerInfo | null>(null);
   const [localOrderNote, setLocalOrderNote] = useState("");
+  const [packLookup, setPackLookup] = useState<Record<string, number>>({});
 
   // Read dealer info from localStorage
   useEffect(() => {
@@ -334,6 +361,22 @@ export default function ViewOrderDealerPage() {
       .catch(() => {});
   }, [id]);
 
+  // Load product pack sizes (catNo → packSize) from local product data
+  useEffect(() => {
+    fetch('/data/products.json')
+      .then(r => r.json())
+      .then((data: any[]) => {
+        const map: Record<string, number> = {};
+        (data ?? []).forEach(product => {
+          const desc = product.Description ?? product.Description ?? "";
+          const pmap = parsePackSizes(desc);
+          Object.assign(map, pmap);
+        });
+        setPackLookup(map);
+      })
+      .catch(() => {});
+  }, []);
+
   const handleExport = () => {
     if (!tableRef.current) return;
     const wb = XLSX.utils.table_to_book(tableRef.current, { sheet: "Order Details" });
@@ -347,6 +390,11 @@ export default function ViewOrderDealerPage() {
     discount: acc.discount + Number(o.orderdata_discount || 0),
     final:    acc.final    + Number(o.orderdata_afterDisPrice || 0),
   }), { qty: 0, gross: 0, discount: 0, final: 0 });
+
+  const totalPieces = orders.reduce((acc, o) => {
+    const pack = Number(packLookup[o.orderdata_cat_no] ?? 1) || 1;
+    return acc + Number(o.orderdata_item_quantity || 0) * pack;
+  }, 0);
 
   // Dealer fields to show — in display order, only truthy ones render
   const dealerFields: { label: string; value?: string }[] = dealer ? [
@@ -455,12 +503,13 @@ export default function ViewOrderDealerPage() {
 
           {/* ── Totals ── */}
           {!loading && orders.length > 0 && (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
               {[
-                { label: "Total Qty",   value: `${totals.qty}`,                                sub: "units",           color: "text-gray-900"    },
-                { label: "Gross",       value: `₹${totals.gross.toLocaleString("en-IN")}`,    sub: "before discount", color: "text-gray-900"    },
-                { label: "Saved",       value: `₹${totals.discount.toLocaleString("en-IN")}`, sub: "total discount",  color: "text-amber-700"   },
-                { label: "Net Payable", value: `₹${totals.final.toLocaleString("en-IN")}`,    sub: "after discount",  color: "text-emerald-700" },
+                { label: "Total Qty",     value: `${totals.qty}`,                             sub: "packs",           color: "text-gray-900"    },
+                { label: "Total Pieces",  value: `${totalPieces}`,                           sub: "pcs",             color: "text-gray-900"    },
+                { label: "Gross",         value: `₹${totals.gross.toLocaleString("en-IN")}`, sub: "before discount", color: "text-gray-900"    },
+                { label: "Saved",         value: `₹${totals.discount.toLocaleString("en-IN")}`, sub: "total discount",  color: "text-amber-700"   },
+                { label: "Net Payable",   value: `₹${totals.final.toLocaleString("en-IN")}`,  sub: "after discount",  color: "text-emerald-700" },
               ].map(s => (
                 <div key={s.label} className="bg-white border border-gray-200 rounded-2xl px-5 py-4">
                   <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{s.label}</p>
@@ -507,7 +556,7 @@ export default function ViewOrderDealerPage() {
                 <table ref={tableRef} className="w-full text-sm border-collapse">
                   <thead>
                     <tr className="border-b border-gray-100">
-                      {["#","Order No","Cat No.","Product","Description","Qty","Dispatched","Left","Unit","Price","Disc %","Amount","Discount","Final","Status","Date",""].map(h => (
+                      {["#","Order No","Cat No.","Product","Description","Qty","Pieces","Dispatched","Left","Unit","Price","Disc %","Amount","Discount","Final","Status","Date",""].map(h => (
                         <th key={h} className="px-4 py-3.5 text-left text-[10px] font-bold uppercase tracking-widest text-gray-400 whitespace-nowrap bg-gray-50/80">{h}</th>
                       ))}
                     </tr>
@@ -518,6 +567,8 @@ export default function ViewOrderDealerPage() {
                       const gross     = Number(o.orderdata_price);
                       const isDeleted = o.del_status === "1";
                       const isPriority = hasPriorityTag(o.priority, o.isPriority, o.is_priority, o.remark, o.remarks);
+                      const pack = Number(packLookup[o.orderdata_cat_no] ?? 1) || 1;
+                      const pieces = Number(o.orderdata_item_quantity || 0) * pack;
                       return (
                         <tr key={o.orderdata_id} className={`group hover:bg-gray-50/80 transition-colors ${isDeleted ? "opacity-40" : ""}`}>
                           <td className="px-4 py-3.5 text-[11px] text-gray-400 font-mono font-semibold">{String(idx + 1).padStart(2, "0")}</td>
@@ -541,6 +592,7 @@ export default function ViewOrderDealerPage() {
                             <span className="block truncate text-[12px] text-gray-600">{o.product_discription || "—"}</span>
                           </td>
                           <td className="px-4 py-3.5 font-mono font-bold text-gray-900">{o.orderdata_item_quantity}</td>
+                          <td className="px-4 py-3.5 font-mono font-bold text-gray-900">{pieces}</td>
                           <td className="px-4 py-3.5 font-mono font-semibold text-emerald-600">{o.readyquantity || "0"}</td>
                           <td className="px-4 py-3.5 font-mono font-bold" style={{ color: left > 0 ? "#dc2626" : "#9ca3af" }}>{left}</td>
                           <td className="px-4 py-3.5 text-[12px] text-gray-600">{o.product_unit || "—"}</td>

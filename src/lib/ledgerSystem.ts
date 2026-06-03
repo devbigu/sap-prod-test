@@ -227,6 +227,7 @@ export function normalizeDealer(dealer: ExternalDealer) {
     Dealer_Address: dealer.Dealer_Address ?? "",
     Dealer_City: dealer.Dealer_City ?? "",
     Dealer_Pincode: dealer.Dealer_Pincode ?? "",
+    creditdays: dealer.creditdays ?? dealer.creditDays ?? dealer.credit_period ?? dealer.Credit_Period ?? "",
     walletBalance: Number(dealer.walletBalance || 0),
   };
 }

@@ -76,6 +76,32 @@ async function fetchOrderItems(orderId: string): Promise<OrderItem[]> {
     }
 }
 
+// Parse PACK OF column from description HTML table: returns { catNo → packSize }
+function parsePackSizes(html: string): Record<string, number> {
+    const result: Record<string, number> = {};
+    if (!html) return result;
+
+    const theadMatch = html.match(/<thead>([\s\S]*?)<\/thead>/i);
+    if (!theadMatch) return result;
+    const headers = [...theadMatch[1].matchAll(/<td>([\s\S]*?)<\/td>/gi)]
+        .map(m => m[1].replace(/<[^>]*>/g, "").trim());
+    const packIdx = headers.findIndex(h => /pack|qty|quantity/i.test(h));
+    if (packIdx === -1) return result;
+
+    const tbodyMatch = html.match(/<tbody>([\s\S]*?)<\/tbody>/i);
+    if (!tbodyMatch) return result;
+
+    [...tbodyMatch[1].matchAll(/<tr>([\s\S]*?)<\/tr>/gi)].forEach(tr => {
+        const cells = [...tr[1].matchAll(/<td>([\s\S]*?)<\/td>/gi)]
+          .map(m => m[1].replace(/<[^>]*>/g, "").trim());
+        const catNo = cells[0];
+        const packStr = cells[packIdx] ?? "1";
+        const n = parseInt(packStr, 10);
+        if (catNo) result[catNo] = isNaN(n) ? 1 : n;
+    });
+    return result;
+}
+
 function invoiceNumber(orderId: string): string {
     return `OM/${new Date().getFullYear()}/${orderId}`;
 }
@@ -210,7 +236,8 @@ export async function generateOrderInvoicePDF(order: OrderInvoiceData): Promise<
     // ── DOCUMENT TITLE ────────────────────────────────────────────────────────
     doc.setFont("Helvetica", "bold");
     doc.setFontSize(11);
-    const titleStr = "ORDER INVOICE";
+    const isApproved = (order as any).accept_order === "1" || Number(order.mtstatus ?? 0) >= 2 || String(order.mtstatus ?? "").toLowerCase().includes("completed");
+    const titleStr = isApproved ? "ORDER INVOICE" : "PURCHASE ORDER";
     const titleW   = doc.getTextWidth(titleStr);
     const titleX   = PW / 2;
     doc.text(titleStr, titleX, y, { align: "center" });
@@ -226,8 +253,8 @@ export async function generateOrderInvoicePDF(order: OrderInvoiceData): Promise<
     const RH   = 6;
 
     const metaRows: [string, string, string, string][] = [
-        ["Invoice No",  invNo,
-         "Invoice Date", moment(order.order_date).format("DD-MM-YYYY")],
+        [isApproved ? "Invoice No" : "Purchase Order No",  invNo,
+         isApproved ? "Invoice Date" : "PO Date", moment(order.order_date).format("DD-MM-YYYY")],
         ["Order Date",  moment(order.order_date).format("DD-MM-YYYY"),
          "Order Time",  moment(order.order_date).format("hh:mm A")],
         ["Dealer",      dp?.Dealer_Name || order.Dealer_Name || "—",
@@ -302,6 +329,23 @@ export async function generateOrderInvoicePDF(order: OrderInvoiceData): Promise<
     // Build item rows from fetched order items, or fall back to a single row
     const itemRows: any[][] = [];
     let totalQty = 0;
+    let totalPieces = 0;
+
+    // Build pack lookup from products.json (public data)
+    const packLookup: Record<string, number> = {};
+    try {
+        const resp = await fetch("/data/products.json");
+        if (resp.ok) {
+            const plist = await resp.json();
+            for (const p of plist) {
+                const desc = p.Description ?? p.Description ?? "";
+                const pmap = parsePackSizes(desc);
+                Object.assign(packLookup, pmap);
+            }
+        }
+    } catch {
+        // ignore errors - default pack size = 1 will be used
+    }
 
     if (orderItems.length > 0) {
         orderItems.forEach((item, idx) => {
@@ -311,12 +355,16 @@ export async function generateOrderInvoicePDF(order: OrderInvoiceData): Promise<
             const qty          = Number(item.orderdata_item_quantity);
             const isPriority   = hasPriorityTag(item.priority, item.isPriority, item.is_priority, item.remark, item.remarks);
             const description  = `${item.product_name || item.orderdata_cat_no || "—"}${isPriority ? "\n[PRIORITY DELIVERY]" : ""}`;
+            const pack = Number(packLookup[item.orderdata_cat_no] ?? 1) || 1;
+            const pieces = qty * pack;
             totalQty += qty;
+            totalPieces += pieces;
 
             itemRows.push([
                 { content: String(idx + 1).padStart(2, "0"),          styles: { halign: "center" } },
                 { content: description,                                styles: { halign: "left" } },
                 { content: String(qty),                                styles: { halign: "center" } },
+                { content: String(pieces),                             styles: { halign: "center" } },
                 { content: item.product_unit || "Pcs",                 styles: { halign: "center" } },
                 { content: fmt(itemGross),                             styles: { halign: "right"  } },
                 { content: fmt(itemDiscount),                          styles: { halign: "right"  } },
@@ -326,21 +374,26 @@ export async function generateOrderInvoicePDF(order: OrderInvoiceData): Promise<
     } else {
         // Fallback: single row with whatever info we have
         totalQty = Number(order.orderdata_item_quantity);
+        const fpack = Number(packLookup[(order as any).orderdata_cat_no] ?? 1) || 1;
+        const fpieces = totalQty * fpack;
+        totalPieces = fpieces;
         itemRows.push([
             { content: "01",                                                   styles: { halign: "center" } },
             { content: order.product_name || "Omsons Glassware Products",       styles: { halign: "left"   } },
             { content: order.orderdata_item_quantity,                           styles: { halign: "center" } },
+            { content: String(fpieces),                                          styles: { halign: "center" } },
             { content: "Pcs",                                                  styles: { halign: "center" } },
-            { content: fmt(gross),                                             styles: { halign: "right"  } },
-            { content: fmt(discount),                                          styles: { halign: "right"  } },
-            { content: fmt(net),                                               styles: { halign: "right"  } },
+            { content: fmt(gross),                                               styles: { halign: "right"  } },
+            { content: fmt(discount),                                            styles: { halign: "right"  } },
+            { content: fmt(net),                                                 styles: { halign: "right"  } },
         ]);
     }
 
-    // Totals row
+    // Totals row (now includes pieces)
     itemRows.push([
         { content: "Total", colSpan: 2,                    styles: { halign: "right", fontStyle: "bold" } },
         { content: String(totalQty),                       styles: { halign: "center", fontStyle: "bold" } },
+        { content: String(totalPieces),                    styles: { halign: "center", fontStyle: "bold" } },
         { content: "",                                     styles: {} },
         { content: fmt(gross),                             styles: { halign: "right", fontStyle: "bold" } },
         { content: fmt(discount),                          styles: { halign: "right", fontStyle: "bold" } },
@@ -353,10 +406,11 @@ export async function generateOrderInvoicePDF(order: OrderInvoiceData): Promise<
             { content: "Sr\nNo",          styles: { halign: "center", cellWidth: 10 } },
             { content: "Description",      styles: { halign: "left",   cellWidth: "auto" as const } },
             { content: "Qty",              styles: { halign: "center", cellWidth: 14 } },
+            { content: "Pieces",           styles: { halign: "center", cellWidth: 14 } },
             { content: "UOM",              styles: { halign: "center", cellWidth: 13 } },
-            { content: "Gross Amt\n(Rs.)", styles: { halign: "right",  cellWidth: 28 } },
-            { content: "Discount\n(Rs.)",  styles: { halign: "right",  cellWidth: 26 } },
-            { content: "Net Amt\n(Rs.)",   styles: { halign: "right",  cellWidth: 26 } },
+            { content: "Gross Amt\n(Rs.)", styles: { halign: "right",  cellWidth: 24 } },
+            { content: "Discount\n(Rs.)",  styles: { halign: "right",  cellWidth: 22 } },
+            { content: "Net Amt\n(Rs.)",   styles: { halign: "right",  cellWidth: 22 } },
         ]],
         body: itemRows,
         margin: { left: ML, right: MR },

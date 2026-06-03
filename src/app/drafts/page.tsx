@@ -21,6 +21,33 @@ import {
   prefetchDraft,
 } from "@/lib/useDrafts";
 
+const BACKEND_URL = "https://mirisoft.co.in/sas/dealerapi/api";
+
+async function fetchLatestOrderIdForDealer(dealerId: string | undefined) {
+  if (!dealerId) return "";
+  try {
+    const res = await fetch(`${BACKEND_URL}/orderhispegination?page=1&search=&id=${encodeURIComponent(dealerId)}`);
+    const json = await res.json();
+    return String(json?.data?.[0]?.order_id ?? "").trim();
+  } catch {
+    return "";
+  }
+}
+
+function deriveOrderNumberFrom(lastOrderId: string | undefined | null, increment = 1) {
+  const year = new Date().getFullYear();
+  const prefix = "OM";
+  const defaultPadding = 4;
+  if (!lastOrderId) return `${prefix}/${year}/${String(increment).padStart(defaultPadding, "0")}`;
+  const parts = String(lastOrderId).trim().split("/");
+  const lastPart = parts[parts.length - 1] ?? "";
+  const digits = (lastPart.match(/\d+/g)?.join("") ?? "").trim();
+  const num = Number.isFinite(Number(digits)) && digits ? parseInt(digits, 10) : 0;
+  const padding = digits.length || defaultPadding;
+  const next = (isNaN(num) ? 0 : num) + increment;
+  return `${prefix}/${year}/${String(next).padStart(padding, "0")}`;
+}
+
 // ── helpers ───────────────────────────────────────────────────────────────────
 
 function fmt(paise: number): string {
@@ -31,11 +58,15 @@ function fmt(paise: number): string {
 }
 
 function draftTotal(draft: OrderDraft): number {
-  const disc = draft.coupon_pct ?? 0;
-  return draft.rows.reduce((acc, row) => {
-    const list = row.producQuanity * row.price;
-    return acc + list - Math.round(list * (disc / 100));
+  const disc = Number(draft.coupon_pct ?? 0);
+  // Sum line totals in rupees, apply order-level coupon once, then return paise
+  const subtotalRupees = draft.rows.reduce((acc, row) => {
+    const qty = Number(row.producQuanity) || 0;
+    const price = Number((row as any).price) || 0;
+    return acc + qty * price;
   }, 0);
+  const discountedRupees = Math.max(0, subtotalRupees - (subtotalRupees * (disc / 100)));
+  return Math.round(discountedRupees * 100);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -49,6 +80,7 @@ export default function DraftsPage() {
   const [renamingId,  setRenamingId]  = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState("");
   const renameRef = useRef<HTMLInputElement>(null);
+  const [provisionals, setProvisionals] = useState<Record<string, string>>({});
 
   // ── auth ────────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -65,6 +97,28 @@ export default function DraftsPage() {
   const { data: drafts = [], isLoading: loading } = useDrafts(user?.Dealer_Id);
   const deleteMutation = useDeleteDraft();
   const renameMutation = useRenameDraft();
+
+  // ── Compute provisional order numbers for drafts missing refno ──────────
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      if (!user?.Dealer_Id) return;
+      try {
+        const last = await fetchLatestOrderIdForDealer(user.Dealer_Id);
+        const map: Record<string, string> = {};
+        let inc = 1;
+        for (const d of drafts) {
+          if (d.refno) continue;
+          map[d.id] = deriveOrderNumberFrom(last, inc);
+          inc += 1;
+        }
+        if (mounted) setProvisionals(map);
+      } catch (e) {
+        // ignore
+      }
+    })();
+    return () => { mounted = false; };
+  }, [user?.Dealer_Id, drafts]);
 
   // ── delete ──────────────────────────────────────────────────────────────
   const handleDelete = async (id: string) => {
@@ -249,7 +303,7 @@ export default function DraftsPage() {
                             </span>
                           </>
                         )}
-                        {draft.coupon_code && (
+                                        {draft.coupon_code && (
                           <>
                             <span className="text-gray-200 text-xs">·</span>
                             <span className="inline-flex items-center gap-1 text-[10.5px] font-bold px-2 py-0.5 bg-violet-50 text-violet-700 border border-violet-200 rounded-full font-mono">
@@ -257,14 +311,14 @@ export default function DraftsPage() {
                             </span>
                           </>
                         )}
-                        {draft.refno && (
-                          <>
-                            <span className="text-gray-200 text-xs">·</span>
-                            <span className="text-[11.5px] text-gray-400 font-mono">
-                              Ref: {draft.refno}
-                            </span>
-                          </>
-                        )}
+                                        {(draft.refno || provisionals[draft.id]) && (
+                                          <>
+                                            <span className="text-gray-200 text-xs">·</span>
+                                            <span className="text-[11.5px] text-gray-400 font-mono">
+                                              Ref: {draft.refno || provisionals[draft.id]}
+                                            </span>
+                                          </>
+                                        )}
                       </div>
 
                       {/* Product chips (first 4) */}
@@ -292,6 +346,11 @@ export default function DraftsPage() {
 
                     {/* Right side: total + actions */}
                     <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                      {(draft.refno || provisionals[draft.id] || draft.id) && (
+                        <div className="text-[11px] text-gray-400 font-mono">
+                          Order #: {draft.refno || provisionals[draft.id] || String(draft.id).slice(0, 8)}
+                        </div>
+                      )}
                       <p className="font-mono text-[16px] font-bold text-gray-900">
                         {total > 0 ? fmt(total) : "—"}
                       </p>

@@ -110,12 +110,14 @@ function InvoiceRowButton({ order }: { order: Order }) {
     }
   };
 
+  const accepted = (order as any).accept_order === "1" || Number(order.mtstatus ?? 0) >= 2 || String(order.mtstatus ?? "").toLowerCase().includes("completed");
+
   return (
     <div className="relative">
       <button
         onClick={() => setShowMenu(v => !v)}
         disabled={loading}
-        title="Invoice PDF"
+        title={accepted ? "Invoice PDF" : "Get a copy"}
         className="flex items-center gap-1.5 px-2.5 py-1.5 bg-white border border-gray-200 hover:border-blue-300 hover:bg-blue-50 text-gray-700 hover:text-blue-700 rounded-lg text-[11px] font-semibold transition-all shadow-sm disabled:opacity-50"
       >
         {loading
@@ -127,7 +129,7 @@ function InvoiceRowButton({ order }: { order: Order }) {
               <line x1="16" y1="17" x2="8" y2="17"/>
             </svg>
         }
-        Invoice
+        {accepted ? "Invoice" : "Get a copy"}
       </button>
 
       {showMenu && (
@@ -144,7 +146,7 @@ function InvoiceRowButton({ order }: { order: Order }) {
                 <line x1="12" y1="15" x2="12" y2="3"/>
               </svg>
               <div>
-                <p className="font-semibold">Download PDF</p>
+                <p className="font-semibold">{accepted ? "Download Invoice" : "Download Purchase Order"}</p>
                 <p className="text-[10px] text-gray-400 mt-0.5">Save to device</p>
               </div>
             </button>
@@ -158,7 +160,7 @@ function InvoiceRowButton({ order }: { order: Order }) {
                 <line x1="12" y1="9" x2="12" y2="21"/>
               </svg>
               <div>
-                <p className="font-semibold">Save to Cloud</p>
+                <p className="font-semibold">{accepted ? "Save to Cloud" : "Save PO to Cloud"}</p>
                 <p className="text-[10px] text-gray-400 mt-0.5">Upload to Supabase</p>
               </div>
             </button>
@@ -483,9 +485,12 @@ export default function OrderHistoryPage() {
                           </td></tr>
                         )
                         : orders.map((order, idx) => {
-                          const net = Number(order.order_amount) - Number(order.order_discount);
+                          const rawAmount = Number(order.order_amount || 0);
+                          const discountAmt = Number(order.order_discount || 0);
+                          const gross = rawAmount + discountAmt; // show subtotal as gross (before discount)
+                          const net = rawAmount; // final payable (API sometimes returns final in order_amount)
 
-                          console.log(order.order_amount, order.order_discount, net);
+                          console.log({ rawAmount, discountAmt, gross, net });
                           const isDeleted = !!(order.reason);
                           const historyNote = extractOrderNote(order, orderNotes[order.order_id]);
 
@@ -514,10 +519,10 @@ export default function OrderHistoryPage() {
                                 <p className="text-[11px] text-gray-600 font-mono mt-0.5">{moment(order.order_date).format("hh:mm A")}</p>
                               </td>
                               <td className="px-4 py-3.5 font-mono text-[13px] text-gray-700 line-through">
-                                ₹{Number(order.order_amount).toLocaleString("en-IN")}
+                                ₹{gross.toLocaleString("en-IN")}
                               </td>
                               <td className="px-4 py-3.5 font-mono text-[13px] text-amber-700">
-                                −₹{Number(order.order_discount).toLocaleString("en-IN")}
+                                −₹{discountAmt.toLocaleString("en-IN")}
                               </td>
                               <td className="px-4 py-3.5 font-mono text-[14px] font-bold text-gray-900">
                                 ₹{net.toLocaleString("en-IN")}

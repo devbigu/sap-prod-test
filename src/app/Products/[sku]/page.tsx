@@ -528,7 +528,12 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ sku: 
                 </p>
                 <div style={{ display: "flex", alignItems: "center", border: "1px solid #e2e8f0", borderRadius: 8, width: "fit-content" }}>
                   <button onClick={() => setQuantity(q => Math.max(0, q - 1))} style={{ padding: "8px 16px", border: "none", background: "transparent", cursor: "pointer", fontSize: 18, color: "#374151" }}>−</button>
-                  <span style={{ padding: "8px 20px", fontSize: 15, fontWeight: 700, borderLeft: "1px solid #e2e8f0", borderRight: "1px solid #e2e8f0" }}>{quantity}</span>
+                   <input 
+                    type="number" 
+                    value={quantity} 
+                    onChange={(e) => setQuantity(parseInt(e.target.value) || 0)} 
+                    style={{ padding: "1px 1px", fontSize: 15, fontWeight: 700, borderLeft: "1px solid #e2e8f0", borderRight: "1px solid #e2e8f0", width:60, textAlign: "center" }} 
+                  />
                   <button onClick={() => setQuantity(q => q + 1)} style={{ padding: "8px 16px", border: "none", background: "transparent", cursor: "pointer", fontSize: 18, color: "#374151" }}>+</button>
                 </div>
               </div>

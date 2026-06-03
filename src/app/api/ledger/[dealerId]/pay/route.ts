@@ -13,7 +13,7 @@ export async function POST(
   try {
     const { dealerId } = await params;
     const body = await req.json();
-    const { amount, paymentMode, narration, referenceId } = body;
+    const { amount, paymentMode, narration, referenceId, paymentDate } = body;
 
     if (!amount || amount <= 0) {
       return NextResponse.json(
@@ -37,6 +37,8 @@ export async function POST(
     }
 
     // Create ledger transaction record
+    const date = paymentDate ? new Date(paymentDate) : new Date();
+
     const transaction = {
       Dealer_Id: dealerId,
       type: "payment",
@@ -44,7 +46,7 @@ export async function POST(
       paymentMode: paymentMode || "Cash",
       narration: narration || `Payment received - ${paymentMode || "Cash"}`,
       referenceId: referenceId || "",
-      date: new Date().toISOString(),
+      date: Number.isNaN(date.getTime()) ? new Date().toISOString() : date.toISOString(),
       createdAt: new Date(),
       updatedAt: new Date(),
     };
