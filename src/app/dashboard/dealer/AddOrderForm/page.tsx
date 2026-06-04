@@ -941,6 +941,55 @@ function AddOrderPageInner() {
     }).catch(() => { });
   };
 
+  const saveOrderSummaryOverride = async (orderId: string) => {
+    if (!orderId || !user?.Dealer_Id) return;
+
+    const approvedDiscountPercent = Number(payloadAmount(Math.max(
+      0,
+      discountPayload.discountPercent -
+      discountPayload.allocatedDiscountPercent -
+      discountPayload.slabDiscountPercent -
+      discountPayload.couponDiscountPercent
+    )));
+    const shouldSaveOverride =
+      discountPayload.discountAmount > 0 &&
+      (
+        discountPayload.slabDiscountPercent > 0 ||
+        discountPayload.couponDiscountPercent > 0 ||
+        approvedDiscountPercent > 0 ||
+        hasApprovedCustomDiscount ||
+        discountPayload.discountPercent > discountPayload.allocatedDiscountPercent
+      );
+
+    if (!shouldSaveOverride) return;
+
+    await fetch("/api/order-summary-overrides", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        orderId,
+        order_id: orderId,
+        dealerId: user.Dealer_Id,
+        order_dealer: user.Dealer_Id,
+        dealerName: user.Dealer_Name,
+        grossAmount: payloadAmount(discountPayload.subtotal),
+        order_amount: payloadAmount(discountPayload.subtotal),
+        discountAmount: payloadAmount(discountPayload.discountAmount),
+        discount_amount: payloadAmount(discountPayload.discountAmount),
+        netPayableAmount: payloadAmount(discountPayload.finalPayableAmount),
+        order_discount: payloadAmount(discountPayload.finalPayableAmount),
+        discountPercent: discountPayload.discountPercent,
+        allocatedDiscountPercent: discountPayload.allocatedDiscountPercent,
+        slabDiscountPercent: discountPayload.slabDiscountPercent,
+        couponDiscountPercent: discountPayload.couponDiscountPercent,
+        approvedDiscountPercent,
+        reason: "slab_or_approved_discount",
+      }),
+    }).catch((err) => {
+      console.error("[order-summary-overrides] save failed:", err);
+    });
+  };
+
   // ── Submit Order ──────────────────────────────────────────────────────────
   const handleSubmitProductArray = async () => {
     if (arr1.every(r => !r.productname)) { toast("Please select at least one product"); return; }
@@ -1019,7 +1068,10 @@ function AddOrderPageInner() {
         response: data,
       });
       const placedOrderId = extractOrderIdFromResponse(data) || await fetchLatestOrderId();
-      await saveOrderNoteForHistory(placedOrderId);
+      await Promise.all([
+        saveOrderNoteForHistory(placedOrderId),
+        saveOrderSummaryOverride(placedOrderId),
+      ]);
       if (reorderRequest) {
         fetch(`/api/custom-discount-requests/${reorderRequest.id}/reorder-log`, {
           method: "POST",

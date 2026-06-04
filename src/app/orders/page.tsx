@@ -26,6 +26,22 @@ type Order = {
   reason?: string;
 };
 type ApiResponse = { msg: string; count: number; status: boolean; data: Order[] };
+type OrderNoteOverlay = {
+  note?: string;
+};
+type OrderSummaryOverride = {
+  grossAmount?: number | string;
+  discountAmount?: number | string;
+  netPayableAmount?: number | string;
+  discountPercent?: number | string;
+  gross_amount?: number | string;
+  discount_amount?: number | string;
+  net_payable_amount?: number | string;
+  order_amount?: number | string;
+  order_discount?: number | string;
+  order_discount_amount?: number | string;
+  order_net_amount?: number | string;
+};
 
 const PAGE_SIZE = 10;
 const BACKEND = "https://mirisoft.co.in/sas/dealerapi/api";
@@ -89,14 +105,29 @@ function moneyValue(value: unknown): number | null {
   return Number.isFinite(amount) ? amount : null;
 }
 
-function getOrderHistoryAmounts(order: Order) {
+function getOrderHistoryAmounts(order: Order, overlay?: OrderSummaryOverride) {
   const raw = order as any;
-  const gross = moneyValue(raw.order_amount) ?? 0;
+  const gross = moneyValue(overlay?.grossAmount ?? overlay?.gross_amount ?? overlay?.order_amount ?? raw.order_amount) ?? 0;
 
   // Legacy PHP stores net payable in `order_discount`, despite the field name.
-  const explicitNet = moneyValue(raw.order_net_amount ?? raw.net_amount ?? raw.netPayableAmount);
+  const explicitNet = moneyValue(
+    overlay?.netPayableAmount ??
+    overlay?.net_payable_amount ??
+    overlay?.order_net_amount ??
+    overlay?.order_discount ??
+    raw.order_net_amount ??
+    raw.net_amount ??
+    raw.netPayableAmount
+  );
   const legacyNet = moneyValue(raw.order_discount);
-  const explicitDiscount = moneyValue(raw.order_discount_amount ?? raw.discount_amount ?? raw.discountAmount);
+  const explicitDiscount = moneyValue(
+    overlay?.discountAmount ??
+    overlay?.discount_amount ??
+    overlay?.order_discount_amount ??
+    raw.order_discount_amount ??
+    raw.discount_amount ??
+    raw.discountAmount
+  );
 
   const netPayable = explicitNet ?? legacyNet ?? gross;
   const discountAmount = explicitDiscount ?? Math.max(0, gross - netPayable);
@@ -420,7 +451,8 @@ export default function OrderHistoryPage() {
   const [year] = useState(new Date().getFullYear());
   const [deleteOrderId, setDeleteOrderId] = useState<string | null>(null);
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
-  const [orderNotes, setOrderNotes] = useState<Record<string, string>>({});
+  const [orderNotes, setOrderNotes] = useState<Record<string, OrderNoteOverlay>>({});
+  const [summaryOverrides, setSummaryOverrides] = useState<Record<string, OrderSummaryOverride>>({});
 
   useEffect(() => { setDealerId(getDealerId()); }, []);
 
@@ -443,11 +475,26 @@ export default function OrderHistoryPage() {
       .then((r) => r.json())
       .then((json) => {
         if (!json.success) return;
-        const next: Record<string, string> = {};
+        const next: Record<string, OrderNoteOverlay> = {};
         (json.data ?? []).forEach((item: any) => {
-          if (item.orderId && item.note) next[item.orderId] = item.note;
+          if (item.orderId) next[item.orderId] = item;
         });
         setOrderNotes(next);
+      })
+      .catch(() => {});
+  }, [dealerId, orderIdsKey]);
+
+  useEffect(() => {
+    if (!dealerId || !orderIdsKey) { setSummaryOverrides({}); return; }
+    fetch(`/api/order-summary-overrides?dealer_id=${encodeURIComponent(dealerId)}&order_ids=${encodeURIComponent(orderIdsKey)}`)
+      .then((r) => r.json())
+      .then((json) => {
+        if (!json.success) return;
+        const next: Record<string, OrderSummaryOverride> = {};
+        (json.data ?? []).forEach((item: any) => {
+          if (item.orderId) next[item.orderId] = item;
+        });
+        setSummaryOverrides(next);
       })
       .catch(() => {});
   }, [dealerId, orderIdsKey]);
@@ -595,8 +642,10 @@ export default function OrderHistoryPage() {
                         : orders.map((order, idx) => {
                           const isDeleted = !!(order.reason);
                           const oid = (order as any).order_id ?? (order as any).orderId ?? "";
-                          const historyNote = extractOrderNote(order, orderNotes[oid]);
-                          const amounts = getOrderHistoryAmounts(order);
+                          const noteOverlay = orderNotes[oid];
+                          const summaryOverride = summaryOverrides[oid];
+                          const historyNote = extractOrderNote(order, noteOverlay?.note);
+                          const amounts = getOrderHistoryAmounts(order, summaryOverride);
 
                           return (
                             <tr key={oid || idx} className={`hover:bg-blue-50/30 transition-colors ${isDeleted ? "opacity-60" : ""}`}>
