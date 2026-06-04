@@ -72,6 +72,7 @@ export default function Cart() {
   const cart      = useCartStore((s) => s.cart);
   const increment = useCartStore((s) => s.incrementQty);
   const decrement = useCartStore((s) => s.decrementQty);
+  const setQty    = useCartStore((s) => s.setQty);
   const remove    = useCartStore((s) => s.removeFromCart);
   const togglePriority = useCartStore((s) => s.togglePriority);
   const clearCart = useCartStore((s) => s.clearCart);
@@ -194,9 +195,16 @@ export default function Cart() {
                               onClick={() => decrement(item.id)}
                               className="w-6 h-7 flex items-center justify-center text-white rounded-l bg-yellow-400 hover:bg-yellow-500 transition-colors font-bold text-sm"
                             >−</button>
-                            <span className="px-3 h-7 text-sm font-semibold text-[#0F1111] flex items-center justify-center min-w-[36px] text-center bg-white">
-                              {item.quantity}
-                            </span>
+                            <input
+                              type="number"
+                              value={item.quantity}
+                              onChange={(e) => {
+                                const val = parseInt(e.target.value);
+                                if (!isNaN(val) && val > 0) setQty(item.id, val);
+                              }}
+                              className="px-2 h-7 text-sm font-semibold text-[#0F1111] text-center bg-white min-w-[40px] w-[40px] outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                              min={1}
+                            />
                             <button
                               onClick={() => increment(item.id)}
                               className="w-6 h-7 flex items-center justify-center text-white rounded-r bg-yellow-400 hover:bg-yellow-500 transition-colors font-bold text-sm"

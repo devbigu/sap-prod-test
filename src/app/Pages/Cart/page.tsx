@@ -56,6 +56,7 @@ export default function CartPage() {
   const cart      = useCartStore(s => s.cart);
   const increment = useCartStore(s => s.incrementQty);
   const decrement = useCartStore(s => s.decrementQty);
+  const setQty    = useCartStore(s => s.setQty);
   const remove    = useCartStore(s => s.removeFromCart);
   const togglePriority = useCartStore(s => s.togglePriority);
   const clearCart = useCartStore(s => s.clearCart);
@@ -231,9 +232,16 @@ export default function CartPage() {
                           onMouseEnter={e => (e.currentTarget.style.background = "#f3f4f6")}
                           onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
                         >−</button>
-                        <span style={{ minWidth: 38, textAlign: "center", fontSize: 14, fontWeight: 700, color: "#111827", fontFamily: "monospace" }}>
-                          {item.quantity}
-                        </span>
+                        <input
+                          type="number"
+                          value={item.quantity}
+                          onChange={(e) => {
+                            const val = parseInt(e.target.value);
+                            if (!isNaN(val) && val > 0) setQty(item.id, val);
+                          }}
+                          style={{ width: 48, minWidth: 38, textAlign: "center", fontSize: 14, fontWeight: 700, color: "#111827", fontFamily: "monospace", border: "none", outline: "none", background: "transparent", MozAppearance: "textfield", WebkitAppearance: "none" }}
+                          min={1}
+                        />
                         <button
                           onClick={() => increment(item.id)}
                           style={{ width: 34, height: 34, border: "none", background: "transparent", cursor: "pointer", fontSize: 18, fontWeight: 600, color: "#374151", display: "flex", alignItems: "center", justifyContent: "center", transition: "background .15s" }}

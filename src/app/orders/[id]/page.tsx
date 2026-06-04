@@ -66,6 +66,24 @@ type Remark = {
 
 const BACKEND = "https://mirisoft.co.in/sas/dealerapi/api";
 
+type PhpExchangeLog = {
+  method: "GET" | "POST";
+  url: string;
+  request?: unknown;
+  response?: unknown;
+  error?: unknown;
+};
+
+function logPhpExchange(label: string, details: PhpExchangeLog) {
+  console.groupCollapsed(`[PHP backend] ${label}`);
+  console.info("method", details.method);
+  console.info("url", details.url);
+  if (details.request !== undefined) console.info("sending to PHP", details.request);
+  if (details.response !== undefined) console.info("received from PHP", details.response);
+  if (details.error !== undefined) console.error("PHP request failed", details.error);
+  console.groupEnd();
+}
+
 // ─── Status config ─────────────────────────────────────────────────────────────
 const itemStatusMap: Record<string, { label: string; dot: string; text: string; bg: string }> = {
   "0": { label: "In Process",   dot: "bg-amber-400",   text: "text-amber-700",   bg: "bg-amber-50"   },
@@ -128,6 +146,67 @@ function parsePackSizes(html: string): Record<string, number> {
 }
 
 // ─── Tracking Modal ────────────────────────────────────────────────────────────
+function num(value: unknown): number {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function closeTo(a: number, b: number): boolean {
+  return Math.abs(a - b) <= Math.max(0.01, Math.abs(b) * 0.01);
+}
+
+function getRowPricing(o: OrderData, packLookup: Record<string, number>, orderMeta?: any) {
+  const item: any = o;
+  const orderedQuantity = num(item.orderdata_item_quantity);
+  const ready = num(item.readyquantity);
+  const unitPrice = num(item.unitPrice ?? item.unit_price ?? item.orderdata_price);
+  const packSize = num(item.packSize ?? item.pack_size ?? packLookup[item.orderdata_cat_no]) || 1;
+  const explicitPieces = num(item.totalPieces ?? item.total_pieces);
+  const explicitPacks = num(item.quantityPacks ?? item.quantity_packs);
+
+  const storedDiscount = num(item.discountAmount ?? item.discount_amount ?? item.orderdata_discount ?? item.order_discount);
+  const storedNet = num(item.finalPrice ?? item.final_price ?? item.orderdata_afterDisPrice);
+  const storedGross = storedDiscount + storedNet;
+  const quantityGross = orderedQuantity * unitPrice;
+  const packGross = quantityGross * packSize;
+
+  let pieces = explicitPieces > 0 ? explicitPieces : orderedQuantity;
+  let packs = explicitPacks > 0 ? explicitPacks : orderedQuantity;
+
+  if (explicitPieces <= 0 && storedGross > 0 && unitPrice > 0 && packSize > 1 && !closeTo(quantityGross, storedGross) && closeTo(packGross, storedGross)) {
+    pieces = orderedQuantity * packSize;
+  }
+
+  if (explicitPacks <= 0 && packSize > 1 && pieces !== orderedQuantity) {
+    packs = orderedQuantity;
+  }
+
+  const explicitGross = num(item.listPriceTotal ?? item.list_price_total ?? item.listPrice ?? item.list_price);
+  const gross = explicitGross > 0 ? explicitGross : storedGross > 0 ? storedGross : unitPrice * pieces;
+
+  const perItemPct = num(item.totalDiscountPercent ?? item.total_discount_percentage ?? item.total_discount ?? item.discount);
+  const orderPct = num(orderMeta?.totalDiscountPercentage ?? orderMeta?.allocatedDiscountPercent ?? orderMeta?.allocatedDiscount);
+  const derivedPct = gross > 0 && storedDiscount > 0 ? Math.round((storedDiscount / gross) * 10000) / 100 : 0;
+  const pct = perItemPct || orderPct || derivedPct;
+
+  const discount = storedDiscount > 0 ? storedDiscount : gross * (pct / 100);
+  const final = storedNet > 0 ? storedNet : Math.max(0, gross - discount);
+
+  return {
+    orderedQuantity,
+    ready,
+    left: orderedQuantity - ready,
+    pieces,
+    packs,
+    packSize,
+    unitPrice,
+    gross,
+    discount,
+    final,
+    pct,
+  };
+}
+
 function TrackingModal({ orderId, itemName, leftQty, onClose }: {
   orderId: string; itemName: string; leftQty: number; onClose: () => void;
 }) {
@@ -236,12 +315,12 @@ function ViewToggle({ mode, onChange }: { mode: ViewMode; onChange: (m: ViewMode
 }
 
 // ─── Card View ─────────────────────────────────────────────────────────────────
-function ItemCard({ o, idx, year, onTrack }: { o: OrderData; idx: number; year: number; onTrack: () => void }) {
-  const left    = Number(o.orderdata_item_quantity) - Number(o.readyquantity || 0);
-  const gross   = Number(o.orderdata_price);
+function ItemCard({ o, idx, year, packLookup, orderMeta, onTrack }: { o: OrderData; idx: number; year: number; packLookup: Record<string, number>; orderMeta?: any; onTrack: () => void }) {
+  const pricing = getRowPricing(o, packLookup, orderMeta);
+  const left    = pricing.left;
   const isDeleted = o.del_status === "1";
-  const pct     = Number(o.orderdata_item_quantity) > 0
-    ? Math.round((Number(o.readyquantity || 0) / Number(o.orderdata_item_quantity)) * 100) : 0;
+  const progressPct = pricing.orderedQuantity > 0
+    ? Math.round((pricing.ready / pricing.orderedQuantity) * 100) : 0;
   const isPriority = hasPriorityTag(o.priority, o.isPriority, o.is_priority, o.remark, o.remarks);
 
   return (
@@ -265,13 +344,13 @@ function ItemCard({ o, idx, year, onTrack }: { o: OrderData; idx: number; year: 
       <div>
         <div className="flex items-center justify-between mb-1.5">
           <span className="text-[11px] font-semibold text-gray-600">Dispatch progress</span>
-          <span className="text-[11px] font-mono font-bold text-gray-900">{pct}%</span>
+          <span className="text-[11px] font-mono font-bold text-gray-900">{progressPct}%</span>
         </div>
         <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-          <div className="h-full rounded-full bg-emerald-500 transition-all" style={{ width: `${pct}%` }} />
+          <div className="h-full rounded-full bg-emerald-500 transition-all" style={{ width: `${progressPct}%` }} />
         </div>
         <div className="flex items-center justify-between mt-1.5">
-          <span className="text-[11px] text-gray-500 font-mono">{o.readyquantity || "0"} dispatched</span>
+          <span className="text-[11px] text-gray-500 font-mono">{pricing.ready} dispatched</span>
           <span className={`text-[11px] font-mono font-semibold ${left > 0 ? "text-red-600" : "text-emerald-600"}`}>
             {left > 0 ? `${left} left` : "complete"}
           </span>
@@ -279,12 +358,12 @@ function ItemCard({ o, idx, year, onTrack }: { o: OrderData; idx: number; year: 
       </div>
       <div className="grid grid-cols-3 gap-3 border-t border-gray-100 pt-4">
         {[
-          { label: "Ordered",    val: `${o.orderdata_item_quantity} `, sub: o.product_unit, cls: "text-gray-900" },
-          { label: "Price",      val: `₹${Number(o.orderdata_price).toLocaleString("en-IN")}`, cls: "text-gray-900" },
-          { label: "Discount",   val: `${o.discount || 0}%`,          cls: "text-amber-700" },
-          { label: "Gross",      val: `₹${gross.toLocaleString("en-IN")}`, cls: "text-gray-500 line-through" },
-          { label: "Saved",      val: `−₹${Number(o.orderdata_discount || 0).toLocaleString("en-IN")}`, cls: "text-amber-700" },
-          { label: "Final",      val: `₹${Number(o.orderdata_afterDisPrice || 0).toLocaleString("en-IN")}`, cls: "text-emerald-700" },
+          { label: "Ordered",    val: `${pricing.orderedQuantity} `, sub: o.product_unit, cls: "text-gray-900" },
+          { label: "Price",      val: `₹${pricing.unitPrice.toLocaleString("en-IN")}`, cls: "text-gray-900" },
+          { label: "Discount",   val: `${pricing.pct}%`,          cls: "text-amber-700" },
+          { label: "Gross",      val: `₹${pricing.gross.toLocaleString("en-IN")}`, cls: "text-gray-500 line-through" },
+          { label: "Saved",      val: `−₹${pricing.discount.toLocaleString("en-IN")}`, cls: "text-amber-700" },
+          { label: "Final",      val: `₹${pricing.final.toLocaleString("en-IN")}`, cls: "text-emerald-700" },
         ].map(f => (
           <div key={f.label}>
             <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">{f.label}</p>
@@ -332,6 +411,7 @@ export default function ViewOrderDealerPage() {
   const [dealer,    setDealer   ] = useState<DealerInfo | null>(null);
   const [localOrderNote, setLocalOrderNote] = useState("");
   const [packLookup, setPackLookup] = useState<Record<string, number>>({});
+  const [orderMeta, setOrderMeta] = useState<any>(null);
 
   // Read dealer info from localStorage
   useEffect(() => {
@@ -346,9 +426,83 @@ export default function ViewOrderDealerPage() {
 
   useEffect(() => {
     if (!id) return;
-    fetch(`${BACKEND}/orderdatalist?id=${id}`)
+    const url = `${BACKEND}/orderdatalist?id=${id}`;
+    fetch(url)
       .then(r => r.json())
-      .then(d => { setOrders(d.data ?? []); setLoading(false); });
+      .then(d => {
+        logPhpExchange("orderdatalist", {
+          method: "GET",
+          url,
+          request: { id },
+          response: d,
+        });
+        // Normalize different backend shapes:
+        // - legacy: d.data = [ { orderdata_... } , ... ]
+        // - new   : d.data = { ...orderFields, items: [ { productId, productName, quantityPacks, packSize, totalPieces, ... } ] }
+        try {
+          const raw = d.data;
+          let items: any[] = [];
+          if (Array.isArray(raw)) {
+            if (raw.length === 0) items = [];
+            else if (raw[0] && (raw[0].productId || raw[0].productName || raw[0].quantityPacks !== undefined)) {
+              // array of new-style items
+              items = raw as any[];
+            } else if (raw[0] && raw[0].items && Array.isArray(raw[0].items)) {
+              items = raw[0].items;
+            } else {
+              // assume legacy array of OrderData
+              setOrders(raw as OrderData[]);
+              setLoading(false);
+              return;
+            }
+          } else if (raw && typeof raw === "object") {
+            if (Array.isArray(raw.items)) items = raw.items;
+            else items = [];
+          }
+
+          // Map new-style items into OrderData shape expected by the UI
+          const mapped: OrderData[] = (items ?? []).map((it: any, idx: number) => ({
+            orderdata_id: String(it.productId ?? it.id ?? `new-${idx}`),
+            orderdata_orderid: String(it.orderId ?? id),
+            orderdata_cat_no: String(it.productId ?? it.catNo ?? it.orderdata_cat_no ?? ""),
+            orderdata_item_quantity: String(it.quantityPacks ?? it.quantity ?? it.orderdata_item_quantity ?? 0),
+            orderdata_price: String(it.unitPrice ?? it.unit_price ?? it.orderdata_price ?? 0),
+            orderdata_discount: String(it.discountAmount ?? it.orderdata_discount ?? 0),
+            orderdata_afterDisPrice: String(it.finalPrice ?? it.final_price ?? it.orderdata_afterDisPrice ?? 0),
+            orderdata_status: String(it.status ?? it.orderdata_status ?? "0"),
+            orderdata_datetime: String(it.documentDate ?? it.orderdata_datetime ?? d?.order_date ?? new Date().toISOString()),
+            product_name: String(it.productName ?? it.product_name ?? ""),
+            product_discription: String(it.productDescription ?? it.product_discription ?? ""),
+            product_unit: String(it.unit ?? it.product_unit ?? "Pcs"),
+            // keep original pack info when available for later calculations
+            packSize: it.packSize ?? it.pack_size ?? undefined,
+            totalPieces: it.totalPieces ?? it.total_pieces ?? undefined,
+            readyquantity: String(it.readyQuantity ?? it.readyquantity ?? 0),
+            remark: it.remark ?? it.remarks ?? undefined,
+            remarks: it.remarks ?? it.remark ?? undefined,
+            priority: it.priority ?? false,
+            isPriority: it.isPriority ?? undefined,
+            is_priority: it.is_priority ?? undefined,
+            discount: String(it.totalDiscountPercent ?? it.discount ?? 0),
+            order_discount: String(it.discountAmount ?? 0),
+            del_status: String(it.del_status ?? "0"),
+            Dealer_Name: d?.Dealer_Name ?? undefined,
+            Dealer_Address: d?.Dealer_Address ?? undefined,
+            Dealer_Number: d?.Dealer_Number ?? undefined,
+            gst: d?.gst ?? undefined,
+          }));
+
+          setOrders(mapped);
+          // capture order-level metadata if present
+          const meta = (Array.isArray(raw) ? (raw[0] ?? {}) : raw) ?? {};
+          setOrderMeta(meta);
+        } catch (err) {
+            setOrders(d.data ?? []);
+            const meta = (Array.isArray(d.data) ? (d.data[0] ?? {}) : d.data) ?? {};
+            setOrderMeta(meta);
+        }
+        setLoading(false);
+      });
   }, [id]);
 
   useEffect(() => {
@@ -384,17 +538,18 @@ export default function ViewOrderDealerPage() {
   };
 
   const firstOrder = orders[0];
-  const totals = orders.reduce((acc, o) => ({
-    qty:      acc.qty      + Number(o.orderdata_item_quantity || 0),
-    gross:    acc.gross    + Number(o.orderdata_price || 0),
-    discount: acc.discount + Number(o.orderdata_discount || 0),
-    final:    acc.final    + Number(o.orderdata_afterDisPrice || 0),
-  }), { qty: 0, gross: 0, discount: 0, final: 0 });
+  // Compute totals from the same row pricing used by the table and cards.
+  const totals = orders.reduce((acc, o) => {
+    const pricing = getRowPricing(o, packLookup, orderMeta);
 
-  const totalPieces = orders.reduce((acc, o) => {
-    const pack = Number(packLookup[o.orderdata_cat_no] ?? 1) || 1;
-    return acc + Number(o.orderdata_item_quantity || 0) * pack;
-  }, 0);
+    return {
+      qty: acc.qty + pricing.orderedQuantity,
+      pieces: acc.pieces + pricing.pieces,
+      gross: acc.gross + pricing.gross,
+      discount: acc.discount + pricing.discount,
+      final: acc.final + pricing.final,
+    };
+  }, { qty: 0, pieces: 0, gross: 0, discount: 0, final: 0 });
 
   // Dealer fields to show — in display order, only truthy ones render
   const dealerFields: { label: string; value?: string }[] = dealer ? [
@@ -505,8 +660,8 @@ export default function ViewOrderDealerPage() {
           {!loading && orders.length > 0 && (
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
               {[
-                { label: "Total Qty",     value: `${totals.qty}`,                             sub: "packs",           color: "text-gray-900"    },
-                { label: "Total Pieces",  value: `${totalPieces}`,                           sub: "pcs",             color: "text-gray-900"    },
+                { label: "Total Qty",     value: `${totals.qty}`,                             sub: "ordered",         color: "text-gray-900"    },
+                { label: "Total Pieces",  value: `${totals.pieces}`,                          sub: "pcs",             color: "text-gray-900"    },
                 { label: "Gross",         value: `₹${totals.gross.toLocaleString("en-IN")}`, sub: "before discount", color: "text-gray-900"    },
                 { label: "Saved",         value: `₹${totals.discount.toLocaleString("en-IN")}`, sub: "total discount",  color: "text-amber-700"   },
                 { label: "Net Payable",   value: `₹${totals.final.toLocaleString("en-IN")}`,  sub: "after discount",  color: "text-emerald-700" },
@@ -542,10 +697,13 @@ export default function ViewOrderDealerPage() {
           {/* ── Card View ── */}
           {!loading && orders.length > 0 && viewMode === "cards" && (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-              {orders.map((o, idx) => (
-                <ItemCard key={o.orderdata_id} o={o} idx={idx} year={year}
-                  onTrack={() => setTrackItem({ id: o.orderdata_id, name: o.product_name || o.orderdata_cat_no, leftQty: Number(o.orderdata_item_quantity) - Number(o.readyquantity || 0) })} />
-              ))}
+              {orders.map((o, idx) => {
+                const pricing = getRowPricing(o, packLookup, orderMeta);
+                return (
+                  <ItemCard key={o.orderdata_id} o={o} idx={idx} year={year} packLookup={packLookup} orderMeta={orderMeta}
+                    onTrack={() => setTrackItem({ id: o.orderdata_id, name: o.product_name || o.orderdata_cat_no, leftQty: pricing.left })} />
+                );
+              })}
             </div>
           )}
 
@@ -563,12 +721,10 @@ export default function ViewOrderDealerPage() {
                   </thead>
                   <tbody className="divide-y divide-gray-50">
                     {orders.map((o, idx) => {
-                      const left      = Number(o.orderdata_item_quantity) - Number(o.readyquantity || 0);
-                      const gross     = Number(o.orderdata_price);
+                      const pricing = getRowPricing(o, packLookup, orderMeta);
+                      const left = pricing.left;
                       const isDeleted = o.del_status === "1";
                       const isPriority = hasPriorityTag(o.priority, o.isPriority, o.is_priority, o.remark, o.remarks);
-                      const pack = Number(packLookup[o.orderdata_cat_no] ?? 1) || 1;
-                      const pieces = Number(o.orderdata_item_quantity || 0) * pack;
                       return (
                         <tr key={o.orderdata_id} className={`group hover:bg-gray-50/80 transition-colors ${isDeleted ? "opacity-40" : ""}`}>
                           <td className="px-4 py-3.5 text-[11px] text-gray-400 font-mono font-semibold">{String(idx + 1).padStart(2, "0")}</td>
@@ -591,16 +747,16 @@ export default function ViewOrderDealerPage() {
                           <td className="px-4 py-3.5 max-w-[140px]">
                             <span className="block truncate text-[12px] text-gray-600">{o.product_discription || "—"}</span>
                           </td>
-                          <td className="px-4 py-3.5 font-mono font-bold text-gray-900">{o.orderdata_item_quantity}</td>
-                          <td className="px-4 py-3.5 font-mono font-bold text-gray-900">{pieces}</td>
-                          <td className="px-4 py-3.5 font-mono font-semibold text-emerald-600">{o.readyquantity || "0"}</td>
+                          <td className="px-4 py-3.5 font-mono font-bold text-gray-900">{pricing.orderedQuantity}</td>
+                          <td className="px-4 py-3.5 font-mono font-bold text-gray-900">{pricing.pieces}</td>
+                          <td className="px-4 py-3.5 font-mono font-semibold text-emerald-600">{pricing.ready}</td>
                           <td className="px-4 py-3.5 font-mono font-bold" style={{ color: left > 0 ? "#dc2626" : "#9ca3af" }}>{left}</td>
                           <td className="px-4 py-3.5 text-[12px] text-gray-600">{o.product_unit || "—"}</td>
-                          <td className="px-4 py-3.5 font-mono text-gray-900 font-semibold">₹{o.orderdata_price}</td>
-                          <td className="px-4 py-3.5 font-mono text-gray-900">{o.discount || 0}%</td>
-                          <td className="px-4 py-3.5 font-mono text-gray-500 line-through text-[12px]">₹{gross.toLocaleString("en-IN")}</td>
-                          <td className="px-4 py-3.5 font-mono text-amber-700 font-semibold">−₹{Number(o.orderdata_discount || 0).toLocaleString("en-IN")}</td>
-                          <td className="px-4 py-3.5 font-mono font-bold text-emerald-700">₹{Number(o.orderdata_afterDisPrice || 0).toLocaleString("en-IN")}</td>
+                          <td className="px-4 py-3.5 font-mono text-gray-900 font-semibold">₹{pricing.unitPrice.toLocaleString("en-IN")}</td>
+                          <td className="px-4 py-3.5 font-mono text-gray-900">{pricing.pct}%</td>
+                          <td className="px-4 py-3.5 font-mono text-gray-500 line-through text-[12px]">₹{pricing.gross.toLocaleString("en-IN")}</td>
+                          <td className="px-4 py-3.5 font-mono text-amber-700 font-semibold">−₹{pricing.discount.toLocaleString("en-IN")}</td>
+                          <td className="px-4 py-3.5 font-mono font-bold text-emerald-700">₹{pricing.final.toLocaleString("en-IN")}</td>
                           <td className="px-4 py-3.5"><StatusPill code={o.orderdata_status} /></td>
                           <td className="px-4 py-3.5 text-[11px] text-gray-500 font-mono whitespace-nowrap">{o.orderdata_datetime || "—"}</td>
                           <td className="px-4 py-3.5 w-px">

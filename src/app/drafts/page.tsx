@@ -2,29 +2,43 @@
 
 /**
  * app/drafts/page.tsx
- * ─────────────────────────────────────────────────────────────────────────────
  * Shows all saved order drafts for the logged-in dealer.
- * Dealer isolation: every query is scoped to UserData.Dealer_Id.
- * ─────────────────────────────────────────────────────────────────────────────
  */
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast, ToastContainer } from "react-toastify";
 import moment from "moment";
-import { type OrderDraft } from "@/lib/drafts";
 import {
-  useDrafts,
-  useDeleteDraft,
-  useRenameDraft,
+  ArrowLeft,
+  ArrowRight,
+  FileText,
+  Loader2,
+  Pencil,
+  Plus,
+  Search,
+  Trash2,
+} from "lucide-react";
+import { type DraftProductRow, type OrderDraft } from "@/lib/drafts";
+import {
   prefetchDraft,
+  useDeleteDraft,
+  useDrafts,
+  useRenameDraft,
 } from "@/lib/useDrafts";
 
 const BACKEND_URL = "https://mirisoft.co.in/sas/dealerapi/api";
+const EMPTY_DRAFTS: OrderDraft[] = [];
+
+type DealerUser = {
+  Dealer_Id: string;
+  Dealer_Name?: string;
+};
 
 async function fetchLatestOrderIdForDealer(dealerId: string | undefined) {
   if (!dealerId) return "";
+
   try {
     const res = await fetch(`${BACKEND_URL}/orderhispegination?page=1&search=&id=${encodeURIComponent(dealerId)}`);
     const json = await res.json();
@@ -38,362 +52,368 @@ function deriveOrderNumberFrom(lastOrderId: string | undefined | null, increment
   const year = new Date().getFullYear();
   const prefix = "OM";
   const defaultPadding = 4;
+
   if (!lastOrderId) return `${prefix}/${year}/${String(increment).padStart(defaultPadding, "0")}`;
+
   const parts = String(lastOrderId).trim().split("/");
   const lastPart = parts[parts.length - 1] ?? "";
   const digits = (lastPart.match(/\d+/g)?.join("") ?? "").trim();
   const num = Number.isFinite(Number(digits)) && digits ? parseInt(digits, 10) : 0;
   const padding = digits.length || defaultPadding;
   const next = (isNaN(num) ? 0 : num) + increment;
+
   return `${prefix}/${year}/${String(next).padStart(padding, "0")}`;
 }
 
-// ── helpers ───────────────────────────────────────────────────────────────────
-
 function fmt(paise: number): string {
-  return `₹${(paise / 100).toLocaleString("en-IN", {
+  return `Rs. ${(paise / 100).toLocaleString("en-IN", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })}`;
 }
 
+function filledRows(draft: OrderDraft): DraftProductRow[] {
+  return draft.rows.filter((row) => row.productname);
+}
+
 function draftTotal(draft: OrderDraft): number {
   const disc = Number(draft.coupon_pct ?? 0);
-  // Sum line totals in rupees, apply order-level coupon once, then return paise
-  const subtotalRupees = draft.rows.reduce((acc, row) => {
+  const subtotalRupees = filledRows(draft).reduce((acc, row) => {
     const qty = Number(row.producQuanity) || 0;
-    const price = Number((row as any).price) || 0;
-    return acc + qty * price;
+    const packSize = Number(row.packSize) || 1;
+    const price = Number(row.price) || 0;
+    return acc + qty * packSize * price;
   }, 0);
-  const discountedRupees = Math.max(0, subtotalRupees - (subtotalRupees * (disc / 100)));
+  const discountedRupees = Math.max(0, subtotalRupees - subtotalRupees * (disc / 100));
   return Math.round(discountedRupees * 100);
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+function draftSearchText(draft: OrderDraft, provisionalRef?: string) {
+  return [
+    draft.name,
+    draft.shipto,
+    draft.refno,
+    provisionalRef,
+    draft.coupon_code,
+    ...draft.rows.flatMap((row) => [row.productname, row.displayName, row.variantCode]),
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+}
+
+function sameRecord(a: Record<string, string>, b: Record<string, string>) {
+  const aKeys = Object.keys(a);
+  const bKeys = Object.keys(b);
+
+  return aKeys.length === bKeys.length && aKeys.every((key) => a[key] === b[key]);
+}
+
+function DraftSkeleton() {
+  return (
+    <div className="divide-y divide-gray-100 rounded-lg border border-gray-200 bg-white">
+      {[1, 2, 3, 4].map((item) => (
+        <div key={item} className="flex animate-pulse items-center gap-4 px-4 py-4">
+          <div className="h-4 w-44 rounded bg-gray-100" />
+          <div className="h-3 flex-1 rounded bg-gray-100" />
+          <div className="h-4 w-24 rounded bg-gray-100" />
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function DraftsPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const [user, setUser] = useState<any>(null);
-
-  // inline rename
-  const [renamingId,  setRenamingId]  = useState<string | null>(null);
+  const [user, setUser] = useState<DealerUser | null>(null);
+  const [renamingId, setRenamingId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState("");
-  const renameRef = useRef<HTMLInputElement>(null);
+  const [query, setQuery] = useState("");
   const [provisionals, setProvisionals] = useState<Record<string, string>>({});
+  const renameRef = useRef<HTMLInputElement>(null);
 
-  // ── auth ────────────────────────────────────────────────────────────────
   useEffect(() => {
-    const stored   = localStorage.getItem("UserData");
+    const stored = localStorage.getItem("UserData");
     const loggedIn = localStorage.getItem("status");
+
     if (!stored || JSON.parse(loggedIn ?? "false") !== true) {
       router.push("/login");
       return;
     }
-    setUser(JSON.parse(stored));
-  }, []);
 
-  // ── React Query hooks ──────────────────────────────────────────────────
-  const { data: drafts = [], isLoading: loading } = useDrafts(user?.Dealer_Id);
+    setUser(JSON.parse(stored));
+  }, [router]);
+
+  const { data: draftData, isLoading: loading } = useDrafts(user?.Dealer_Id);
+  const drafts = draftData ?? EMPTY_DRAFTS;
   const deleteMutation = useDeleteDraft();
   const renameMutation = useRenameDraft();
 
-  // ── Compute provisional order numbers for drafts missing refno ──────────
   useEffect(() => {
     let mounted = true;
+
     (async () => {
-      if (!user?.Dealer_Id) return;
+      if (!user?.Dealer_Id || drafts.length === 0) {
+        if (mounted) setProvisionals((prev) => (Object.keys(prev).length === 0 ? prev : {}));
+        return;
+      }
+
       try {
         const last = await fetchLatestOrderIdForDealer(user.Dealer_Id);
         const map: Record<string, string> = {};
         let inc = 1;
-        for (const d of drafts) {
-          if (d.refno) continue;
-          map[d.id] = deriveOrderNumberFrom(last, inc);
+
+        for (const draft of drafts) {
+          if (draft.refno) continue;
+          map[draft.id] = deriveOrderNumberFrom(last, inc);
           inc += 1;
         }
-        if (mounted) setProvisionals(map);
-      } catch (e) {
-        // ignore
+
+        if (mounted) setProvisionals((prev) => (sameRecord(prev, map) ? prev : map));
+      } catch {
+        if (mounted) setProvisionals((prev) => (Object.keys(prev).length === 0 ? prev : {}));
       }
     })();
-    return () => { mounted = false; };
+
+    return () => {
+      mounted = false;
+    };
   }, [user?.Dealer_Id, drafts]);
 
-  // ── delete ──────────────────────────────────────────────────────────────
-  const handleDelete = async (id: string) => {
+  const visibleDrafts = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const filtered = q
+      ? drafts.filter((draft) => draftSearchText(draft, provisionals[draft.id]).includes(q))
+      : drafts;
+
+    return [...filtered].sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
+  }, [drafts, provisionals, query]);
+
+  const handleDelete = (id: string) => {
+    if (!user) return;
     if (!confirm("Delete this draft? This cannot be undone.")) return;
+
     deleteMutation.mutate(
       { id, dealerId: user.Dealer_Id },
       {
         onSuccess: () => toast.success("Draft deleted."),
-        onError:   () => toast.error("Could not delete draft."),
-      }
+        onError: () => toast.error("Could not delete draft."),
+      },
     );
   };
 
-  // ── rename ──────────────────────────────────────────────────────────────
   const startRename = (draft: OrderDraft) => {
     setRenamingId(draft.id);
     setRenameValue(draft.name);
     setTimeout(() => renameRef.current?.focus(), 50);
   };
 
-  const commitRename = async (id: string) => {
+  const commitRename = (id: string) => {
+    if (!user) return;
+
     const trimmed = renameValue.trim();
-    if (!trimmed) { setRenamingId(null); return; }
+    if (!trimmed) {
+      setRenamingId(null);
+      return;
+    }
+
     renameMutation.mutate(
       { id, dealerId: user.Dealer_Id, name: trimmed },
       {
-        onError:   () => toast.error("Rename failed."),
+        onError: () => toast.error("Rename failed."),
         onSettled: () => setRenamingId(null),
-      }
+      },
     );
   };
 
-  // ── open draft in order page ────────────────────────────────────────────
   const openDraft = (id: string) => {
     router.push(`/dashboard/dealer/AddOrderForm?draft=${id}`);
   };
 
-  // ─────────────────────────────────────────────────────────────────────────
   if (!user) return null;
 
-  const newLocal = <h1 onClick={() => router.back()} className="cursor-pointer">back</h1>;
   return (
     <>
       <ToastContainer position="top-right" autoClose={4000} />
 
-      <div className="p-7 max-w-[1100px] mx-auto font-[family-name:var(--font-dm-sans)]">
-
-        {/* Header */}
-        <div className="flex items-center justify-between mb-7">
-          <div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">Saved Drafts</h1>
-            {newLocal}
-            <p className="text-sm text-gray-400 mt-1">
-              {user.Dealer_Name} · {drafts.length} draft{drafts.length !== 1 ? "s" : ""}
-            </p>
-          </div>
-          <button
-            onClick={() => router.push("/dashboard/dealer/AddOrderForm")}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-xl text-[13.5px] font-semibold transition-all cursor-pointer border-none"
-          >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-              <path d="M12 5v14M5 12h14"/>
-            </svg>
-            New Order
-          </button>
-        </div>
-
-        {/* Empty state */}
-        {!loading && drafts.length === 0 && (
-          <div className="bg-white border border-gray-200 border-dashed rounded-2xl p-16 flex flex-col items-center justify-center text-center">
-            <div className="w-14 h-14 rounded-2xl bg-gray-50 border border-gray-200 flex items-center justify-center mb-4">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                <polyline points="14 2 14 8 20 8"/>
-                <line x1="12" y1="11" x2="12" y2="17"/>
-                <line x1="9" y1="14" x2="15" y2="14"/>
-              </svg>
+      <main className="min-h-screen bg-gray-50 text-gray-950" style={{ fontFamily: "'DM Sans','Helvetica Neue',sans-serif" }}>
+        <div className="mx-auto flex w-full max-w-[1040px] flex-col gap-5 px-4 py-6 sm:px-6 lg:px-8">
+          <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div className="min-w-0">
+              <button
+                type="button"
+                onClick={() => router.back()}
+                className="mb-3 inline-flex items-center gap-1.5 text-[12px] font-semibold text-gray-500 transition hover:text-gray-900"
+              >
+                <ArrowLeft size={14} />
+                Back
+              </button>
+              <h1 className="text-xl font-semibold tracking-tight">Drafts</h1>
+              <p className="mt-1 text-sm text-gray-500">
+                {drafts.length} saved order{drafts.length !== 1 ? "s" : ""}{user.Dealer_Name ? ` for ${user.Dealer_Name}` : ""}
+              </p>
             </div>
-            <p className="text-[15px] font-semibold text-gray-700 mb-1">No drafts yet</p>
-            <p className="text-[13px] text-gray-400 max-w-xs">
-              Start building an order and hit &ldquo;Save as Draft&rdquo; to pick it back up later.
-            </p>
+
             <button
+              type="button"
               onClick={() => router.push("/dashboard/dealer/AddOrderForm")}
-              className="mt-5 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[13.5px] font-semibold transition-colors cursor-pointer border-none"
+              className="inline-flex h-9 items-center justify-center gap-2 rounded-md bg-gray-950 px-3.5 text-[13px] font-semibold text-white transition hover:bg-gray-800"
             >
-              Start an Order
+              <Plus size={15} />
+              New Order
             </button>
-          </div>
-        )}
+          </header>
 
-        {/* Skeleton loader */}
-        {loading && (
-          <div className="space-y-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white border border-gray-100 rounded-2xl p-5 animate-pulse flex gap-4">
-                <div className="flex-1 space-y-2">
-                  <div className="h-4 w-48 bg-gray-100 rounded-lg" />
-                  <div className="h-3 w-72 bg-gray-50 rounded-lg" />
-                </div>
-                <div className="h-4 w-24 bg-gray-100 rounded-lg self-center" />
+          <section className="relative">
+            <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={15} />
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search drafts"
+              className="h-10 w-full rounded-md border border-gray-200 bg-white pl-9 pr-3 text-[13px] text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-gray-400"
+            />
+          </section>
+
+          {loading && <DraftSkeleton />}
+
+          {!loading && drafts.length === 0 && (
+            <section className="rounded-lg border border-dashed border-gray-300 bg-white px-6 py-14 text-center">
+              <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-md bg-gray-50 text-gray-400">
+                <FileText size={20} />
               </div>
-            ))}
-          </div>
-        )}
+              <p className="mt-4 text-sm font-semibold text-gray-900">No drafts yet</p>
+              <button
+                type="button"
+                onClick={() => router.push("/dashboard/dealer/AddOrderForm")}
+                className="mt-4 inline-flex h-9 items-center justify-center rounded-md bg-gray-950 px-3.5 text-[13px] font-semibold text-white transition hover:bg-gray-800"
+              >
+                Start Order
+              </button>
+            </section>
+          )}
 
-        {/* Draft cards */}
-        {!loading && drafts.length > 0 && (
-          <div className="space-y-3">
-            {drafts.map((draft) => {
-              const total      = draftTotal(draft);
-              const productQty = draft.rows.filter((r) => r.productname).length;
-              const isDeleting = deleteMutation.isPending && deleteMutation.variables?.id === draft.id;
-              const isRenaming = renamingId === draft.id;
+          {!loading && drafts.length > 0 && visibleDrafts.length === 0 && (
+            <section className="rounded-lg border border-gray-200 bg-white px-6 py-12 text-center">
+              <p className="text-sm font-semibold text-gray-900">No matching drafts</p>
+              <button
+                type="button"
+                onClick={() => setQuery("")}
+                className="mt-3 text-[13px] font-semibold text-gray-500 transition hover:text-gray-900"
+              >
+                Clear search
+              </button>
+            </section>
+          )}
 
-              return (
-                <div
-                  key={draft.id}
-                  className="group bg-white border border-gray-200 hover:border-gray-300 rounded-2xl p-5 transition-all hover:shadow-sm"
-                >
-                  <div className="flex items-start gap-4">
+          {!loading && visibleDrafts.length > 0 && (
+            <section className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+              <div className="divide-y divide-gray-100">
+                {visibleDrafts.map((draft) => {
+                  const rows = filledRows(draft);
+                  const total = draftTotal(draft);
+                  const isDeleting = deleteMutation.isPending && deleteMutation.variables?.id === draft.id;
+                  const isRenaming = renamingId === draft.id;
+                  const orderNumber = draft.refno || provisionals[draft.id] || String(draft.id).slice(0, 8);
+                  const isDiscountRejectionDraft = draft.source === "custom_discount_rejection";
 
-                    {/* Icon */}
-                    <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="1.8" strokeLinecap="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                        <polyline points="14 2 14 8 20 8"/>
-                        <line x1="8" y1="13" x2="16" y2="13"/>
-                        <line x1="8" y1="17" x2="16" y2="17"/>
-                        <line x1="8" y1="9" x2="10" y2="9"/>
-                      </svg>
-                    </div>
+                  return (
+                    <article key={draft.id} className="group px-4 py-4 transition hover:bg-gray-50/70">
+                      <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+                        <div className="min-w-0">
+                          <div className="flex min-w-0 items-center gap-2">
+                            {isRenaming ? (
+                              <input
+                                ref={renameRef}
+                                value={renameValue}
+                                onChange={(event) => setRenameValue(event.target.value)}
+                                onBlur={() => commitRename(draft.id)}
+                                onKeyDown={(event) => {
+                                  if (event.key === "Enter") commitRename(draft.id);
+                                  if (event.key === "Escape") setRenamingId(null);
+                                }}
+                                className="h-8 w-full max-w-sm rounded-md border border-gray-300 px-2.5 text-sm font-semibold outline-none focus:border-gray-500"
+                              />
+                            ) : (
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={() => openDraft(draft.id)}
+                                  onMouseEnter={() => prefetchDraft(queryClient, user.Dealer_Id, draft.id)}
+                                  className="truncate text-left text-sm font-semibold text-gray-950 transition hover:text-indigo-700"
+                                >
+                                  {draft.name}
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => startRename(draft)}
+                                  title="Rename draft"
+                                  aria-label="Rename draft"
+                                  className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md text-gray-400 transition hover:bg-white hover:text-gray-900 sm:opacity-0 sm:group-hover:opacity-100"
+                                >
+                                  <Pencil size={13} />
+                                </button>
+                              </>
+                            )}
 
-                    {/* Main content */}
-                    <div className="flex-1 min-w-0">
-
-                      {/* Name (editable inline) */}
-                      {isRenaming ? (
-                        <input
-                          ref={renameRef}
-                          value={renameValue}
-                          onChange={(e) => setRenameValue(e.target.value)}
-                          onBlur={() => commitRename(draft.id)}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter")  commitRename(draft.id);
-                            if (e.key === "Escape") setRenamingId(null);
-                          }}
-                          className="text-[14px] font-semibold text-gray-900 border-b-2 border-indigo-400 outline-none bg-transparent w-full max-w-xs"
-                        />
-                      ) : (
-                        <div className="flex items-center gap-2">
-                          <p className="text-[14px] font-semibold text-gray-900 truncate">
-                            {draft.name}
-                          </p>
-                          <button
-                            onClick={() => startRename(draft)}
-                            className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-300 hover:text-gray-500 cursor-pointer"
-                            title="Rename draft"
-                          >
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                            </svg>
-                          </button>
-                        </div>
-                      )}
-
-                      {/* Meta row */}
-                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5">
-                        <span className="text-[11.5px] text-gray-400 font-mono">
-                          {moment(draft.updated_at).fromNow()}
-                        </span>
-                        <span className="text-gray-200 text-xs">·</span>
-                        <span className="text-[11.5px] text-gray-400">
-                          {productQty} product{productQty !== 1 ? "s" : ""}
-                        </span>
-                        {draft.shipto && (
-                          <>
-                            <span className="text-gray-200 text-xs">·</span>
-                            <span className="text-[11.5px] text-gray-400 truncate max-w-[200px]">
-                              Ship: {draft.shipto}
-                            </span>
-                          </>
-                        )}
-                                        {draft.coupon_code && (
-                          <>
-                            <span className="text-gray-200 text-xs">·</span>
-                            <span className="inline-flex items-center gap-1 text-[10.5px] font-bold px-2 py-0.5 bg-violet-50 text-violet-700 border border-violet-200 rounded-full font-mono">
-                              {draft.coupon_code} · {draft.coupon_pct}%
-                            </span>
-                          </>
-                        )}
-                                        {(draft.refno || provisionals[draft.id]) && (
-                                          <>
-                                            <span className="text-gray-200 text-xs">·</span>
-                                            <span className="text-[11.5px] text-gray-400 font-mono">
-                                              Ref: {draft.refno || provisionals[draft.id]}
-                                            </span>
-                                          </>
-                                        )}
-                      </div>
-
-                      {/* Product chips (first 4) */}
-                      {draft.rows.filter(r => r.productname).length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 mt-2.5">
-                          {draft.rows
-                            .filter((r) => r.productname)
-                            .slice(0, 4)
-                            .map((r) => (
-                              <span
-                                key={r.key}
-                                className="inline-flex items-center px-2 py-0.5 bg-gray-50 border border-gray-200 text-gray-500 rounded-lg text-[10.5px] font-mono"
-                              >
-                                {r.variantCode || r.productname} × {r.producQuanity}
+                            {isDiscountRejectionDraft && (
+                              <span className="flex-shrink-0 rounded-full bg-red-50 px-2 py-0.5 text-[10px] font-semibold text-red-600">
+                                rejected
                               </span>
-                            ))}
-                          {draft.rows.filter((r) => r.productname).length > 4 && (
-                            <span className="inline-flex items-center px-2 py-0.5 bg-gray-50 border border-gray-200 text-gray-400 rounded-lg text-[10.5px]">
-                              +{draft.rows.filter((r) => r.productname).length - 4} more
-                            </span>
-                          )}
+                            )}
+                          </div>
+
+                          <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-gray-500">
+                            <span>{moment(draft.updated_at).fromNow()}</span>
+                            <span>{rows.length} product{rows.length !== 1 ? "s" : ""}</span>
+                            <span className="font-mono">{orderNumber}</span>
+                            {draft.shipto && <span className="max-w-full truncate sm:max-w-[260px]">{draft.shipto}</span>}
+                            {draft.coupon_code && (
+                              <span className="font-mono text-violet-600">
+                                {draft.coupon_code} / {draft.coupon_pct}%
+                              </span>
+                            )}
+                          </div>
                         </div>
-                      )}
-                    </div>
 
-                    {/* Right side: total + actions */}
-                    <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                      {(draft.refno || provisionals[draft.id] || draft.id) && (
-                        <div className="text-[11px] text-gray-400 font-mono">
-                          Order #: {draft.refno || provisionals[draft.id] || String(draft.id).slice(0, 8)}
+                        <div className="flex items-center justify-between gap-3 sm:justify-end">
+                          <p className="font-mono text-sm font-semibold text-gray-950">
+                            {total > 0 ? fmt(total) : "Rs. 0.00"}
+                          </p>
+
+                          <div className="flex items-center gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => openDraft(draft.id)}
+                              onMouseEnter={() => prefetchDraft(queryClient, user.Dealer_Id, draft.id)}
+                              title="Continue draft"
+                              aria-label="Continue draft"
+                              className="flex h-8 w-8 items-center justify-center rounded-md bg-gray-950 text-white transition hover:bg-gray-800"
+                            >
+                              <ArrowRight size={14} />
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => handleDelete(draft.id)}
+                              disabled={isDeleting}
+                              title="Delete draft"
+                              aria-label="Delete draft"
+                              className="flex h-8 w-8 items-center justify-center rounded-md text-gray-400 transition hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-40"
+                            >
+                              {isDeleting ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+                            </button>
+                          </div>
                         </div>
-                      )}
-                      <p className="font-mono text-[16px] font-bold text-gray-900">
-                        {total > 0 ? fmt(total) : "—"}
-                      </p>
-
-                      <div className="flex items-center gap-2">
-                        {/* Open / Continue — prefetch on hover */}
-                        <button
-                          onClick={() => openDraft(draft.id)}
-                          onMouseEnter={() => prefetchDraft(queryClient, user.Dealer_Id, draft.id)}
-                          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[12px] font-semibold transition-colors cursor-pointer border-none"
-                        >
-                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                            <path d="M5 12h14M12 5l7 7-7 7"/>
-                          </svg>
-                          Continue
-                        </button>
-
-                        {/* Delete */}
-                        <button
-                          onClick={() => handleDelete(draft.id)}
-                          disabled={isDeleting}
-                          title="Delete draft"
-                          className="w-[30px] h-[30px] flex items-center justify-center rounded-xl border border-red-100 text-red-400 hover:bg-red-50 hover:border-red-200 transition-colors cursor-pointer bg-transparent disabled:opacity-40"
-                        >
-                          {isDeleting ? (
-                            <div className="w-3 h-3 border border-red-300 border-t-red-500 rounded-full animate-spin" />
-                          ) : (
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                              <polyline points="3 6 5 6 21 6"/>
-                              <path d="M19 6l-1 14H6L5 6m5 0V4h4v2"/>
-                            </svg>
-                          )}
-                        </button>
                       </div>
-                    </div>
-
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+        </div>
+      </main>
     </>
   );
 }

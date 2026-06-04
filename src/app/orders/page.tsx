@@ -16,6 +16,7 @@ type Order = {
   order_discount: string;
   Dealer_Name: string;
   orderdata_item_quantity: string;
+  orderdata_status: string | number;
   mtstatus: string;
   outstandingDate: string;
   order_note?: string;
@@ -29,11 +30,83 @@ type ApiResponse = { msg: string; count: number; status: boolean; data: Order[] 
 const PAGE_SIZE = 10;
 const BACKEND = "https://mirisoft.co.in/sas/dealerapi/api";
 
+type PhpExchangeLog = {
+  method: "GET" | "POST";
+  url: string;
+  request?: unknown;
+  response?: unknown;
+  error?: unknown;
+};
+
+function parseResponseText(text: string): unknown {
+  if (!text.trim()) return "";
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    return text;
+  }
+}
+
+function readFormData(fd: FormData): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+
+  fd.forEach((value, key) => {
+    result[key] = value instanceof File
+      ? {
+        fileName: value.name,
+        fileSize: value.size,
+        fileType: value.type,
+        lastModified: value.lastModified,
+      }
+      : value;
+  });
+
+  return result;
+}
+
+function logPhpExchange(label: string, details: PhpExchangeLog) {
+  console.groupCollapsed(`[PHP backend] ${label}`);
+  console.info("method", details.method);
+  console.info("url", details.url);
+  if (details.request !== undefined) console.info("sending to PHP", details.request);
+  if (details.response !== undefined) console.info("received from PHP", details.response);
+  if (details.error !== undefined) console.error("PHP request failed", details.error);
+  console.groupEnd();
+}
+
 const getDealerId = () => {
   if (typeof window === "undefined") return "225";
   try { return JSON.parse(localStorage.getItem("UserData") ?? "{}")?.Dealer_Id ?? "225"; }
   catch { return "225"; }
 };
+
+function moneyValue(value: unknown): number | null {
+  if (value === null || value === undefined) return null;
+  const text = String(value).replace(/,/g, "").trim();
+  if (!text) return null;
+  const amount = Number(text);
+  return Number.isFinite(amount) ? amount : null;
+}
+
+function getOrderHistoryAmounts(order: Order) {
+  const raw = order as any;
+  const gross = moneyValue(raw.order_amount) ?? 0;
+
+  // Legacy PHP stores net payable in `order_discount`, despite the field name.
+  const explicitNet = moneyValue(raw.order_net_amount ?? raw.net_amount ?? raw.netPayableAmount);
+  const legacyNet = moneyValue(raw.order_discount);
+  const explicitDiscount = moneyValue(raw.order_discount_amount ?? raw.discount_amount ?? raw.discountAmount);
+
+  const netPayable = explicitNet ?? legacyNet ?? gross;
+  const discountAmount = explicitDiscount ?? Math.max(0, gross - netPayable);
+
+  return { gross, discountAmount, netPayable };
+}
+
+function formatMoney(amount: number) {
+  return `₹${amount.toLocaleString("en-IN", { maximumFractionDigits: 2 })}`;
+}
 
 function extractOrderNote(order: Order, overlayNote?: string) {
   if (overlayNote) return overlayNote;
@@ -44,20 +117,43 @@ function extractOrderNote(order: Order, overlayNote?: string) {
 }
 
 async function fetchOrders(page: number, search: string, id: string): Promise<ApiResponse> {
-  const r = await fetch(`${BACKEND}/orderhispegination?page=${page}&search=${search}&id=${id}`);
-  if (!r.ok) throw new Error("Failed");
-  return r.json();
+  const url = `${BACKEND}/orderhispegination?page=${page}&search=${search}&id=${id}`;
+  const r = await fetch(url);
+
+  if (!r.ok) {
+    const errorBody = parseResponseText(await r.text());
+    logPhpExchange("orderhispegination", {
+      method: "GET",
+      url,
+      request: { page, search, id },
+      error: { status: r.status, statusText: r.statusText, response: errorBody },
+    });
+    throw new Error("Failed");
+  }
+
+  const rawData = await r.json();
+  logPhpExchange("orderhispegination", {
+    method: "GET",
+    url,
+    request: { page, search, id },
+    response: rawData,
+  });
+
+  return rawData;
 }
 
-const statusConf: Record<string, { label: string; dot: string; text: string; bg: string }> = {
-  pending:   { label: "Pending", dot: "bg-amber-400", text: "text-amber-800", bg: "bg-amber-50 border-amber-200" },
-  inprocess: { label: "In Process", dot: "bg-amber-400", text: "text-amber-800", bg: "bg-amber-50 border-amber-200" },
-  completed: { label: "Completed", dot: "bg-emerald-400", text: "text-emerald-800", bg: "bg-emerald-50 border-emerald-200" },
+// Status mapping from reference: 0=In process, 1=Packing, 2=Dispatch, 3=Not in stock, 4=Successful
+const statusConf: Record<number, { label: string; dot: string; text: string; bg: string }> = {
+  0: { label: "In Process",   dot: "bg-amber-400",   text: "text-amber-800",   bg: "bg-amber-50 border-amber-200" },
+  1: { label: "Packing",      dot: "bg-blue-400",    text: "text-blue-800",    bg: "bg-blue-50 border-blue-200" },
+  2: { label: "Dispatch",     dot: "bg-indigo-400",  text: "text-indigo-800",  bg: "bg-indigo-50 border-indigo-200" },
+  3: { label: "Not in Stock", dot: "bg-red-400",     text: "text-red-800",     bg: "bg-red-50 border-red-200" },
+  4: { label: "Successful",   dot: "bg-emerald-400", text: "text-emerald-800", bg: "bg-emerald-50 border-emerald-200" },
 };
 
-function MtStatusBadge({ status }: { status: string }) {
-  const key = status?.toLowerCase().replace(/[\s_-]/g, "") ?? "";
-  const s = statusConf[key] ?? { label: "No Action Taken", dot: "bg-slate-400", text: "text-slate-700", bg: "bg-slate-50 border-slate-200" };
+function OrderStatusBadge({ status }: { status: string | number }) {
+  const num = Number(status);
+  const s = statusConf[num] ?? { label: "Pending", dot: "bg-slate-400", text: "text-slate-700", bg: "bg-slate-50 border-slate-200" };
   return (
     <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${s.bg} ${s.text}`}>
       <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${s.dot}`} />
@@ -110,7 +206,7 @@ function InvoiceRowButton({ order }: { order: Order }) {
     }
   };
 
-  const accepted = (order as any).accept_order === "1" || Number(order.mtstatus ?? 0) >= 2 || String(order.mtstatus ?? "").toLowerCase().includes("completed");
+  const accepted = (order as any).accept_order === "1" || Number(order.orderdata_status ?? 0) >= 4 || Number(order.mtstatus ?? 0) >= 2 || String(order.mtstatus ?? "").toLowerCase().includes("completed");
 
   return (
     <div className="relative">
@@ -335,12 +431,11 @@ export default function OrderHistoryPage() {
     staleTime: 30_000,
     enabled: !!dealerId,
   });
-  console.log(" data", data);
 
   const orders = data?.data ?? [];
   const totalCount = data?.count ?? 0;
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
-  const orderIdsKey = orders.map((o) => o.order_id).filter(Boolean).join(",");
+  const orderIdsKey = orders.map((o) => (o as any).order_id ?? (o as any).orderId ?? "").filter(Boolean).join(",");
 
   useEffect(() => {
     if (!dealerId || !orderIdsKey) { setOrderNotes({}); return; }
@@ -366,7 +461,20 @@ export default function OrderHistoryPage() {
     fd.append("reason", reason);
     fd.append("field", "order_id");
     fd.append("tbl", "order_tbl");
-    await fetch(`${BACKEND}/deletewithreason`, { method: "POST", body: fd });
+    const targetApiUrl = `${BACKEND}/deletewithreason`;
+    const phpPayload = readFormData(fd);
+    const response = await fetch(targetApiUrl, { method: "POST", body: fd });
+    const responseBody = parseResponseText(await response.text());
+
+    logPhpExchange("deletewithreason", {
+      method: "POST",
+      url: targetApiUrl,
+      request: phpPayload,
+      response: responseBody,
+      error: response.ok ? undefined : { status: response.status, statusText: response.statusText },
+    });
+
+    if (!response.ok) throw new Error("Failed to delete order");
     setDeleteOrderId(null);
     refetch();
   };
@@ -464,7 +572,7 @@ export default function OrderHistoryPage() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="bg-gray-50 border-b border-gray-200">
-                      {["#", "Order No.", "Date", "Gross", "Discount", "Net", "Units", "Outstanding", "Actions"].map(h => (
+                      {["#", "Order No.", "Date", "Gross", "Discount", "Net Payable", "Units", "Status", "Outstanding", "Actions"].map(h => (
                         <th key={h} className="px-4 py-3.5 text-left text-[11px] font-bold uppercase tracking-wider text-gray-600 whitespace-nowrap">{h}</th>
                       ))}
                     </tr>
@@ -485,24 +593,20 @@ export default function OrderHistoryPage() {
                           </td></tr>
                         )
                         : orders.map((order, idx) => {
-                          const rawAmount = Number(order.order_amount || 0);
-                          const discountAmt = Number(order.order_discount || 0);
-                          const gross = rawAmount + discountAmt; // show subtotal as gross (before discount)
-                          const net = rawAmount; // final payable (API sometimes returns final in order_amount)
-
-                          console.log({ rawAmount, discountAmt, gross, net });
                           const isDeleted = !!(order.reason);
-                          const historyNote = extractOrderNote(order, orderNotes[order.order_id]);
+                          const oid = (order as any).order_id ?? (order as any).orderId ?? "";
+                          const historyNote = extractOrderNote(order, orderNotes[oid]);
+                          const amounts = getOrderHistoryAmounts(order);
 
                           return (
-                            <tr key={order.order_id} className={`hover:bg-blue-50/30 transition-colors ${isDeleted ? "opacity-60" : ""}`}>
+                            <tr key={oid || idx} className={`hover:bg-blue-50/30 transition-colors ${isDeleted ? "opacity-60" : ""}`}>
                               <td className="px-4 py-3.5 text-gray-700 font-medium">
                                 {String((page - 1) * PAGE_SIZE + idx + 1).padStart(2, "0")}
                               </td>
                               <td className="px-4 py-3.5">
                                 <div className="flex items-center gap-2">
                                   <span className="font-mono text-[13px] font-bold text-indigo-700">
-                                    OM/{year}/{order.order_id}
+                                    OM/{year}/{oid}
                                   </span>
                                   {isDeleted && (
                                     <span className="px-1.5 py-0.5 bg-red-50 border border-red-200 text-red-700 rounded text-[10px] font-bold">DELETED</span>
@@ -518,23 +622,23 @@ export default function OrderHistoryPage() {
                                 <p className="text-[13px] text-gray-900 font-medium">{moment(order.order_date).format("DD MMM YYYY")}</p>
                                 <p className="text-[11px] text-gray-600 font-mono mt-0.5">{moment(order.order_date).format("hh:mm A")}</p>
                               </td>
-                              <td className="px-4 py-3.5 font-mono text-[13px] text-gray-700 line-through">
-                                ₹{gross.toLocaleString("en-IN")}
+                              <td className="px-4 py-3.5 font-mono text-[14px] font-bold text-gray-900">
+                                {formatMoney(amounts.gross)}
                               </td>
                               <td className="px-4 py-3.5 font-mono text-[13px] text-amber-700">
-                                −₹{discountAmt.toLocaleString("en-IN")}
+                                {amounts.discountAmount > 0 ? `−${formatMoney(amounts.discountAmount)}` : "—"}
                               </td>
-                              <td className="px-4 py-3.5 font-mono text-[14px] font-bold text-gray-900">
-                                ₹{net.toLocaleString("en-IN")}
+                              <td className="px-4 py-3.5 font-mono text-[14px] font-bold text-emerald-700">
+                                {formatMoney(amounts.netPayable)}
                               </td>
                               <td className="px-4 py-3.5">
                                 <span className="px-2 py-0.5 bg-gray-100 text-gray-800 rounded-lg text-[12px] font-mono font-semibold">
                                   {order.orderdata_item_quantity} units
                                 </span>
                               </td>
-                              {/* <td className="px-4 py-3.5">
-                                <MtStatusBadge status={order.mtstatus} />
-                              </td> */}
+                              <td className="px-4 py-3.5">
+                                <OrderStatusBadge status={order.orderdata_status} />
+                              </td>
                               <td className="px-4 py-3.5 font-mono text-[12px] text-gray-700">
                                 {order.outstandingDate ? moment(order.outstandingDate).format("DD MMM YYYY") : "—"}
                               </td>
@@ -543,7 +647,7 @@ export default function OrderHistoryPage() {
                               <td className="px-4 py-3.5 w-px whitespace-nowrap">
                                 <div className="flex items-center gap-1.5">
                                   <button
-                                    onClick={() => router.push(`/orders/${order.order_id}`)}
+                                    onClick={() => router.push(`/orders/${oid}`)}
                                     title="View order detail"
                                     className="flex items-center gap-1.5 px-2.5 py-1.5 bg-white border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50 text-gray-700 hover:text-indigo-700 rounded-lg text-[11px] font-semibold transition-all shadow-sm"
                                   >
@@ -559,7 +663,7 @@ export default function OrderHistoryPage() {
 
                                   {!isDeleted && (
                                     <button
-                                      onClick={() => setDeleteOrderId(order.order_id)}
+                                      onClick={() => setDeleteOrderId(oid)}
                                       title="Delete order"
                                       className="flex items-center gap-1.5 px-2.5 py-1.5 bg-white border border-gray-200 hover:border-red-300 hover:bg-red-50 text-gray-700 hover:text-red-700 rounded-lg text-[11px] font-semibold transition-all shadow-sm"
                                     >

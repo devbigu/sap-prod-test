@@ -70,7 +70,45 @@ async function fetchOrderItems(orderId: string): Promise<OrderItem[]> {
         const res = await fetch(`${BACKEND_URL}/orderdatalist?id=${orderId}`);
         if (!res.ok) return [];
         const json = await res.json();
-        return Array.isArray(json.data) ? json.data : [];
+        const raw = json.data;
+        // raw may be: array of legacy order rows, or object with items array, or array of new-style items
+        let items: any[] = [];
+        if (Array.isArray(raw)) {
+            if (raw.length > 0 && (raw[0].productId || raw[0].productName || raw[0].quantityPacks !== undefined)) {
+                items = raw;
+            } else if (raw.length > 0 && raw[0].items && Array.isArray(raw[0].items)) {
+                items = raw[0].items;
+            } else {
+                // assume legacy rows already shaped like OrderItem
+                return raw as OrderItem[];
+            }
+        } else if (raw && typeof raw === "object") {
+            if (Array.isArray(raw.items)) items = raw.items;
+        }
+
+        // Normalize new-style items into OrderItem shape used below
+        return (items ?? []).map((it: any, idx: number) => ({
+            orderdata_id: String(it.productId ?? it.id ?? `i-${idx}`),
+            orderdata_cat_no: String(it.productId ?? it.catNo ?? it.orderdata_cat_no ?? ""),
+            orderdata_item_quantity: String(it.quantityPacks ?? it.quantity ?? it.orderdata_item_quantity ?? 0),
+            orderdata_price: String(it.unitPrice ?? it.unit_price ?? it.orderdata_price ?? 0),
+            orderdata_discount: String(it.discountAmount ?? it.orderdata_discount ?? 0),
+            orderdata_afterDisPrice: String(it.finalPrice ?? it.final_price ?? it.orderdata_afterDisPrice ?? 0),
+            product_name: String(it.productName ?? it.product_name ?? ""),
+            product_discription: String(it.productDescription ?? it.product_discription ?? ""),
+            product_unit: String(it.unit ?? it.product_unit ?? "Pcs"),
+            discount: String(it.totalDiscountPercent ?? it.discount ?? 0),
+            remark: it.remark ?? it.remarks ?? undefined,
+            remarks: it.remarks ?? it.remark ?? undefined,
+            priority: it.priority ?? false,
+            isPriority: it.isPriority ?? undefined,
+            is_priority: it.is_priority ?? undefined,
+            // preserve payload pack info
+            // @ts-ignore - allow extra fields
+            packSize: it.packSize ?? it.pack_size ?? undefined,
+            // @ts-ignore
+            totalPieces: it.totalPieces ?? it.total_pieces ?? undefined,
+        }));
     } catch {
         return [];
     }
@@ -171,8 +209,34 @@ function cell(
 export async function generateOrderInvoicePDF(order: OrderInvoiceData): Promise<Blob> {
     const dp = getDealerProfile();
 
-    // Fetch detailed order items (product names) from the API
-    const orderItems = await fetchOrderItems(order.order_id);
+    // Fetch detailed order items (product names) from the API or prefer inlined `order.items` if present
+    let orderItems: OrderItem[] = [];
+    if (Array.isArray((order as any).items)) {
+        const raw = (order as any).items as any[];
+        orderItems = raw.map((it: any, idx: number) => ({
+            orderdata_id: String(it.productId ?? it.id ?? `i-${idx}`),
+            orderdata_cat_no: String(it.productId ?? it.catNo ?? it.orderdata_cat_no ?? ""),
+            orderdata_item_quantity: String(it.quantityPacks ?? it.quantity ?? it.orderdata_item_quantity ?? 0),
+            orderdata_price: String(it.unitPrice ?? it.unit_price ?? it.orderdata_price ?? 0),
+            orderdata_discount: String(it.discountAmount ?? it.orderdata_discount ?? 0),
+            orderdata_afterDisPrice: String(it.finalPrice ?? it.final_price ?? it.orderdata_afterDisPrice ?? 0),
+            product_name: String(it.productName ?? it.product_name ?? ""),
+            product_discription: String(it.productDescription ?? it.product_discription ?? ""),
+            product_unit: String(it.unit ?? it.product_unit ?? "Pcs"),
+            discount: String(it.totalDiscountPercent ?? it.discount ?? 0),
+            remark: it.remark ?? it.remarks ?? undefined,
+            remarks: it.remarks ?? it.remark ?? undefined,
+            priority: it.priority ?? false,
+            isPriority: it.isPriority ?? undefined,
+            is_priority: it.is_priority ?? undefined,
+            // @ts-ignore
+            packSize: it.packSize ?? it.pack_size ?? undefined,
+            // @ts-ignore
+            totalPieces: it.totalPieces ?? it.total_pieces ?? undefined,
+        }));
+    } else {
+        orderItems = await fetchOrderItems(order.order_id);
+    }
 
     const doc = new jsPDF("p", "mm", "a4");
     const PW = doc.internal.pageSize.getWidth();
@@ -348,17 +412,42 @@ export async function generateOrderInvoicePDF(order: OrderInvoiceData): Promise<
     }
 
     if (orderItems.length > 0) {
+        let sumGross = 0;
+        let sumDiscount = 0;
+        let sumNet = 0;
         orderItems.forEach((item, idx) => {
-            const itemGross    = Number(item.orderdata_price) * Number(item.orderdata_item_quantity);
-            const itemDiscount = Number(item.orderdata_discount || 0);
-            const itemNet      = Number(item.orderdata_afterDisPrice || (itemGross - itemDiscount));
-            const qty          = Number(item.orderdata_item_quantity);
-            const isPriority   = hasPriorityTag(item.priority, item.isPriority, item.is_priority, item.remark, item.remarks);
-            const description  = `${item.product_name || item.orderdata_cat_no || "—"}${isPriority ? "\n[PRIORITY DELIVERY]" : ""}`;
-            const pack = Number(packLookup[item.orderdata_cat_no] ?? 1) || 1;
-            const pieces = qty * pack;
+            const qty = Number(item.orderdata_item_quantity);
+            const itemAny: any = item as any;
+            const payloadPieces = Number(itemAny.totalPieces ?? itemAny.total_pieces ?? 0);
+            const pack = Number(itemAny.packSize ?? packLookup[item.orderdata_cat_no] ?? 1) || 1;
+            const pieces = (!isNaN(payloadPieces) && payloadPieces > 0) ? payloadPieces : qty * pack;
+
+            // Compute rowGross (list price)
+            const lpField = itemAny.listPriceTotal ?? itemAny.list_price_total ?? itemAny.listPrice ?? itemAny.list_price;
+            let rowGross = 0;
+            if (lpField !== undefined && lpField !== null && String(lpField).trim() !== "") {
+                rowGross = Number(lpField) || 0;
+            } else if (!isNaN(Number(itemAny.unitPrice)) && !isNaN(Number(pieces)) && Number(pieces) > 0) {
+                rowGross = Number(itemAny.unitPrice) * Number(pieces);
+            } else {
+                rowGross = Number(item.orderdata_price) * qty;
+            }
+
+            // Discount percent (per-item or order-level)
+            const perItemPct = Number(itemAny.totalDiscountPercent ?? itemAny.total_discount_percentage ?? itemAny.total_discount ?? itemAny.discount ?? NaN);
+            const orderPct = Number((order as any)?.totalDiscountPercentage ?? (order as any)?.allocatedDiscountPercent ?? (order as any)?.allocatedDiscount ?? NaN);
+            const pct = !isNaN(perItemPct) ? perItemPct : (!isNaN(orderPct) ? orderPct : 0);
+            const rowDiscount = rowGross * (pct / 100);
+            const rowNet = rowGross - rowDiscount;
+
+            const isPriority = hasPriorityTag(item.priority, item.isPriority, item.is_priority, item.remark, item.remarks);
+            const description = `${item.product_name || item.orderdata_cat_no || "—"}${isPriority ? "\n[PRIORITY DELIVERY]" : ""}`;
+
             totalQty += qty;
             totalPieces += pieces;
+            sumGross += rowGross;
+            sumDiscount += rowDiscount;
+            sumNet += rowNet;
 
             itemRows.push([
                 { content: String(idx + 1).padStart(2, "0"),          styles: { halign: "center" } },
@@ -366,11 +455,21 @@ export async function generateOrderInvoicePDF(order: OrderInvoiceData): Promise<
                 { content: String(qty),                                styles: { halign: "center" } },
                 { content: String(pieces),                             styles: { halign: "center" } },
                 { content: item.product_unit || "Pcs",                 styles: { halign: "center" } },
-                { content: fmt(itemGross),                             styles: { halign: "right"  } },
-                { content: fmt(itemDiscount),                          styles: { halign: "right"  } },
-                { content: fmt(itemNet),                               styles: { halign: "right"  } },
+                { content: fmt(rowGross),                              styles: { halign: "right"  } },
+                { content: fmt(rowDiscount),                           styles: { halign: "right"  } },
+                { content: fmt(rowNet),                                styles: { halign: "right"  } },
             ]);
         });
+        // After iterating, append totals row using sums
+        itemRows.push([
+            { content: "Total", colSpan: 2,                    styles: { halign: "right", fontStyle: "bold" } },
+            { content: String(totalQty),                        styles: { halign: "center", fontStyle: "bold" } },
+            { content: String(totalPieces),                     styles: { halign: "center", fontStyle: "bold" } },
+            { content: "",                                     styles: {} },
+            { content: fmt(sumGross),                           styles: { halign: "right", fontStyle: "bold" } },
+            { content: fmt(sumDiscount),                        styles: { halign: "right", fontStyle: "bold" } },
+            { content: fmt(sumNet),                             styles: { halign: "right", fontStyle: "bold" } },
+        ]);
     } else {
         // Fallback: single row with whatever info we have
         totalQty = Number(order.orderdata_item_quantity);
@@ -390,15 +489,17 @@ export async function generateOrderInvoicePDF(order: OrderInvoiceData): Promise<
     }
 
     // Totals row (now includes pieces)
-    itemRows.push([
-        { content: "Total", colSpan: 2,                    styles: { halign: "right", fontStyle: "bold" } },
-        { content: String(totalQty),                       styles: { halign: "center", fontStyle: "bold" } },
-        { content: String(totalPieces),                    styles: { halign: "center", fontStyle: "bold" } },
-        { content: "",                                     styles: {} },
-        { content: fmt(gross),                             styles: { halign: "right", fontStyle: "bold" } },
-        { content: fmt(discount),                          styles: { halign: "right", fontStyle: "bold" } },
-        { content: fmt(net),                               styles: { halign: "right", fontStyle: "bold" } },
-    ]);
+    if (orderItems.length === 0) {
+        itemRows.push([
+            { content: "Total", colSpan: 2,                    styles: { halign: "right", fontStyle: "bold" } },
+            { content: String(totalQty),                        styles: { halign: "center", fontStyle: "bold" } },
+            { content: String(totalPieces),                     styles: { halign: "center", fontStyle: "bold" } },
+            { content: "",                                     styles: {} },
+            { content: fmt(gross),                              styles: { halign: "right", fontStyle: "bold" } },
+            { content: fmt(discount),                           styles: { halign: "right", fontStyle: "bold" } },
+            { content: fmt(net),                                styles: { halign: "right", fontStyle: "bold" } },
+        ]);
+    }
 
     autoTable(doc, {
         startY: y,

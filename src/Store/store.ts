@@ -17,6 +17,7 @@ type CartStore = {
   removeFromCart: (id: string) => void;
   incrementQty: (id: string) => void;
   decrementQty: (id: string) => void;
+  setQty: (id: string, qty: number) => void;
   togglePriority: (id: string) => void;
   clearCart: () => void;
 };
@@ -77,6 +78,17 @@ export const useCartStore = create<CartStore>((set) => ({
     set((state) => ({
       cart: state.cart
         .map((i) => (i.id === id ? { ...i, quantity: Math.max(0, i.quantity - 1) } : i))
+        .filter((i) => i.quantity > 0),
+    })),
+
+  setQty: (id, qty) =>
+    set((state) => ({
+      cart: state.cart
+        .map((i) =>
+          i.id === id
+            ? { ...i, quantity: i.stock ? Math.min(Math.max(0, qty), i.stock) : Math.max(0, qty) }
+            : i
+        )
         .filter((i) => i.quantity > 0),
     })),
 

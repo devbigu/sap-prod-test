@@ -32,6 +32,8 @@ export type OrderDraft = {
   order_note: string | null;
   coupon_code: string | null;
   coupon_pct: number | null;
+  source?: string;
+  source_request_id?: string;
   rows: DraftProductRow[];
   created_at: string;
   updated_at: string;

@@ -55,6 +55,7 @@ type CustomDiscountRequest = {
   refno?: string;
   orderNote?: string;
   adminNote?: string;
+  rejectionDraftId?: string;
   createdAt?: string;
   reviewedAt?: string | null;
 };
@@ -223,6 +224,74 @@ const COUPONS: Record<string, number> = {
 
 const BACKEND_URL = "https://mirisoft.co.in/sas/dealerapi/api";
 
+type PhpExchangeLog = {
+  method: "GET" | "POST";
+  url: string;
+  request?: unknown;
+  response?: unknown;
+  error?: unknown;
+};
+
+function readFormData(fd: FormData): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+
+  fd.forEach((value, key) => {
+    const parsedValue = value instanceof File
+      ? {
+        fileName: value.name,
+        fileSize: value.size,
+        fileType: value.type,
+        lastModified: value.lastModified,
+      }
+      : parseLogValue(value);
+
+    if (Object.prototype.hasOwnProperty.call(result, key)) {
+      const existing = result[key];
+      result[key] = Array.isArray(existing) ? [...existing, parsedValue] : [existing, parsedValue];
+      return;
+    }
+
+    result[key] = parsedValue;
+  });
+
+  return result;
+}
+
+function parseLogValue(value: string): unknown {
+  const trimmed = value.trim();
+  if (!trimmed) return value;
+  if (!["{", "["].includes(trimmed[0])) return value;
+
+  try {
+    return JSON.parse(trimmed);
+  } catch {
+    return value;
+  }
+}
+
+function getAxiosDebugError(error: unknown) {
+  if (axios.isAxiosError(error)) {
+    return {
+      message: error.message,
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      response: error.response?.data,
+    };
+  }
+
+  return error instanceof Error ? { message: error.message } : error;
+}
+
+function logPhpExchange(label: string, details: PhpExchangeLog) {
+  console.groupCollapsed(`[PHP backend] ${label}`);
+  console.info("method", details.method);
+  console.info("url", details.url);
+  if (details.request !== undefined) console.info("sending to PHP", details.request);
+  if (details.response !== undefined) console.info("received from PHP", details.response);
+  if (details.error !== undefined) console.error("PHP request failed", details.error);
+  console.groupEnd();
+}
+
 // ─── Empty row factory ────────────────────────────────────────────────────────
 const emptyRow = (): ProductRow => ({
   key: Date.now() + Math.random(),
@@ -317,7 +386,7 @@ function AddOrderPageInner() {
 
   useEffect(() => {
     if (!user?.Dealer_Id) return;
-    fetch(`/api/custom-discount-requests?dealer_id=${encodeURIComponent(user.Dealer_Id)}&limit=25`)
+    fetch(`/api/custom-discount-requests?dealer_id=${encodeURIComponent(user.Dealer_Id)}&limit=200`)
       .then((r) => r.json())
       .then((json) => {
         if (json.success) setCustomDiscountRequests(json.data ?? []);
@@ -581,8 +650,18 @@ function AddOrderPageInner() {
     .map((row) => getApprovedProductCustomRequest(row))
     .filter((r): r is CustomDiscountRequest => !!r);
   const hasApprovedCustomDiscount = approvedCustomDiscountPercent !== null || approvedProductCustomRequests.length > 0;
-  const rejectedCustomDiscountRequests = customDiscountRequests.filter((r) => r.status === "rejected");
-  const latestRejectedCustomDiscountRequest = rejectedCustomDiscountRequests[0] ?? null;
+  const discountRejectionDraftRequest = activeDraftId
+    ? customDiscountRequests.find((r) => (
+      r.status === "rejected" &&
+      (
+        String(r.rejectionDraftId ?? "") === String(activeDraftId) ||
+        (
+          cachedDraft?.source === "custom_discount_rejection" &&
+          String(cachedDraft?.source_request_id ?? "") === String(r.id)
+        )
+      )
+    ))
+    : null;
   const requestedCustomDiscountPercent = Math.min(100, Math.max(0, Number(customDiscountInput) || 0));
   const requestedCustomDiscountAmount = customDiscountBaseSubtotal * (requestedCustomDiscountPercent / 100);
   const requestedCustomFinalPayable = Math.max(0, customDiscountBaseSubtotal - requestedCustomDiscountAmount);
@@ -605,7 +684,7 @@ function AddOrderPageInner() {
 
   const refreshCustomDiscountRequests = async () => {
     if (!user?.Dealer_Id) return [];
-    const res = await fetch(`/api/custom-discount-requests?dealer_id=${encodeURIComponent(user.Dealer_Id)}&limit=25`);
+    const res = await fetch(`/api/custom-discount-requests?dealer_id=${encodeURIComponent(user.Dealer_Id)}&limit=200`);
     const json = await res.json();
     if (!json.success) throw new Error(json.message ?? "Could not load discount requests");
     setCustomDiscountRequests(json.data ?? []);
@@ -868,14 +947,24 @@ function AddOrderPageInner() {
     setLoading(true);
     const payload = arr1.filter(r => r.productname).map(r => {
       const rowDiscountPercent = getRowDiscountPercent(r);
+      const quantityPacks = safePositiveNumber(r.producQuanity);
+      const packSize = safePositiveNumber(r.packSize) || 1;
+      const totalPieces = quantityPacks * packSize;
       const rowSubtotal = rowSubtotalPaise(r) / 100;
       const rowDiscountAmount = rowSubtotal * (rowDiscountPercent / 100);
       return {
         productname: r.productname,
-        producQuanity: String(r.producQuanity),
+        // PHP calculates amount as producQuanity * price, so send pieces here.
+        producQuanity: String(totalPieces),
+        quantityPacks: String(quantityPacks),
+        packSize: String(packSize),
+        totalPieces: String(totalPieces),
         price: String(r.price),
+        unitPrice: String(r.price),
+        listPriceTotal: payloadAmount(rowSubtotal),
         discount: payloadAmount(rowDiscountAmount),
         discountPercent: String(rowDiscountPercent),
+        totalDiscountPercent: String(rowDiscountPercent),
         afterDiscountPrice: payloadAmount(Math.max(0, rowSubtotal - rowDiscountAmount)),
         remarks: buildOrderRemarks(r.variantCode, r.isPriority, orderNote),
         priority: r.isPriority ? "1" : "0",
@@ -883,7 +972,6 @@ function AddOrderPageInner() {
       };
     });
 
-    console.log(payload.map(r=>r.price))
     const fd = new FormData();
     fd.append("productorder", JSON.stringify(payload));
     fd.append("Dealer_shipto", shipto);
@@ -918,11 +1006,18 @@ function AddOrderPageInner() {
     }
     if (refno) fd.append("refno", refno);
     if (appliedCoupon) fd.append("coupon_code", appliedCoupon.code);
+    
+    const targetApiUrl = `${BACKEND_URL}/PlaceOrderarray?id=${user.Dealer_Id}&staffid=${user.assignedstaff}`;
+    const phpPayload = readFormData(fd);
+
     try {
-      const { data } = await axios.post(
-        `${BACKEND_URL}/PlaceOrderarray?id=${user.Dealer_Id}&staffid=${user.assignedstaff}`,
-        fd
-      );
+      const { data } = await axios.post(targetApiUrl, fd);
+      logPhpExchange("PlaceOrderarray", {
+        method: "POST",
+        url: targetApiUrl,
+        request: phpPayload,
+        response: data,
+      });
       const placedOrderId = extractOrderIdFromResponse(data) || await fetchLatestOrderId();
       await saveOrderNoteForHistory(placedOrderId);
       if (reorderRequest) {
@@ -948,7 +1043,13 @@ function AddOrderPageInner() {
       if (fromCart && user?.Dealer_Id) {
         fetch(`/api/draft-cart?dealer_id=${encodeURIComponent(user.Dealer_Id)}`, { method: "DELETE" }).catch(() => { });
       }
-    } catch {
+    } catch (error) {
+      logPhpExchange("PlaceOrderarray", {
+        method: "POST",
+        url: targetApiUrl,
+        request: phpPayload,
+        error: getAxiosDebugError(error),
+      });
       toast.error("Order failed, please try again.", { autoClose: 5000 });
     } finally {
       setLoading(false);
@@ -963,10 +1064,24 @@ function AddOrderPageInner() {
     fd.append("staffid", user.assignedstaff);
     fd.append("order_dealer", user.Dealer_Id);
     fd.append("exelefile", file);
+    const targetApiUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/importdata`;
+    const phpPayload = readFormData(fd);
     try {
-      const { data } = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/importdata`, fd);
+      const { data } = await axios.post(targetApiUrl, fd);
+      logPhpExchange("importdata", {
+        method: "POST",
+        url: targetApiUrl,
+        request: phpPayload,
+        response: data,
+      });
       toast.success(data.msg);
-    } catch {
+    } catch (error) {
+      logPhpExchange("importdata", {
+        method: "POST",
+        url: targetApiUrl,
+        request: phpPayload,
+        error: getAxiosDebugError(error),
+      });
       toast.error("Upload failed.");
     } finally {
       setLoading(false);
@@ -1077,7 +1192,7 @@ function AddOrderPageInner() {
           </div>
         )}
 
-        {latestRejectedCustomDiscountRequest && (
+        {discountRejectionDraftRequest && (
           <div className="flex flex-col gap-3 bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-5 text-[12.5px] text-red-700 font-medium lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-start gap-2">
               <svg className="mt-0.5 flex-shrink-0 text-red-500" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -1089,9 +1204,9 @@ function AddOrderPageInner() {
                 <p>
                   A custom discount request was disapproved. An order draft has been saved so you can edit and resubmit it.
                 </p>
-                {latestRejectedCustomDiscountRequest.adminNote && (
+                {discountRejectionDraftRequest.adminNote && (
                   <p className="mt-1 text-[11.5px] text-red-600">
-                    Admin note: {latestRejectedCustomDiscountRequest.adminNote}
+                    Admin note: {discountRejectionDraftRequest.adminNote}
                   </p>
                 )}
               </div>

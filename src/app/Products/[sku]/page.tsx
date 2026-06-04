@@ -613,7 +613,16 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ sku: 
                               <div style={{ display: "flex", alignItems: "center", border: "1px solid #e2e8f0", borderRadius: 6, overflow: "hidden" }}>
                                 <button onClick={() => setRowPacks(p => ({ ...p, [v.sku]: Math.max(0, (p[v.sku] ?? 0) - 1) }))}
                                   style={{ padding: "4px 8px", border: "none", background: "#f8fafc", cursor: "pointer", fontSize: 14, color: "#374151" }}>−</button>
-                                <span style={{ padding: "4px 10px", fontSize: 12, fontWeight: 700, borderLeft: "1px solid #e2e8f0", borderRight: "1px solid #e2e8f0" }}>{numPacks}</span>
+                                <input
+                                  type="number"
+                                  value={numPacks}
+                                  onChange={(e) => {
+                                    const val = parseInt(e.target.value) || 0;
+                                    setRowPacks(p => ({ ...p, [v.sku]: Math.max(0, val) }));
+                                  }}
+                                  style={{ width: 48, padding: "4px 4px", fontSize: 12, fontWeight: 700, borderLeft: "1px solid #e2e8f0", borderRight: "1px solid #e2e8f0", border: "none", borderLeftStyle: "solid", borderLeftWidth: 1, borderLeftColor: "#e2e8f0", borderRightStyle: "solid", borderRightWidth: 1, borderRightColor: "#e2e8f0", textAlign: "center", outline: "none", MozAppearance: "textfield", background: "transparent" }}
+                                  min={0}
+                                />
                                 <button onClick={() => setRowPacks(p => ({ ...p, [v.sku]: (p[v.sku] ?? 0) + 1 }))}
                                   style={{ padding: "4px 8px", border: "none", background: "#f8fafc", cursor: "pointer", fontSize: 14, color: "#374151" }}>+</button>
                               </div>
