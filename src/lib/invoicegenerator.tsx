@@ -71,6 +71,25 @@ interface OrderItem {
     is_priority?: string | boolean;
 }
 
+async function fetchOrderSummaryOverride(order: OrderInvoiceData): Promise<Record<string, any> | null> {
+    try {
+        const params = new URLSearchParams();
+        params.set("order_id", String(order.order_id));
+
+        const dealerId = (order as any).dealerId ?? (order as any).dealer_id ?? (order as any).order_dealer;
+        if (dealerId) params.set("dealer_id", String(dealerId));
+
+        const res = await fetch(`/api/order-summary-overrides?${params.toString()}`, { cache: "no-store" });
+        if (!res.ok) return null;
+
+        const json = await res.json();
+        if (!json?.success || !Array.isArray(json.data)) return null;
+        return json.data[0] ?? null;
+    } catch {
+        return null;
+    }
+}
+
 async function fetchOrderItems(orderId: string): Promise<OrderItem[]> {
     try {
         const res = await fetch(`${BACKEND_URL}/orderdatalist?id=${orderId}`);
@@ -214,11 +233,13 @@ function cell(
 // ─── Main PDF Generator ───────────────────────────────────────────────────────
 export async function generateOrderInvoicePDF(order: OrderInvoiceData): Promise<Blob> {
     const dp = getDealerProfile();
+    const summaryOverride = await fetchOrderSummaryOverride(order);
+    const displayOrder = summaryOverride ? { ...(order as any), ...summaryOverride } : order;
 
     // Fetch detailed order items (product names) from the API or prefer inlined `order.items` if present
     let orderItems: OrderItem[] = [];
-    if (Array.isArray((order as any).items)) {
-        const raw = (order as any).items as any[];
+    if (Array.isArray((displayOrder as any).items)) {
+        const raw = (displayOrder as any).items as any[];
         orderItems = raw.map((it: any, idx: number) => ({
             orderdata_id: String(it.productId ?? it.id ?? `i-${idx}`),
             orderdata_cat_no: String(it.productId ?? it.catNo ?? it.orderdata_cat_no ?? ""),
@@ -241,7 +262,7 @@ export async function generateOrderInvoicePDF(order: OrderInvoiceData): Promise<
             totalPieces: it.totalPieces ?? it.total_pieces ?? undefined,
         }));
     } else {
-        orderItems = await fetchOrderItems(order.order_id);
+        orderItems = await fetchOrderItems(displayOrder.order_id);
     }
 
     const doc = new jsPDF("p", "mm", "a4");
@@ -250,11 +271,11 @@ export async function generateOrderInvoicePDF(order: OrderInvoiceData): Promise<
     const MR = 14;
     const CW = PW - ML - MR;
 
-    const amounts  = resolveOrderAmounts(order);
+    const amounts  = resolveOrderAmounts(displayOrder);
     const gross    = amounts.gross;
     const discount = amounts.discountAmount;
     const net      = amounts.netPayable;
-    const invNo    = invoiceNumber(order.order_id);
+    const invNo    = invoiceNumber(displayOrder.order_id);
 
     // Shared inner padding used consistently everywhere
     const PAD = 4;
@@ -307,7 +328,7 @@ export async function generateOrderInvoicePDF(order: OrderInvoiceData): Promise<
     // ── DOCUMENT TITLE ────────────────────────────────────────────────────────
     doc.setFont("Helvetica", "bold");
     doc.setFontSize(11);
-    const isApproved = (order as any).accept_order === "1" || Number(order.mtstatus ?? 0) >= 2 || String(order.mtstatus ?? "").toLowerCase().includes("completed");
+    const isApproved = (displayOrder as any).accept_order === "1" || Number(displayOrder.mtstatus ?? 0) >= 2 || String(displayOrder.mtstatus ?? "").toLowerCase().includes("completed");
     const titleStr = isApproved ? "ORDER INVOICE" : "PURCHASE ORDER";
     const titleW   = doc.getTextWidth(titleStr);
     const titleX   = PW / 2;
@@ -325,11 +346,11 @@ export async function generateOrderInvoicePDF(order: OrderInvoiceData): Promise<
 
     const metaRows: [string, string, string, string][] = [
         [isApproved ? "Invoice No" : "Purchase Order No",  invNo,
-         isApproved ? "Invoice Date" : "PO Date", moment(order.order_date).format("DD-MM-YYYY")],
-        ["Order Date",  moment(order.order_date).format("DD-MM-YYYY"),
-         "Order Time",  moment(order.order_date).format("hh:mm A")],
-        ["Dealer",      dp?.Dealer_Name || order.Dealer_Name || "—",
-         "Outstanding Date", order.outstandingDate ? moment(order.outstandingDate).format("DD-MM-YYYY") : "—"],
+         isApproved ? "Invoice Date" : "PO Date", moment(displayOrder.order_date).format("DD-MM-YYYY")],
+        ["Order Date",  moment(displayOrder.order_date).format("DD-MM-YYYY"),
+         "Order Time",  moment(displayOrder.order_date).format("hh:mm A")],
+        ["Dealer",      dp?.Dealer_Name || displayOrder.Dealer_Name || "—",
+         "Outstanding Date", displayOrder.outstandingDate ? moment(displayOrder.outstandingDate).format("DD-MM-YYYY") : "—"],
     ];
 
     metaRows.forEach(([l1, v1, l2, v2], i) => {
@@ -352,8 +373,8 @@ export async function generateOrderInvoicePDF(order: OrderInvoiceData): Promise<
     if (dp?.gst)            dealerLines.push(["GST No",  dp.gst]);
     if (dp?.Dealer_Number)  dealerLines.push(["Phone",   dp.Dealer_Number]);
     if (dp?.Dealer_Email)   dealerLines.push(["Email",   dp.Dealer_Email]);
-    if (dealerLines.length === 0 && order.Dealer_Name)
-        dealerLines.push(["Name", order.Dealer_Name]);
+    if (dealerLines.length === 0 && displayOrder.Dealer_Name)
+        dealerLines.push(["Name", displayOrder.Dealer_Name]);
 
     const ROW_STEP    = 5.2;
     const DEALER_BOD_H = Math.max(28, dealerLines.length * ROW_STEP + 10);
@@ -384,7 +405,7 @@ export async function generateOrderInvoicePDF(order: OrderInvoiceData): Promise<
     doc.text("Name :",    ML + half + PAD, y + 7);
     doc.text("Address :", ML + half + PAD, y + 13);
     doc.setFont("Helvetica", "normal"); doc.setFontSize(7);
-    doc.text(dp?.Dealer_Name || order.Dealer_Name || "—", ML + half + PAD + LAB_W, y + 7);
+    doc.text(dp?.Dealer_Name || displayOrder.Dealer_Name || "—", ML + half + PAD + LAB_W, y + 7);
     const shipWrapped = doc.splitTextToSize(shipAddr, half - PAD - LAB_W - PAD);
     doc.text(shipWrapped, ML + half + PAD + LAB_W, y + 13);
 
@@ -442,7 +463,7 @@ export async function generateOrderInvoicePDF(order: OrderInvoiceData): Promise<
 
             // Discount percent (per-item or order-level)
             const perItemPct = Number(itemAny.totalDiscountPercent ?? itemAny.total_discount_percentage ?? itemAny.total_discount ?? itemAny.discount ?? NaN);
-            const orderPct = Number((order as any)?.totalDiscountPercentage ?? (order as any)?.allocatedDiscountPercent ?? (order as any)?.allocatedDiscount ?? NaN);
+            const orderPct = Number((displayOrder as any)?.totalDiscountPercentage ?? (displayOrder as any)?.discountPercent ?? (displayOrder as any)?.allocatedDiscountPercent ?? (displayOrder as any)?.allocatedDiscount ?? NaN);
             const pct = !isNaN(perItemPct) ? perItemPct : (!isNaN(orderPct) ? orderPct : 0);
             const rowDiscount = rowGross * (pct / 100);
             const rowNet = rowGross - rowDiscount;
@@ -459,8 +480,8 @@ export async function generateOrderInvoicePDF(order: OrderInvoiceData): Promise<
             itemRows.push([
                 { content: String(idx + 1).padStart(2, "0"),          styles: { halign: "center" } },
                 { content: description,                                styles: { halign: "left" } },
-                { content: String(qty),                                styles: { halign: "center" } },
                 { content: String(pieces),                             styles: { halign: "center" } },
+                { content: String(qty),                                styles: { halign: "center" } },
                 { content: item.product_unit || "Pcs",                 styles: { halign: "center" } },
                 { content: fmt(rowGross),                              styles: { halign: "right"  } },
                 { content: fmt(rowDiscount),                           styles: { halign: "right"  } },
@@ -470,8 +491,8 @@ export async function generateOrderInvoicePDF(order: OrderInvoiceData): Promise<
         // After iterating, append totals row using sums
         itemRows.push([
             { content: "Total", colSpan: 2,                    styles: { halign: "right", fontStyle: "bold" } },
-            { content: String(totalQty),                        styles: { halign: "center", fontStyle: "bold" } },
             { content: String(totalPieces),                     styles: { halign: "center", fontStyle: "bold" } },
+            { content: String(totalQty),                        styles: { halign: "center", fontStyle: "bold" } },
             { content: "",                                     styles: {} },
             { content: fmt(sumGross),                           styles: { halign: "right", fontStyle: "bold" } },
             { content: fmt(sumDiscount),                        styles: { halign: "right", fontStyle: "bold" } },
@@ -479,15 +500,15 @@ export async function generateOrderInvoicePDF(order: OrderInvoiceData): Promise<
         ]);
     } else {
         // Fallback: single row with whatever info we have
-        totalQty = Number(order.orderdata_item_quantity);
-        const fpack = Number(packLookup[(order as any).orderdata_cat_no] ?? 1) || 1;
+        totalQty = Number(displayOrder.orderdata_item_quantity);
+        const fpack = Number(packLookup[(displayOrder as any).orderdata_cat_no] ?? 1) || 1;
         const fpieces = totalQty * fpack;
         totalPieces = fpieces;
         itemRows.push([
             { content: "01",                                                   styles: { halign: "center" } },
-            { content: order.product_name || "Omsons Glassware Products",       styles: { halign: "left"   } },
-            { content: order.orderdata_item_quantity,                           styles: { halign: "center" } },
+            { content: displayOrder.product_name || "Omsons Glassware Products",       styles: { halign: "left"   } },
             { content: String(fpieces),                                          styles: { halign: "center" } },
+            { content: String(totalQty),                                         styles: { halign: "center" } },
             { content: "Pcs",                                                  styles: { halign: "center" } },
             { content: fmt(gross),                                               styles: { halign: "right"  } },
             { content: fmt(discount),                                            styles: { halign: "right"  } },
@@ -499,8 +520,8 @@ export async function generateOrderInvoicePDF(order: OrderInvoiceData): Promise<
     if (orderItems.length === 0) {
         itemRows.push([
             { content: "Total", colSpan: 2,                    styles: { halign: "right", fontStyle: "bold" } },
-            { content: String(totalQty),                        styles: { halign: "center", fontStyle: "bold" } },
             { content: String(totalPieces),                     styles: { halign: "center", fontStyle: "bold" } },
+            { content: String(totalQty),                        styles: { halign: "center", fontStyle: "bold" } },
             { content: "",                                     styles: {} },
             { content: fmt(gross),                              styles: { halign: "right", fontStyle: "bold" } },
             { content: fmt(discount),                           styles: { halign: "right", fontStyle: "bold" } },
@@ -513,8 +534,8 @@ export async function generateOrderInvoicePDF(order: OrderInvoiceData): Promise<
         head: [[
             { content: "Sr\nNo",          styles: { halign: "center", cellWidth: 10 } },
             { content: "Description",      styles: { halign: "left",   cellWidth: "auto" as const } },
-            { content: "Qty",              styles: { halign: "center", cellWidth: 14 } },
-            { content: "Pieces",           styles: { halign: "center", cellWidth: 14 } },
+            { content: "Qty\n(Pcs)",        styles: { halign: "center", cellWidth: 14 } },
+            { content: "Packs",            styles: { halign: "center", cellWidth: 14 } },
             { content: "UOM",              styles: { halign: "center", cellWidth: 13 } },
             { content: "Gross Amt\n(Rs.)", styles: { halign: "right",  cellWidth: 24 } },
             { content: "Discount\n(Rs.)",  styles: { halign: "right",  cellWidth: 22 } },
@@ -553,8 +574,8 @@ export async function generateOrderInvoicePDF(order: OrderInvoiceData): Promise<
     doc.text("Remarks", ML + PAD, y + PAD + 2);
     doc.rect(ML + PAD, y + PAD + 4, LEFT_W - PAD * 2, REM_H - PAD * 2 - 4);
     doc.setFont("Helvetica", "normal"); doc.setFontSize(7.5);
-    const remarkLines = order.reason
-        ? doc.splitTextToSize(order.reason, LEFT_W - PAD * 2 - 4)
+    const remarkLines = displayOrder.reason
+        ? doc.splitTextToSize(displayOrder.reason, LEFT_W - PAD * 2 - 4)
         : ["N/A"];
     doc.text(remarkLines, ML + PAD + 2, y + PAD + 4 + 4);
 
@@ -661,12 +682,14 @@ export async function uploadOrderInvoiceToSupabase(
     order: OrderInvoiceData
 ): Promise<InvoiceResult> {
     try {
+        const summaryOverride = await fetchOrderSummaryOverride(order);
+        const displayOrder = summaryOverride ? { ...(order as any), ...summaryOverride } : order;
         const invNo     = invoiceNumber(order.order_id);
         const timestamp = moment().format("YYYY-MM-DD_HH-mm-ss");
         const safeInv   = invNo.replace(/[^a-z0-9-._]/gi, "_");
         const filePath  = `invoices/${safeInv}_${timestamp}.pdf`;
         const invoiceId = `${safeInv}_${timestamp}`;
-        const net       = resolveOrderAmounts(order).netPayable;
+        const net       = resolveOrderAmounts(displayOrder).netPayable;
 
         const { error: upErr } = await supabase.storage
             .from("invoices")
@@ -680,10 +703,10 @@ export async function uploadOrderInvoiceToSupabase(
             invoice_id:     invoiceId,
             invoice_number: invNo,
             dealer_id:      dp?.Dealer_Id || order.order_id,
-            buyer_name:     dp?.Dealer_Name || order.Dealer_Name,
+            buyer_name:     dp?.Dealer_Name || displayOrder.Dealer_Name,
             file_url:       urlData.publicUrl,
             file_path:      filePath,
-            invoice_date:   order.order_date,
+            invoice_date:   displayOrder.order_date,
             total_amount:   net,
             created_at:     new Date().toISOString(),
         }]);

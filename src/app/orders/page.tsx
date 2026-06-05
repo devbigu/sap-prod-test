@@ -723,7 +723,7 @@ export default function OrderHistoryPage() {
                                   </button>
 
                                   {/* Invoice button — always present */}
-                                  <InvoiceRowButton order={order} />
+                                  <InvoiceRowButton order={withOrderHistoryDisplayAmounts(order, summaryOverride)} />
 
                                   {!isDeleted && (
                                     <button
