@@ -3,19 +3,25 @@ import autoTable from "jspdf-autotable";
 import { supabase } from "@/lib/Exporttopdf";
 import moment from "moment";
 import { hasPriorityTag } from "@/lib/orderPriority";
+import { resolveOrderAmounts } from "@/lib/orderAmounts";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 export interface OrderInvoiceData {
     order_id: string;
     order_date: string;
-    order_amount: string;
-    order_discount: string;
+    order_amount: string | number;
+    order_discount: string | number;
     Dealer_Name: string;
     orderdata_item_quantity: string;
     mtstatus: string;
     outstandingDate?: string;
     reason?: string;
     product_name?: string;
+    order_discount_amount?: string | number;
+    order_net_amount?: string | number;
+    grossAmount?: string | number;
+    discountAmount?: string | number;
+    netPayableAmount?: string | number;
     
 }
 
@@ -244,9 +250,10 @@ export async function generateOrderInvoicePDF(order: OrderInvoiceData): Promise<
     const MR = 14;
     const CW = PW - ML - MR;
 
-    const gross    = Number(order.order_amount);
-    const discount = Number(order.order_discount);
-    const net      = gross - discount;
+    const amounts  = resolveOrderAmounts(order);
+    const gross    = amounts.gross;
+    const discount = amounts.discountAmount;
+    const net      = amounts.netPayable;
     const invNo    = invoiceNumber(order.order_id);
 
     // Shared inner padding used consistently everywhere
@@ -659,7 +666,7 @@ export async function uploadOrderInvoiceToSupabase(
         const safeInv   = invNo.replace(/[^a-z0-9-._]/gi, "_");
         const filePath  = `invoices/${safeInv}_${timestamp}.pdf`;
         const invoiceId = `${safeInv}_${timestamp}`;
-        const net       = Number(order.order_amount) - Number(order.order_discount);
+        const net       = resolveOrderAmounts(order).netPayable;
 
         const { error: upErr } = await supabase.storage
             .from("invoices")

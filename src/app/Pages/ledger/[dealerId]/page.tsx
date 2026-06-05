@@ -16,6 +16,7 @@ import TransactionTable from '@/components/ledger/TransactionTable'
 import PayMoneyModal, { PaymentData } from '@/components/ledger/PayMoneyModal'
 import { InvoiceModal } from '@/components/InvoiceModel'
 import { downloadOrderInvoice } from '@/lib/invoicegenerator'
+import { resolveOrderAmounts } from '@/lib/orderAmounts'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const BACKEND_URL = 'https://mirisoft.co.in/sas/dealerapi/api'
@@ -82,8 +83,8 @@ interface TransactionsResponse {
 type RawOrder = {
   order_id: string
   order_date: string
-  order_amount: string
-  order_discount: string
+  order_amount: string | number
+  order_discount: string | number
   order_dealer?: string
   accept_order?: string
   del_status?: string
@@ -93,6 +94,11 @@ type RawOrder = {
   outstandingDate: string
   reason?: string
   product_name?: string
+  order_discount_amount?: string | number
+  order_net_amount?: string | number
+  grossAmount?: string | number
+  discountAmount?: string | number
+  netPayableAmount?: string | number
 }
 
 type PayStatus = 'Paid' | 'Partial' | 'Unpaid' | 'Overdue'
@@ -204,7 +210,7 @@ function DealerAgingPanel({ orders }: { orders: RawOrder[] }) {
     let current = 0, d31 = 0, d61 = 0, d90 = 0
 
     for (const o of unpaid) {
-      const net  = Number(o.order_amount) - Number(o.order_discount)
+      const net  = resolveOrderAmounts(o).netPayable
       const ref  = o.outstandingDate || o.order_date
       const days = ref ? TODAY.diff(moment(ref).startOf('day'), 'days') : 0
 
@@ -611,9 +617,10 @@ export default function DealerLedgerPage() {
                     </td>
                   </tr>
                 ) : ordersSlice.map((order, i) => {
-                  const gross    = Number(order.order_amount)
-                  const discount = Number(order.order_discount)
-                  const net      = gross - discount
+                  const amounts  = resolveOrderAmounts(order)
+                  const gross    = amounts.gross
+                  const discount = amounts.discountAmount
+                  const net      = amounts.netPayable
                   const ps       = getPayStatus(order)
                   const rowN     = (ordersPage - 1) * ORDERS_PAGE_SIZE + i + 1
 

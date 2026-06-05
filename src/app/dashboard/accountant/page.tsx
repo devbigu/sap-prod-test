@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { isAuthenticated, clearAccountantSession } from "@/lib/accountantauth";
 import { downloadOrderInvoice } from "@/lib/invoicegenerator";
+import { OrderAmountSource, withDisplayOrderAmounts } from "@/lib/orderAmounts";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const BACKEND_URL = "https://mirisoft.co.in/sas/dealerapi/api";
@@ -26,18 +27,29 @@ const YEAR = new Date().getFullYear();
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type Order = {
-  order_id: string; order_date: string; order_amount: string;
-  order_discount: string; Dealer_Name: string;
+  order_id: string; order_date: string; order_amount: string | number;
+  order_discount: string | number; Dealer_Name: string;
   orderdata_item_quantity: string; mtstatus: string;
   outstandingDate: string; reason?: string;
-  product_name?: string; 
+  product_name?: string;
+  order_dealer?: string | number;
+  order_discount_amount?: string | number;
+  order_net_amount?: string | number;
+  grossAmount?: string | number;
+  discountAmount?: string | number;
+  netPayableAmount?: string | number;
 };
 
 type PendingOrder = {
   order_id: string; order_date: string; orderDate: string;
-  order_dealer: string; order_amount: string; order_discount: string;
+  order_dealer: string; order_amount: string | number; order_discount: string | number;
   order_status: string; accept_order: string; outstandingDate: string;
   Dealer_Name: string; orderdata_item_quantity: string;
+  order_discount_amount?: string | number;
+  order_net_amount?: string | number;
+  grossAmount?: string | number;
+  discountAmount?: string | number;
+  netPayableAmount?: string | number;
 };
 
 type Stats = { dealerCount: number; staffCount: number; orderCount: number; PorderCount: number };
@@ -45,6 +57,7 @@ type ChartOrder  = { order_id: string; total: string };
 type ChartDealer = { Dealer_Name: string; total: string };
 type LedgerSummary = { netBalance: number };
 type LedgerResponse = { data: LedgerSummary[] };
+type OrderSummaryOverride = OrderAmountSource & { orderId?: string; order_id?: string };
 
 // ─── CSV Export ───────────────────────────────────────────────────────────────
 function downloadCSV(rows: Record<string, any>[], filename: string) {
@@ -113,7 +126,7 @@ function InvoiceBtn({ order }: { order: Order | PendingOrder }) {
 
   const handle = async () => {
     setLoading(true);
-    const res = await downloadOrderInvoice(order as Order);
+    const res = await downloadOrderInvoice(order as any);
     setLoading(false);
     setToast({ type: res.success ? "success" : "error", text: res.success ? "Invoice downloaded" : res.error || "Failed" });
   };
@@ -153,7 +166,7 @@ function ExportMenu({
     setOpen(false); setBusy(true);
     const list = (type === "orders" ? orders : pendingOrders) ?? [];
     for (const o of list.slice(0, 10)) {
-      await downloadOrderInvoice(o as Order);
+      await downloadOrderInvoice(o as any);
       await new Promise(r => setTimeout(r, 400));
     }
     setBusy(false);
@@ -238,6 +251,7 @@ function AccountantDashboardInner() {
   const [chartDealers,  setChartDealers]  = useState<ChartDealer[]>([]);
   const [recentOrders,  setRecentOrders]  = useState<Order[]>([]);
   const [pendingOrders, setPendingOrders] = useState<PendingOrder[]>([]);
+  const [summaryOverrides, setSummaryOverrides] = useState<Record<string, OrderSummaryOverride>>({});
   const [stats,         setStats]         = useState<Stats>({ dealerCount:0, staffCount:0, orderCount:0, PorderCount:0 });
   const [loading,       setLoading]       = useState(true);
 
@@ -280,6 +294,34 @@ function AccountantDashboardInner() {
     load();
   }, []);
 
+  useEffect(() => {
+    const orderIds = Array.from(new Set(
+      [...recentOrders, ...pendingOrders].map(o => String(o.order_id || "").trim()).filter(Boolean)
+    ));
+    if (orderIds.length === 0) {
+      setSummaryOverrides({});
+      return;
+    }
+
+    let active = true;
+    fetch(`/api/order-summary-overrides?order_ids=${encodeURIComponent(orderIds.join(","))}`, { cache: "no-store" })
+      .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
+      .then(json => {
+        if (!active) return;
+        const map: Record<string, OrderSummaryOverride> = {};
+        for (const row of Array.isArray(json.data) ? json.data : []) {
+          const id = String(row.orderId || row.order_id || "").trim();
+          if (id) map[id] = row;
+        }
+        setSummaryOverrides(map);
+      })
+      .catch(() => {
+        if (active) setSummaryOverrides({});
+      });
+
+    return () => { active = false; };
+  }, [recentOrders, pendingOrders]);
+
   const [
     pendingVerificationQ,
     ledgerQ,
@@ -303,9 +345,16 @@ function AccountantDashboardInner() {
     ledgerQ.refetch();
   };
 
+  const pricedRecentOrders = recentOrders.map(order =>
+    withDisplayOrderAmounts(order, summaryOverrides[order.order_id])
+  );
+  const pricedPendingOrders = pendingOrders.map(order =>
+    withDisplayOrderAmounts(order, summaryOverrides[order.order_id])
+  );
+
   // Derived
   const totalSale         = chartOrders.reduce((s, o) => s + Number(o.total), 0);
-  const pendingPayment    = pendingOrders.reduce((s, o) => s + (Number(o.order_amount) - Number(o.order_discount)), 0);
+  const pendingPayment    = pricedPendingOrders.reduce((s, o) => s + (Number(o.order_amount) - Number(o.order_discount)), 0);
   const pendingPayCount   = pendingOrders.filter(o => o.accept_order === "0" || o.order_status !== "1").length;
   const pendingVerification = (pendingVerificationQ.data?.data ?? pendingOrders).filter(o => o.order_status === "0").length;
   const ledgerRows = ledgerQ.data?.data ?? [];
@@ -406,7 +455,7 @@ function AccountantDashboardInner() {
             </div>
             <div className="text-[11.5px] text-gray-400 mt-0.5">Latest entries across all dealers</div>
           </div>
-          <ExportMenu type="orders" orders={recentOrders}/>
+          <ExportMenu type="orders" orders={pricedRecentOrders}/>
         </div>
 
         <div className="overflow-x-auto">
@@ -421,9 +470,9 @@ function AccountantDashboardInner() {
             <tbody className="divide-y divide-gray-50">
               {loading
                 ? <Skeleton cols={9}/>
-                : recentOrders.length === 0
+                : pricedRecentOrders.length === 0
                   ? <tr><td colSpan={9} className="py-12 text-center text-[13px] text-gray-400">No orders found</td></tr>
-                  : recentOrders.map((order, idx) => {
+                  : pricedRecentOrders.map((order, idx) => {
                     const net     = Number(order.order_amount) - Number(order.order_discount);
                     const deleted = !!order.reason;
                     return (
@@ -468,7 +517,7 @@ function AccountantDashboardInner() {
             </div>
             <div className="text-[11.5px] text-gray-400 mt-0.5">Orders awaiting approval or payment</div>
           </div>
-          <ExportMenu type="pending" pendingOrders={pendingOrders}/>
+          <ExportMenu type="pending" pendingOrders={pricedPendingOrders}/>
         </div>
 
         <div className="overflow-x-auto">
@@ -483,9 +532,9 @@ function AccountantDashboardInner() {
             <tbody className="divide-y divide-gray-50">
               {loading
                 ? <Skeleton cols={10}/>
-                : pendingOrders.length === 0
+                : pricedPendingOrders.length === 0
                   ? <tr><td colSpan={10} className="py-12 text-center text-[13px] text-gray-400">All caught up 🎉</td></tr>
-                  : pendingOrders.map((order, idx) => {
+                  : pricedPendingOrders.map((order, idx) => {
                     const net      = Number(order.order_amount) - Number(order.order_discount);
                     const approved = order.order_status === "1";
                     const accepted = order.accept_order === "1";

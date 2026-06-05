@@ -1,5 +1,10 @@
 import { Db } from "mongodb";
 import { getDb } from "@/lib/mongodb";
+import {
+  OrderAmountSource,
+  resolveOrderAmounts,
+  withDisplayOrderAmounts,
+} from "@/lib/orderAmounts";
 
 const BACKEND_URL = "https://mirisoft.co.in/sas/dealerapi/api";
 const CACHE_ID = "collective_ledger_snapshot";
@@ -27,6 +32,11 @@ export type ExternalOrder = Record<string, any> & {
   order_date?: string;
   order_amount?: string | number;
   order_discount?: string | number;
+  order_discount_amount?: string | number;
+  order_net_amount?: string | number;
+  grossAmount?: string | number;
+  discountAmount?: string | number;
+  netPayableAmount?: string | number;
   accept_order?: string | number;
   del_status?: string | number;
   mtstatus?: string | number;
@@ -91,6 +101,55 @@ async function getOptionalDb(): Promise<Db | null> {
     console.error("[ledger mongo connection]", error);
     return null;
   }
+}
+
+function orderOverrideKey(orderId: unknown, dealerId: unknown) {
+  const oid = String(orderId ?? "").trim();
+  const did = String(dealerId ?? "").trim();
+  return oid && did ? `${did}:${oid}` : "";
+}
+
+async function readOrderSummaryOverrides(
+  orders: ExternalOrder[],
+  db?: Db | null
+): Promise<Map<string, OrderAmountSource>> {
+  const ids = Array.from(new Set(
+    orders.map((order) => String(order.order_id ?? "").trim()).filter(Boolean)
+  ));
+  if (ids.length === 0) return new Map();
+
+  const database = db ?? await getOptionalDb();
+  if (!database) return new Map();
+
+  try {
+    const docs = await database
+      .collection("order_summary_overrides")
+      .find({ orderId: { $in: ids } })
+      .toArray();
+
+    const byOrder = new Map<string, OrderAmountSource>();
+    for (const doc of docs) {
+      const key = orderOverrideKey(doc.orderId ?? doc.order_id, doc.dealerId ?? doc.order_dealer);
+      if (key) byOrder.set(key, doc as OrderAmountSource);
+    }
+    return byOrder;
+  } catch (error) {
+    console.error("[ledger order summary overrides]", error);
+    return new Map();
+  }
+}
+
+async function applyOrderSummaryOverrides(snapshot: LedgerSnapshot, db?: Db | null): Promise<LedgerSnapshot> {
+  const overrides = await readOrderSummaryOverrides(snapshot.orders, db);
+  if (snapshot.orders.length === 0) return snapshot;
+
+  return {
+    ...snapshot,
+    orders: snapshot.orders.map((order) => {
+      const key = orderOverrideKey(order.order_id, order.order_dealer);
+      return withDisplayOrderAmounts(order, key ? overrides.get(key) : undefined);
+    }),
+  };
 }
 
 async function fetchJson(url: string, init: RequestInit = {}) {
@@ -165,7 +224,7 @@ export async function getLedgerSnapshot(): Promise<SnapshotResult> {
   if (snapshotRequest) return snapshotRequest;
 
   snapshotRequest = (async () => {
-    const live = await fetchLiveSnapshot();
+    const live = await applyOrderSummaryOverrides(await fetchLiveSnapshot());
     try {
       const db = await getOptionalDb();
       if (db) await writeCachedSnapshot(db, live);
@@ -191,7 +250,8 @@ export async function getLedgerSnapshot(): Promise<SnapshotResult> {
     if (db) {
       const cached = await readCachedSnapshot(db);
       if (cached) {
-        memorySnapshot = { ...cached, isLive: false, cachedAt: Date.now() };
+        const correctedCached = await applyOrderSummaryOverrides(cached, db);
+        memorySnapshot = { ...correctedCached, isLive: false, cachedAt: Date.now() };
         return memorySnapshot;
       }
     }
@@ -255,7 +315,7 @@ export function isLedgerOrder(order: ExternalOrder) {
 }
 
 export function orderNetPaise(order: ExternalOrder) {
-  return toPaise(order.order_amount) - toPaise(order.order_discount);
+  return toPaise(resolveOrderAmounts(order).netPayable);
 }
 
 export function orderNet(order: ExternalOrder) {
@@ -280,6 +340,8 @@ function orderDedupeKey(order: ExternalOrder) {
     order.order_date ?? "",
     order.order_amount ?? "",
     order.order_discount ?? "",
+    order.order_discount_amount ?? "",
+    order.order_net_amount ?? "",
     order.accept_order ?? "",
     order.mtstatus ?? "",
   ].map(String).join(":");

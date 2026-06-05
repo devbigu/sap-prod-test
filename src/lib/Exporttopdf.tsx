@@ -2,6 +2,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { createClient } from "@supabase/supabase-js";
 import moment from "moment";
+import { resolveOrderAmounts } from "@/lib/orderAmounts";
 
 // ─── Supabase Setup ────────────────────────────────────────────────────────
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
@@ -12,13 +13,18 @@ export const supabase = createClient(supabaseUrl, supabaseKey);
 export type Order = {
   order_id: string;
   order_date: string;
-  order_amount: string;
-  order_discount: string;
+  order_amount: string | number;
+  order_discount: string | number;
   Dealer_Name: string;
   orderdata_item_quantity: string;
   mtstatus: string;
   outstandingDate: string;
   reason?: string;
+  order_discount_amount?: string | number;
+  order_net_amount?: string | number;
+  grossAmount?: string | number;
+  discountAmount?: string | number;
+  netPayableAmount?: string | number;
 };
 
 export interface ExportOptions {
@@ -58,9 +64,9 @@ export async function generateOrdersPDF(options: ExportOptions): Promise<Blob> {
 
   // ─── Summary Stats ────────────────────────────────────────────────────
   const totalOrders = orders.length;
-  const totalAmount = orders.reduce((sum, o) => sum + Number(o.order_amount), 0);
-  const totalDiscount = orders.reduce((sum, o) => sum + Number(o.order_discount), 0);
-  const totalNet = totalAmount - totalDiscount;
+  const totalAmount = orders.reduce((sum, o) => sum + resolveOrderAmounts(o).gross, 0);
+  const totalDiscount = orders.reduce((sum, o) => sum + resolveOrderAmounts(o).discountAmount, 0);
+  const totalNet = orders.reduce((sum, o) => sum + resolveOrderAmounts(o).netPayable, 0);
   const totalUnits = orders.reduce((sum, o) => sum + Number(o.orderdata_item_quantity), 0);
 
   doc.setFont("Helvetica", "bold");
@@ -73,7 +79,7 @@ export async function generateOrdersPDF(options: ExportOptions): Promise<Blob> {
 
   // ─── Table Data ────────────────────────────────────────────────────────
   const tableData = orders.map((order, idx) => {
-    const net = Number(order.order_amount) - Number(order.order_discount);
+    const amounts = resolveOrderAmounts(order);
     const statusLabel = order.mtstatus || "—";
     const isDeleted = !!order.reason;
 
@@ -81,9 +87,9 @@ export async function generateOrdersPDF(options: ExportOptions): Promise<Blob> {
       String(idx + 1).padStart(2, "0"),
       `OM/${year}/${order.order_id}${isDeleted ? " [DEL]" : ""}`,
       moment(order.order_date).format("DD MMM YY"),
-      `₹${Number(order.order_amount).toLocaleString("en-IN")}`,
-      `₹${Number(order.order_discount).toLocaleString("en-IN")}`,
-      `₹${net.toLocaleString("en-IN")}`,
+      `₹${amounts.gross.toLocaleString("en-IN")}`,
+      `₹${amounts.discountAmount.toLocaleString("en-IN")}`,
+      `₹${amounts.netPayable.toLocaleString("en-IN")}`,
       order.orderdata_item_quantity,
       statusLabel,
       order.outstandingDate ? moment(order.outstandingDate).format("DD MMM YY") : "—",

@@ -576,8 +576,8 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ sku: 
                         <th key={k} style={{ padding: "12px 16px", fontWeight: 700, color: "#374151", whiteSpace: "nowrap" }}>{k}</th>
                       ))}
                       <th style={{ padding: "12px 16px", fontWeight: 700, color: "#374151" }}>Qty</th>
-                      <th style={{ padding: "12px 16px", fontWeight: 700, color: "#374151" }}>Price</th>
-                      <th style={{ padding: "12px 16px", fontWeight: 700, color: "#374151" }}>Per Unit</th>
+                      <th style={{ padding: "12px 16px", fontWeight: 700, color: "#374151" ,  display:"none"}}>Price</th>
+                      <th style={{ padding: "12px 16px", fontWeight: 700, color: "#374151" }}>Price/Unit</th>
                       <th style={{ padding: "12px 16px", fontWeight: 700, color: "#374151" }}>Total</th>
                       <th style={{ padding: "12px 16px" }} />
                     </tr>
@@ -637,7 +637,7 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ sku: 
                             </span>
                           </td>
 
-                          <td style={{ padding: "11px 16px", color: "#374151", fontWeight: 600 }}>
+                          <td style={{ padding: "11px 16px", color: "#374151", fontWeight: 600 , display:"none" }}>
                             {packPaise ? fmt(packPaise) : "—"}
                           </td>
 

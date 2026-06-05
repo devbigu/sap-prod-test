@@ -15,6 +15,7 @@ import {
   Search,
   X,
 } from 'lucide-react'
+import { resolveOrderAmounts } from '@/lib/orderAmounts'
 
 type AccountBook = {
   bookedCount?: number
@@ -147,9 +148,7 @@ function orderLabel(order: RawOrder) {
 }
 
 function orderAmount(order: RawOrder) {
-  const gross = Number(order.order_amount ?? order.total ?? 0)
-  const discount = Number(order.order_discount ?? 0)
-  return Math.max(0, gross - discount)
+  return resolveOrderAmounts(order).netPayable
 }
 
 export default function DealerLedgerShellPage() {

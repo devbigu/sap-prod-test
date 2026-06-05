@@ -135,6 +135,20 @@ function getOrderHistoryAmounts(order: Order, overlay?: OrderSummaryOverride) {
   return { gross, discountAmount, netPayable };
 }
 
+function withOrderHistoryDisplayAmounts(order: Order, overlay?: OrderSummaryOverride): Order {
+  const amounts = getOrderHistoryAmounts(order, overlay);
+  return {
+    ...(order as any),
+    order_amount: String(amounts.gross),
+    order_discount: String(amounts.discountAmount),
+    order_discount_amount: String(amounts.discountAmount),
+    order_net_amount: String(amounts.netPayable),
+    grossAmount: amounts.gross,
+    discountAmount: amounts.discountAmount,
+    netPayableAmount: amounts.netPayable,
+  };
+}
+
 function formatMoney(amount: number) {
   return `₹${amount.toLocaleString("en-IN", { maximumFractionDigits: 2 })}`;
 }
@@ -465,6 +479,7 @@ export default function OrderHistoryPage() {
   });
 
   const orders = data?.data ?? [];
+  const ordersForExport = orders.map(order => withOrderHistoryDisplayAmounts(order, summaryOverrides[order.order_id]));
   const totalCount = data?.count ?? 0;
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
   const orderIdsKey = orders.map((o) => (o as any).order_id ?? (o as any).orderId ?? "").filter(Boolean).join(",");
@@ -594,7 +609,7 @@ export default function OrderHistoryPage() {
             </button>
 
             <ExportButton
-              orders={orders}
+              orders={ordersForExport}
               dealerName={data?.data?.[0]?.Dealer_Name || "Unknown"}
               dealerId={dealerId}
               isLoading={isLoading}

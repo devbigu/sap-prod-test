@@ -7,6 +7,7 @@ import axios from 'axios'
 import { ArrowLeft, Package, Search, Download } from 'lucide-react'
 import moment from 'moment'
 import { hasPriorityTag } from '@/lib/orderPriority'
+import { OrderAmountSource, withDisplayOrderAmounts } from '@/lib/orderAmounts'
 
 const BACKEND_URL = "https://mirisoft.co.in/sas/dealerapi/api"
 const YEAR        = new Date().getFullYear()
@@ -34,13 +35,21 @@ type DealerInfo = {
 type RawOrder = {
   order_id: string
   order_date: string
-  order_amount: string
-  order_discount: string
+  order_amount: string | number
+  order_discount: string | number
   Dealer_Name: string
   orderdata_item_quantity: string
   mtstatus: string
   outstandingDate: string
+  order_dealer?: string | number
+  order_discount_amount?: string | number
+  order_net_amount?: string | number
+  grossAmount?: string | number
+  discountAmount?: string | number
+  netPayableAmount?: string | number
 }
+
+type OrderSummaryOverride = OrderAmountSource & { orderId?: string; order_id?: string }
 
 type OrderItem = {
   orderdata_id: string
@@ -142,6 +151,7 @@ export default function StaffDealerViewPage() {
   const [tab,           setTab]          = useState<"orders" | "items">("orders")
   const [dealer,        setDealer]       = useState<DealerInfo | null>(null)
   const [allOrders,     setAllOrders]    = useState<RawOrder[]>([])
+  const [summaryOverrides, setSummaryOverrides] = useState<Record<string, OrderSummaryOverride>>({})
   const [loadingOrders, setLoadingOrders] = useState(true)
   const [orderPage,     setOrderPage]    = useState(1)
   const [itemPage,      setItemPage]     = useState(1)
@@ -179,6 +189,32 @@ export default function StaffDealerViewPage() {
 
   useEffect(() => { loadOrders() }, [loadOrders])
 
+  useEffect(() => {
+    const orderIds = Array.from(new Set(allOrders.map(o => String(o.order_id || "").trim()).filter(Boolean)))
+    if (orderIds.length === 0) {
+      setSummaryOverrides({})
+      return
+    }
+
+    let active = true
+    fetch(`/api/order-summary-overrides?order_ids=${encodeURIComponent(orderIds.join(","))}`, { cache: "no-store" })
+      .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
+      .then(json => {
+        if (!active) return
+        const map: Record<string, OrderSummaryOverride> = {}
+        for (const row of Array.isArray(json.data) ? json.data : []) {
+          const id = String(row.orderId || row.order_id || "").trim()
+          if (id) map[id] = row
+        }
+        setSummaryOverrides(map)
+      })
+      .catch(() => {
+        if (active) setSummaryOverrides({})
+      })
+
+    return () => { active = false }
+  }, [allOrders])
+
   // Debounced search (items tab)
   useEffect(() => {
     const t = setTimeout(() => { setItemPage(1); setSearch(searchInput) }, 400)
@@ -213,14 +249,18 @@ export default function StaffDealerViewPage() {
     })
   }, [dealerId, itemPage, search, tab])
 
+  const pricedAllOrders = useMemo(() => {
+    return allOrders.map(order => withDisplayOrderAmounts(order, summaryOverrides[order.order_id]))
+  }, [allOrders, summaryOverrides])
+
   // Dealer's orders (filtered + sorted)
   const dealerOrders = useMemo(() => {
     if (!dealer) return []
     const name = dealer.Dealer_Name?.toLowerCase() ?? ""
-    return allOrders
+    return pricedAllOrders
       .filter(o => o.Dealer_Name?.toLowerCase() === name)
       .sort((a, b) => moment(b.order_date).valueOf() - moment(a.order_date).valueOf())
-  }, [allOrders, dealer])
+  }, [pricedAllOrders, dealer])
 
   // Summary
   const summary = useMemo(() => {

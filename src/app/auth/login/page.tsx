@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react"
 import { useRouter } from "next/navigation"
 import axios from "axios"
+import { Eye, EyeOff } from "lucide-react"
 
 const ROLE_OPTIONS = [
   { label: "Staff", value: "1" },
@@ -18,6 +19,7 @@ export default function Login() {
   const [roletype, setRoletype] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [showPw, setShowPw] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
@@ -169,13 +171,25 @@ export default function Login() {
 
                 <label className="block">
                   <span className="mb-1.5 block text-[12px] font-semibold text-slate-700">Password</span>
-                  <input
-                    type="password"
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="h-10 w-full rounded-full border border-slate-200 bg-white px-5 text-[13px] text-slate-900 shadow-sm outline-none transition placeholder:text-slate-300 focus:border-[#5b3ff2] focus:ring-4 focus:ring-[#5b3ff2]/10"
-                  />
+                  <div className="relative">
+                    <input
+                      type={showPw ? "text" : "password"}
+                      placeholder="Enter your password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      autoComplete="current-password"
+                      className="h-10 w-full rounded-full border border-slate-200 bg-white px-5 pr-12 text-[13px] text-slate-900 shadow-sm outline-none transition placeholder:text-slate-300 focus:border-[#5b3ff2] focus:ring-4 focus:ring-[#5b3ff2]/10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPw((visible) => !visible)}
+                      className="absolute right-4 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-full text-slate-400 transition hover:bg-slate-50 hover:text-slate-700"
+                      aria-label={showPw ? "Hide password" : "Show password"}
+                      title={showPw ? "Hide password" : "Show password"}
+                    >
+                      {showPw ? <EyeOff size={15} /> : <Eye size={15} />}
+                    </button>
+                  </div>
                 </label>
               </div>
 

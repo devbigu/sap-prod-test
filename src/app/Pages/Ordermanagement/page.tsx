@@ -131,6 +131,7 @@ function moneyValue(value: unknown): number | null {
   return Number.isFinite(amount) ? amount : null
 }
 function getOrderAmounts(order: OrderData, override?: OrderSummaryOverride) {
+  const row = order as any
   const gross = moneyValue(override?.grossAmount ?? override?.gross_amount ?? override?.order_amount ?? order.order_amount) ?? 0
   const net = moneyValue(
     override?.netPayableAmount ??
@@ -144,7 +145,6 @@ function getOrderAmounts(order: OrderData, override?: OrderSummaryOverride) {
     override?.discount_amount ??
     override?.order_discount_amount
   ) ?? Math.max(0, gross - net)
-
   return { gross, discount, net }
 }
 function highlight(text: string, query: string) {
@@ -780,6 +780,7 @@ export default function OrdersPage() {
                       </div>
                     </th>
                     <th>Discount</th>
+                    <th>After Discount</th>
                     <th>Qty</th>
                     <th>
                       Confirmation
@@ -810,7 +811,7 @@ export default function OrdersPage() {
                 <tbody>
                   {isLoading && Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
                     <tr key={i}>
-                      {Array.from({ length: cfg.showDealerCol ? 11 : 10 }).map((_, j) => (
+                      {Array.from({ length: cfg.showDealerCol ? 12 : 11 }).map((_, j) => (
                         <td key={j}><div className="shimmer" style={{ width: j === 2 ? 120 : 70 }} /></td>
                       ))}
                     </tr>
@@ -818,7 +819,7 @@ export default function OrdersPage() {
 
                   {!isLoading && data.length === 0 && (
                     <tr className="empty-row">
-                      <td colSpan={cfg.showDealerCol ? 11 : 10}>
+                      <td colSpan={cfg.showDealerCol ? 12 : 11}>
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="1.5" style={{ margin: '0 auto 10px', display: 'block' }}>
                           <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z" />
                         </svg>
@@ -856,6 +857,7 @@ export default function OrdersPage() {
 
                         <td><span className="amount-pill">₹{amounts.gross.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</span></td>
                         <td className="mono-sm">₹{amounts.discount.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</td>
+                        <td className="mono-sm">₹{amounts.net.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</td>
 
                         <td style={{ textAlign: 'center', fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: '#374151' }}>
                           {order.orderdata_item_quantity || '—'}

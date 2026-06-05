@@ -47,10 +47,14 @@ export async function GET(req: NextRequest) {
     }
 
     const collection = await getCollection();
+    const resultLimit = orderIds
+      ? Math.min(query.orderId?.$in?.length || 200, 1000)
+      : 200;
+
     const docs = await collection
       .find(query)
       .sort({ orderIdNumber: -1, createdAt: -1 })
-      .limit(200)
+      .limit(resultLimit)
       .toArray();
 
     return NextResponse.json({ success: true, data: docs.map(toDoc) });

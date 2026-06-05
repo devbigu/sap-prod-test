@@ -1,7 +1,7 @@
 "use client";
 
 import { GiHamburgerMenu } from "react-icons/gi";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import moment from "moment";
@@ -11,6 +11,7 @@ import { SIDEBAR_CATEGORIES } from "@/lib/categories";
 import Footer from "@/components/Footer";
 import Link from "next/link";
 import axios from "axios";
+import { OrderAmountSource, withDisplayOrderAmounts } from "@/lib/orderAmounts";
 // import { getRecentlyViewed, pushRecentlyViewed, type RecentlyViewedItem } from "@/components/Header";
 
 import { getRecentlyViewed, pushRecentlyViewed, type RecentlyViewedItem } from "@/components/Header";
@@ -55,14 +56,22 @@ type PublishedHotItem = { id: string; SKU: string; name: string; image: string; 
 type Order = {
   order_id: string;
   order_date: string;
-  order_amount: string;
-  order_discount: string;
+  order_amount: string | number;
+  order_discount: string | number;
   Dealer_Name: string;
   orderdata_item_quantity: string;
   mtstatus: string;
   outstandingDate: string;
   reason?: string;
+  order_dealer?: string | number;
+  order_discount_amount?: string | number;
+  order_net_amount?: string | number;
+  grossAmount?: string | number;
+  discountAmount?: string | number;
+  netPayableAmount?: string | number;
 };
+
+type OrderSummaryOverride = OrderAmountSource & { orderId?: string; order_id?: string };
 
 type ApiResponse = {
   msg: string;
@@ -235,6 +244,7 @@ export default function Page() {
   const [hotItems, setHotItems] = useState<HotItemDisplay[]>([]);
   const [hotLoading, setHotLoading] = useState(true);
   const [dealerId, setDealerId] = useState("225");
+  const [summaryOverrides, setSummaryOverrides] = useState<Record<string, OrderSummaryOverride>>({});
   const [recentlyViewed, setRecentlyViewed] = useState<RecentlyViewedItem[]>([]);
   const year = new Date().getFullYear();
 
@@ -298,7 +308,40 @@ export default function Page() {
     enabled: !!dealerId,
   });
 
-  const recentOrders = (ordersData?.data ?? []).slice(0, 4);
+  useEffect(() => {
+    const orderIds = Array.from(new Set((ordersData?.data ?? [])
+      .map(order => String(order.order_id || "").trim())
+      .filter(Boolean)
+    ));
+    if (orderIds.length === 0) {
+      setSummaryOverrides({});
+      return;
+    }
+
+    let active = true;
+    fetch(`/api/order-summary-overrides?dealer_id=${encodeURIComponent(dealerId)}&order_ids=${encodeURIComponent(orderIds.join(","))}`, { cache: "no-store" })
+      .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
+      .then(json => {
+        if (!active) return;
+        const map: Record<string, OrderSummaryOverride> = {};
+        for (const row of Array.isArray(json.data) ? json.data : []) {
+          const id = String(row.orderId || row.order_id || "").trim();
+          if (id) map[id] = row;
+        }
+        setSummaryOverrides(map);
+      })
+      .catch(() => {
+        if (active) setSummaryOverrides({});
+      });
+
+    return () => { active = false; };
+  }, [dealerId, ordersData?.data]);
+
+  const recentOrders = useMemo(() => {
+    return (ordersData?.data ?? [])
+      .slice(0, 4)
+      .map(order => withDisplayOrderAmounts(order, summaryOverrides[order.order_id]));
+  }, [ordersData?.data, summaryOverrides]);
 
   // Navigate to product detail and also record a recently viewed entry
   const goToProduct = (sku: string, name: string, image?: string) => {

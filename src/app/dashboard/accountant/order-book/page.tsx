@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { isAuthenticated } from "@/lib/accountantauth";
 import { downloadOrderInvoice } from "@/lib/invoicegenerator";
+import { OrderAmountSource, withDisplayOrderAmounts } from "@/lib/orderAmounts";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const BACKEND_URL = "https://mirisoft.co.in/sas/dealerapi/api";
@@ -18,11 +19,22 @@ const TODAY = moment().startOf("day");
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type RawOrder = {
-  order_id: string; order_date: string; order_amount: string;
-  order_discount: string; Dealer_Name: string;
+  order_id: string; order_date: string; order_amount: string | number;
+  order_discount: string | number; Dealer_Name: string;
   orderdata_item_quantity: string; mtstatus: string;
   outstandingDate: string; reason?: string;
-  product_name?: string; 
+  product_name?: string;
+  order_dealer?: string | number;
+  order_discount_amount?: string | number;
+  order_net_amount?: string | number;
+  grossAmount?: string | number;
+  discountAmount?: string | number;
+  netPayableAmount?: string | number;
+};
+
+type OrderSummaryOverride = OrderAmountSource & {
+  orderId?: string;
+  order_id?: string;
 };
 
 type PayStatus   = "Paid" | "Partial" | "Unpaid" | "Overdue";
@@ -210,6 +222,7 @@ export default function OrderBookPage() {
   const router = useRouter();
 
   const [orders,  setOrders]  = useState<RawOrder[]>([]);
+  const [summaryOverrides, setSummaryOverrides] = useState<Record<string, OrderSummaryOverride>>({});
   const [loading, setLoading] = useState(true);
   const [page,    setPage]    = useState(1);
   const [filters, setFilters] = useState<Filters>({
@@ -237,9 +250,39 @@ export default function OrderBookPage() {
 
   useEffect(() => { load(); }, [load]);
 
+  useEffect(() => {
+    const orderIds = Array.from(new Set(orders.map(o => String(o.order_id || "").trim()).filter(Boolean)));
+    if (orderIds.length === 0) {
+      setSummaryOverrides({});
+      return;
+    }
+
+    let active = true;
+    fetch(`/api/order-summary-overrides?order_ids=${encodeURIComponent(orderIds.join(","))}`, { cache: "no-store" })
+      .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
+      .then(json => {
+        if (!active) return;
+        const map: Record<string, OrderSummaryOverride> = {};
+        for (const row of Array.isArray(json.data) ? json.data : []) {
+          const id = String(row.orderId || row.order_id || "").trim();
+          if (id) map[id] = row;
+        }
+        setSummaryOverrides(map);
+      })
+      .catch(() => {
+        if (active) setSummaryOverrides({});
+      });
+
+    return () => { active = false; };
+  }, [orders]);
+
+  const displayOrders = useMemo(() => {
+    return orders.map(order => withDisplayOrderAmounts(order, summaryOverrides[order.order_id]));
+  }, [orders, summaryOverrides]);
+
   // Derived: filtered + sorted (newest first)
   const filtered = useMemo(() => {
-    return orders
+    return displayOrders
       .filter(o => {
         const date = moment(o.order_date);
         if (filters.from && date.isBefore(moment(filters.from), "day")) return false;
@@ -249,7 +292,7 @@ export default function OrderBookPage() {
         return true;
       })
       .sort((a, b) => moment(b.order_date).valueOf() - moment(a.order_date).valueOf());
-  }, [orders, filters]);
+  }, [displayOrders, filters]);
 
   // Pagination
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
@@ -330,7 +373,7 @@ export default function OrderBookPage() {
             <h1 className="text-[22px] font-bold text-gray-900 tracking-tight">Order Book</h1>
           </div>
           <p className="text-[12.5px] text-gray-400 ml-11">
-            GST-level financial view of all orders · {filtered.length} of {orders.length} record{orders.length !== 1 ? "s" : ""}
+            GST-level financial view of all orders · {filtered.length} of {displayOrders.length} record{displayOrders.length !== 1 ? "s" : ""}
           </p>
         </div>
 
@@ -421,7 +464,7 @@ export default function OrderBookPage() {
       </div>
 
       {/* ── Aging Analysis ── */}
-      <AgingPanel orders={orders} />
+      <AgingPanel orders={displayOrders} />
 
       {/* ── Order Book Table ── */}
       <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
