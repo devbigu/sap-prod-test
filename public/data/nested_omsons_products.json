@@ -6703,9 +6703,10 @@
           "Capacity (ml)": "1",
           "Neck Size": "7/16",
           "Tolerance (±mL)": "0.025",
-          "Neck Dia x Height OD (mm)": "10 13x65"
+          "Neck": "10",
+          "Dia x Height OD (mm)": "13x65"
         },
-        "specsText": "Capacity (ml): 1; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck Dia x Height OD (mm): 10 13x65",
+        "specsText": "Capacity (ml): 1; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck: 10; Dia x Height OD (mm): 13x65",
         "pack": 2,
         "price": 396,
         "priceLabel": "396.00",
@@ -6723,9 +6724,10 @@
           "Capacity (ml)": "2",
           "Neck Size": "7/16",
           "Tolerance (±mL)": "0.025",
-          "Neck Dia x Height OD (mm)": "10 17x70"
+          "Neck": "10",
+          "Dia x Height OD (mm)": "17x70"
         },
-        "specsText": "Capacity (ml): 2; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck Dia x Height OD (mm): 10 17x70",
+        "specsText": "Capacity (ml): 2; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck: 10; Dia x Height OD (mm): 17x70",
         "pack": 2,
         "price": 396,
         "priceLabel": "396.00",
@@ -6743,9 +6745,10 @@
           "Capacity (ml)": "5",
           "Neck Size": "7/16",
           "Tolerance (±mL)": "0.025",
-          "Neck Dia x Height OD (mm)": "13 22x70"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck Dia x Height OD (mm): 13 22x70",
+        "specsText": "Capacity (ml): 5; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck: 13; Dia x Height OD (mm): 22x70",
         "pack": 1,
         "price": 295,
         "priceLabel": "295.00",
@@ -6763,9 +6766,10 @@
           "Capacity (ml)": "10",
           "Neck Size": "7/16",
           "Tolerance (±mL)": "0.025",
-          "Neck Dia x Height OD (mm)": "13 27x90"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "27x90"
         },
-        "specsText": "Capacity (ml): 10; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck Dia x Height OD (mm): 13 27x90",
+        "specsText": "Capacity (ml): 10; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck: 13; Dia x Height OD (mm): 27x90",
         "pack": 1,
         "price": 312,
         "priceLabel": "312.00",
@@ -6783,9 +6787,10 @@
           "Capacity (ml)": "20",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 39x110"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "39x110"
         },
-        "specsText": "Capacity (ml): 20; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 39x110",
+        "specsText": "Capacity (ml): 20; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 39x110",
         "pack": 1,
         "price": 343,
         "priceLabel": "343.00",
@@ -6803,9 +6808,10 @@
           "Capacity (ml)": "25",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 40x110"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "40x110"
         },
-        "specsText": "Capacity (ml): 25; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 40x110",
+        "specsText": "Capacity (ml): 25; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 40x110",
         "pack": 1,
         "price": 343,
         "priceLabel": "343.00",
@@ -6823,9 +6829,10 @@
           "Capacity (ml)": "50",
           "Neck Size": "12/21",
           "Tolerance (±mL)": "0.060",
-          "Neck Dia x Height OD (mm)": "16 50x140"
+          "Neck": "16",
+          "Dia x Height OD (mm)": "50x140"
         },
-        "specsText": "Capacity (ml): 50; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck Dia x Height OD (mm): 16 50x140",
+        "specsText": "Capacity (ml): 50; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck: 16; Dia x Height OD (mm): 50x140",
         "pack": 1,
         "price": 326,
         "priceLabel": "326.00",
@@ -6843,9 +6850,10 @@
           "Capacity (ml)": "100",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.100",
-          "Neck Dia x Height OD (mm)": "19 60x170"
+          "Neck": "19",
+          "Dia x Height OD (mm)": "60x170"
         },
-        "specsText": "Capacity (ml): 100; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck Dia x Height OD (mm): 19 60x170",
+        "specsText": "Capacity (ml): 100; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck: 19; Dia x Height OD (mm): 60x170",
         "pack": 1,
         "price": 438,
         "priceLabel": "438.00",
@@ -6863,9 +6871,10 @@
           "Capacity (ml)": "150*",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.100",
-          "Neck Dia x Height OD (mm)": "18 69x200"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "69x200"
         },
-        "specsText": "Capacity (ml): 150*; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck Dia x Height OD (mm): 18 69x200",
+        "specsText": "Capacity (ml): 150*; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck: 18; Dia x Height OD (mm): 69x200",
         "pack": 1,
         "price": 502,
         "priceLabel": "502.00",
@@ -6883,9 +6892,10 @@
           "Capacity (ml)": "200",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.150",
-          "Neck Dia x Height OD (mm)": "18 75x210"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "75x210"
         },
-        "specsText": "Capacity (ml): 200; Neck Size: 14/23; Tolerance (±mL): 0.150; Neck Dia x Height OD (mm): 18 75x210",
+        "specsText": "Capacity (ml): 200; Neck Size: 14/23; Tolerance (±mL): 0.150; Neck: 18; Dia x Height OD (mm): 75x210",
         "pack": 1,
         "price": 583,
         "priceLabel": "583.00",
@@ -6903,9 +6913,10 @@
           "Capacity (ml)": "250",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.150",
-          "Neck Dia x Height OD (mm)": "18 80x220"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "80x220"
         },
-        "specsText": "Capacity (ml): 250; Neck Size: 14/23; Tolerance (±mL): 0.150; Neck Dia x Height OD (mm): 18 80x220",
+        "specsText": "Capacity (ml): 250; Neck Size: 14/23; Tolerance (±mL): 0.150; Neck: 18; Dia x Height OD (mm): 80x220",
         "pack": 1,
         "price": 598,
         "priceLabel": "598.00",
@@ -6923,9 +6934,10 @@
           "Capacity (ml)": "500",
           "Neck Size": "19/26",
           "Tolerance (±mL)": "0.250",
-          "Neck Dia x Height OD (mm)": "22 100x260"
+          "Neck": "22",
+          "Dia x Height OD (mm)": "100x260"
         },
-        "specsText": "Capacity (ml): 500; Neck Size: 19/26; Tolerance (±mL): 0.250; Neck Dia x Height OD (mm): 22 100x260",
+        "specsText": "Capacity (ml): 500; Neck Size: 19/26; Tolerance (±mL): 0.250; Neck: 22; Dia x Height OD (mm): 100x260",
         "pack": 1,
         "price": 922,
         "priceLabel": "922.00",
@@ -6943,9 +6955,10 @@
           "Capacity (ml)": "1000",
           "Neck Size": "24/29",
           "Tolerance (±mL)": "0.400",
-          "Neck Dia x Height OD (mm)": "28 125x300"
+          "Neck": "28",
+          "Dia x Height OD (mm)": "125x300"
         },
-        "specsText": "Capacity (ml): 1000; Neck Size: 24/29; Tolerance (±mL): 0.400; Neck Dia x Height OD (mm): 28 125x300",
+        "specsText": "Capacity (ml): 1000; Neck Size: 24/29; Tolerance (±mL): 0.400; Neck: 28; Dia x Height OD (mm): 125x300",
         "pack": 1,
         "price": 1423,
         "priceLabel": "1423.00",
@@ -6963,9 +6976,10 @@
           "Capacity (ml)": "2000",
           "Neck Size": "29/32",
           "Tolerance (±mL)": "0.600",
-          "Neck Dia x Height OD (mm)": "34 160x370"
+          "Neck": "34",
+          "Dia x Height OD (mm)": "160x370"
         },
-        "specsText": "Capacity (ml): 2000; Neck Size: 29/32; Tolerance (±mL): 0.600; Neck Dia x Height OD (mm): 34 160x370",
+        "specsText": "Capacity (ml): 2000; Neck Size: 29/32; Tolerance (±mL): 0.600; Neck: 34; Dia x Height OD (mm): 160x370",
         "pack": 1,
         "price": 2836,
         "priceLabel": "2836.00",
@@ -6983,9 +6997,10 @@
           "Capacity (ml)": "5000",
           "Neck Size": "34/35",
           "Tolerance (±mL)": "1.200",
-          "Neck Dia x Height OD (mm)": "42 215x475"
+          "Neck": "42",
+          "Dia x Height OD (mm)": "215x475"
         },
-        "specsText": "Capacity (ml): 5000; Neck Size: 34/35; Tolerance (±mL): 1.200; Neck Dia x Height OD (mm): 42 215x475",
+        "specsText": "Capacity (ml): 5000; Neck Size: 34/35; Tolerance (±mL): 1.200; Neck: 42; Dia x Height OD (mm): 215x475",
         "pack": 1,
         "price": 13578,
         "priceLabel": "13578.00",
@@ -7027,9 +7042,10 @@
           "Capacity (ml)": "1",
           "Neck Size": "7/16",
           "Tolerance (±mL)": "0.025",
-          "Neck Dia x Height OD (mm)": "10 13x65"
+          "Neck": "10",
+          "Dia x Height OD (mm)": "13x65"
         },
-        "specsText": "Capacity (ml): 1; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck Dia x Height OD (mm): 10 13x65",
+        "specsText": "Capacity (ml): 1; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck: 10; Dia x Height OD (mm): 13x65",
         "pack": 2,
         "price": 645,
         "priceLabel": "645.00",
@@ -7047,9 +7063,10 @@
           "Capacity (ml)": "2",
           "Neck Size": "7/16",
           "Tolerance (±mL)": "0.025",
-          "Neck Dia x Height OD (mm)": "10 17x70"
+          "Neck": "10",
+          "Dia x Height OD (mm)": "17x70"
         },
-        "specsText": "Capacity (ml): 2; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck Dia x Height OD (mm): 10 17x70",
+        "specsText": "Capacity (ml): 2; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck: 10; Dia x Height OD (mm): 17x70",
         "pack": 2,
         "price": 645,
         "priceLabel": "645.00",
@@ -7067,9 +7084,10 @@
           "Capacity (ml)": "5",
           "Neck Size": "7/16",
           "Tolerance (±mL)": "0.025",
-          "Neck Dia x Height OD (mm)": "13 22x70"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck Dia x Height OD (mm): 13 22x70",
+        "specsText": "Capacity (ml): 5; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck: 13; Dia x Height OD (mm): 22x70",
         "pack": 2,
         "price": 660,
         "priceLabel": "660.00",
@@ -7087,9 +7105,10 @@
           "Capacity (ml)": "10",
           "Neck Size": "7/16",
           "Tolerance (±mL)": "0.025",
-          "Neck Dia x Height OD (mm)": "13 27x90"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "27x90"
         },
-        "specsText": "Capacity (ml): 10; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck Dia x Height OD (mm): 13 27x90",
+        "specsText": "Capacity (ml): 10; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck: 13; Dia x Height OD (mm): 27x90",
         "pack": 2,
         "price": 660,
         "priceLabel": "660.00",
@@ -7107,9 +7126,10 @@
           "Capacity (ml)": "20",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 39x110"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "39x110"
         },
-        "specsText": "Capacity (ml): 20; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 39x110",
+        "specsText": "Capacity (ml): 20; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 39x110",
         "pack": 2,
         "price": 673,
         "priceLabel": "673.00",
@@ -7127,9 +7147,10 @@
           "Capacity (ml)": "25",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 40x110"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "40x110"
         },
-        "specsText": "Capacity (ml): 25; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 40x110",
+        "specsText": "Capacity (ml): 25; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 40x110",
         "pack": 2,
         "price": 673,
         "priceLabel": "673.00",
@@ -7147,9 +7168,10 @@
           "Capacity (ml)": "50",
           "Neck Size": "12/21",
           "Tolerance (±mL)": "0.060",
-          "Neck Dia x Height OD (mm)": "16 50x140"
+          "Neck": "16",
+          "Dia x Height OD (mm)": "50x140"
         },
-        "specsText": "Capacity (ml): 50; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck Dia x Height OD (mm): 16 50x140",
+        "specsText": "Capacity (ml): 50; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck: 16; Dia x Height OD (mm): 50x140",
         "pack": 2,
         "price": 700,
         "priceLabel": "700.00",
@@ -7167,9 +7189,10 @@
           "Capacity (ml)": "100",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.100",
-          "Neck Dia x Height OD (mm)": "19 60x170"
+          "Neck": "19",
+          "Dia x Height OD (mm)": "60x170"
         },
-        "specsText": "Capacity (ml): 100; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck Dia x Height OD (mm): 19 60x170",
+        "specsText": "Capacity (ml): 100; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck: 19; Dia x Height OD (mm): 60x170",
         "pack": 2,
         "price": 713,
         "priceLabel": "713.00",
@@ -7187,9 +7210,10 @@
           "Capacity (ml)": "150*",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.100",
-          "Neck Dia x Height OD (mm)": "18 69x200"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "69x200"
         },
-        "specsText": "Capacity (ml): 150*; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck Dia x Height OD (mm): 18 69x200",
+        "specsText": "Capacity (ml): 150*; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck: 18; Dia x Height OD (mm): 69x200",
         "pack": 2,
         "price": 752,
         "priceLabel": "752.00",
@@ -7207,9 +7231,10 @@
           "Capacity (ml)": "200",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.150",
-          "Neck Dia x Height OD (mm)": "18 75x210"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "75x210"
         },
-        "specsText": "Capacity (ml): 200; Neck Size: 14/23; Tolerance (±mL): 0.150; Neck Dia x Height OD (mm): 18 75x210",
+        "specsText": "Capacity (ml): 200; Neck Size: 14/23; Tolerance (±mL): 0.150; Neck: 18; Dia x Height OD (mm): 75x210",
         "pack": 2,
         "price": 816,
         "priceLabel": "816.00",
@@ -7227,9 +7252,10 @@
           "Capacity (ml)": "250",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.150",
-          "Neck Dia x Height OD (mm)": "18 80x220"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "80x220"
         },
-        "specsText": "Capacity (ml): 250; Neck Size: 14/23; Tolerance (±mL): 0.150; Neck Dia x Height OD (mm): 18 80x220",
+        "specsText": "Capacity (ml): 250; Neck Size: 14/23; Tolerance (±mL): 0.150; Neck: 18; Dia x Height OD (mm): 80x220",
         "pack": 2,
         "price": 816,
         "priceLabel": "816.00",
@@ -7247,9 +7273,10 @@
           "Capacity (ml)": "500",
           "Neck Size": "19/26",
           "Tolerance (±mL)": "0.250",
-          "Neck Dia x Height OD (mm)": "22 100x260"
+          "Neck": "22",
+          "Dia x Height OD (mm)": "100x260"
         },
-        "specsText": "Capacity (ml): 500; Neck Size: 19/26; Tolerance (±mL): 0.250; Neck Dia x Height OD (mm): 22 100x260",
+        "specsText": "Capacity (ml): 500; Neck Size: 19/26; Tolerance (±mL): 0.250; Neck: 22; Dia x Height OD (mm): 100x260",
         "pack": 2,
         "price": 1122,
         "priceLabel": "1122.00",
@@ -7267,9 +7294,10 @@
           "Capacity (ml)": "1000",
           "Neck Size": "24/29",
           "Tolerance (±mL)": "0.400",
-          "Neck Dia x Height OD (mm)": "28 125x300"
+          "Neck": "28",
+          "Dia x Height OD (mm)": "125x300"
         },
-        "specsText": "Capacity (ml): 1000; Neck Size: 24/29; Tolerance (±mL): 0.400; Neck Dia x Height OD (mm): 28 125x300",
+        "specsText": "Capacity (ml): 1000; Neck Size: 24/29; Tolerance (±mL): 0.400; Neck: 28; Dia x Height OD (mm): 125x300",
         "pack": 2,
         "price": 1780,
         "priceLabel": "1780.00",
@@ -7287,9 +7315,10 @@
           "Capacity (ml)": "2000",
           "Neck Size": "29/32",
           "Tolerance (±mL)": "0.600",
-          "Neck Dia x Height OD (mm)": "34 160x370"
+          "Neck": "34",
+          "Dia x Height OD (mm)": "160x370"
         },
-        "specsText": "Capacity (ml): 2000; Neck Size: 29/32; Tolerance (±mL): 0.600; Neck Dia x Height OD (mm): 34 160x370",
+        "specsText": "Capacity (ml): 2000; Neck Size: 29/32; Tolerance (±mL): 0.600; Neck: 34; Dia x Height OD (mm): 160x370",
         "pack": 1,
         "price": 3032,
         "priceLabel": "3032.00",
@@ -7307,9 +7336,10 @@
           "Capacity (ml)": "5000",
           "Neck Size": "34/35",
           "Tolerance (±mL)": "1.200",
-          "Neck Dia x Height OD (mm)": "42 215x475"
+          "Neck": "42",
+          "Dia x Height OD (mm)": "215x475"
         },
-        "specsText": "Capacity (ml): 5000; Neck Size: 34/35; Tolerance (±mL): 1.200; Neck Dia x Height OD (mm): 42 215x475",
+        "specsText": "Capacity (ml): 5000; Neck Size: 34/35; Tolerance (±mL): 1.200; Neck: 42; Dia x Height OD (mm): 215x475",
         "pack": 1,
         "price": 15180,
         "priceLabel": "15180.00",
@@ -7352,9 +7382,10 @@
           "Capacity (ml)": "1",
           "Neck Size": "7/16",
           "Tolerance (±mL)": "0.05",
-          "Neck Dia x Height OD (mm)": "10 13x65"
+          "Neck": "10",
+          "Dia x Height OD (mm)": "13x65"
         },
-        "specsText": "Capacity (ml): 1; Neck Size: 7/16; Tolerance (±mL): 0.05; Neck Dia x Height OD (mm): 10 13x65",
+        "specsText": "Capacity (ml): 1; Neck Size: 7/16; Tolerance (±mL): 0.05; Neck: 10; Dia x Height OD (mm): 13x65",
         "pack": 2,
         "price": 145,
         "priceLabel": "145.00",
@@ -7372,9 +7403,10 @@
           "Capacity (ml)": "2",
           "Neck Size": "7/16",
           "Tolerance (±mL)": "0.05",
-          "Neck Dia x Height OD (mm)": "10 17x70"
+          "Neck": "10",
+          "Dia x Height OD (mm)": "17x70"
         },
-        "specsText": "Capacity (ml): 2; Neck Size: 7/16; Tolerance (±mL): 0.05; Neck Dia x Height OD (mm): 10 17x70",
+        "specsText": "Capacity (ml): 2; Neck Size: 7/16; Tolerance (±mL): 0.05; Neck: 10; Dia x Height OD (mm): 17x70",
         "pack": 2,
         "price": 145,
         "priceLabel": "145.00",
@@ -7392,9 +7424,10 @@
           "Capacity (ml)": "5",
           "Neck Size": "7/16",
           "Tolerance (±mL)": "0.05",
-          "Neck Dia x Height OD (mm)": "13 22x70"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5; Neck Size: 7/16; Tolerance (±mL): 0.05; Neck Dia x Height OD (mm): 13 22x70",
+        "specsText": "Capacity (ml): 5; Neck Size: 7/16; Tolerance (±mL): 0.05; Neck: 13; Dia x Height OD (mm): 22x70",
         "pack": 2,
         "price": 145,
         "priceLabel": "145.00",
@@ -7412,9 +7445,10 @@
           "Capacity (ml)": "10",
           "Neck Size": "7/16",
           "Tolerance (±mL)": "0.05",
-          "Neck Dia x Height OD (mm)": "13 27x90"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "27x90"
         },
-        "specsText": "Capacity (ml): 10; Neck Size: 7/16; Tolerance (±mL): 0.05; Neck Dia x Height OD (mm): 13 27x90",
+        "specsText": "Capacity (ml): 10; Neck Size: 7/16; Tolerance (±mL): 0.05; Neck: 13; Dia x Height OD (mm): 27x90",
         "pack": 2,
         "price": 145,
         "priceLabel": "145.00",
@@ -7432,9 +7466,10 @@
           "Capacity (ml)": "20",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.08",
-          "Neck Dia x Height OD (mm)": "13 39x110"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "39x110"
         },
-        "specsText": "Capacity (ml): 20; Neck Size: 10/19; Tolerance (±mL): 0.08; Neck Dia x Height OD (mm): 13 39x110",
+        "specsText": "Capacity (ml): 20; Neck Size: 10/19; Tolerance (±mL): 0.08; Neck: 13; Dia x Height OD (mm): 39x110",
         "pack": 2,
         "price": 183,
         "priceLabel": "183.00",
@@ -7452,9 +7487,10 @@
           "Capacity (ml)": "25",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.08",
-          "Neck Dia x Height OD (mm)": "13 40x110"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "40x110"
         },
-        "specsText": "Capacity (ml): 25; Neck Size: 10/19; Tolerance (±mL): 0.08; Neck Dia x Height OD (mm): 13 40x110",
+        "specsText": "Capacity (ml): 25; Neck Size: 10/19; Tolerance (±mL): 0.08; Neck: 13; Dia x Height OD (mm): 40x110",
         "pack": 2,
         "price": 183,
         "priceLabel": "183.00",
@@ -7472,9 +7508,10 @@
           "Capacity (ml)": "50",
           "Neck Size": "12/21",
           "Tolerance (±mL)": "0.12",
-          "Neck Dia x Height OD (mm)": "16 50x140"
+          "Neck": "16",
+          "Dia x Height OD (mm)": "50x140"
         },
-        "specsText": "Capacity (ml): 50; Neck Size: 12/21; Tolerance (±mL): 0.12; Neck Dia x Height OD (mm): 16 50x140",
+        "specsText": "Capacity (ml): 50; Neck Size: 12/21; Tolerance (±mL): 0.12; Neck: 16; Dia x Height OD (mm): 50x140",
         "pack": 2,
         "price": 211,
         "priceLabel": "211.00",
@@ -7492,9 +7529,10 @@
           "Capacity (ml)": "100",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.20",
-          "Neck Dia x Height OD (mm)": "19 60x170"
+          "Neck": "19",
+          "Dia x Height OD (mm)": "60x170"
         },
-        "specsText": "Capacity (ml): 100; Neck Size: 14/23; Tolerance (±mL): 0.20; Neck Dia x Height OD (mm): 19 60x170",
+        "specsText": "Capacity (ml): 100; Neck Size: 14/23; Tolerance (±mL): 0.20; Neck: 19; Dia x Height OD (mm): 60x170",
         "pack": 2,
         "price": 224,
         "priceLabel": "224.00",
@@ -7512,9 +7550,10 @@
           "Capacity (ml)": "150*",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.20",
-          "Neck Dia x Height OD (mm)": "18 69x200"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "69x200"
         },
-        "specsText": "Capacity (ml): 150*; Neck Size: 14/23; Tolerance (±mL): 0.20; Neck Dia x Height OD (mm): 18 69x200",
+        "specsText": "Capacity (ml): 150*; Neck Size: 14/23; Tolerance (±mL): 0.20; Neck: 18; Dia x Height OD (mm): 69x200",
         "pack": 2,
         "price": 330,
         "priceLabel": "330.00",
@@ -7532,9 +7571,10 @@
           "Capacity (ml)": "200",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.30",
-          "Neck Dia x Height OD (mm)": "18 75x210"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "75x210"
         },
-        "specsText": "Capacity (ml): 200; Neck Size: 14/23; Tolerance (±mL): 0.30; Neck Dia x Height OD (mm): 18 75x210",
+        "specsText": "Capacity (ml): 200; Neck Size: 14/23; Tolerance (±mL): 0.30; Neck: 18; Dia x Height OD (mm): 75x210",
         "pack": 2,
         "price": 317,
         "priceLabel": "317.00",
@@ -7552,9 +7592,10 @@
           "Capacity (ml)": "250",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.30",
-          "Neck Dia x Height OD (mm)": "18 80x220"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "80x220"
         },
-        "specsText": "Capacity (ml): 250; Neck Size: 14/23; Tolerance (±mL): 0.30; Neck Dia x Height OD (mm): 18 80x220",
+        "specsText": "Capacity (ml): 250; Neck Size: 14/23; Tolerance (±mL): 0.30; Neck: 18; Dia x Height OD (mm): 80x220",
         "pack": 2,
         "price": 317,
         "priceLabel": "317.00",
@@ -7572,9 +7613,10 @@
           "Capacity (ml)": "500",
           "Neck Size": "19/26",
           "Tolerance (±mL)": "0.50",
-          "Neck Dia x Height OD (mm)": "22 100x260"
+          "Neck": "22",
+          "Dia x Height OD (mm)": "100x260"
         },
-        "specsText": "Capacity (ml): 500; Neck Size: 19/26; Tolerance (±mL): 0.50; Neck Dia x Height OD (mm): 22 100x260",
+        "specsText": "Capacity (ml): 500; Neck Size: 19/26; Tolerance (±mL): 0.50; Neck: 22; Dia x Height OD (mm): 100x260",
         "pack": 2,
         "price": 502,
         "priceLabel": "502.00",
@@ -7592,9 +7634,10 @@
           "Capacity (ml)": "1000",
           "Neck Size": "24/29",
           "Tolerance (±mL)": "0.80",
-          "Neck Dia x Height OD (mm)": "28 125x300"
+          "Neck": "28",
+          "Dia x Height OD (mm)": "125x300"
         },
-        "specsText": "Capacity (ml): 1000; Neck Size: 24/29; Tolerance (±mL): 0.80; Neck Dia x Height OD (mm): 28 125x300",
+        "specsText": "Capacity (ml): 1000; Neck Size: 24/29; Tolerance (±mL): 0.80; Neck: 28; Dia x Height OD (mm): 125x300",
         "pack": 2,
         "price": 805,
         "priceLabel": "805.00",
@@ -7612,9 +7655,10 @@
           "Capacity (ml)": "2000",
           "Neck Size": "29/32",
           "Tolerance (±mL)": "1.20",
-          "Neck Dia x Height OD (mm)": "34 160x370"
+          "Neck": "34",
+          "Dia x Height OD (mm)": "160x370"
         },
-        "specsText": "Capacity (ml): 2000; Neck Size: 29/32; Tolerance (±mL): 1.20; Neck Dia x Height OD (mm): 34 160x370",
+        "specsText": "Capacity (ml): 2000; Neck Size: 29/32; Tolerance (±mL): 1.20; Neck: 34; Dia x Height OD (mm): 160x370",
         "pack": 2,
         "price": 1687,
         "priceLabel": "1687.00",
@@ -7632,9 +7676,10 @@
           "Capacity (ml)": "5000",
           "Neck Size": "34/35",
           "Tolerance (±mL)": "2.50",
-          "Neck Dia x Height OD (mm)": "42 215x475"
+          "Neck": "42",
+          "Dia x Height OD (mm)": "215x475"
         },
-        "specsText": "Capacity (ml): 5000; Neck Size: 34/35; Tolerance (±mL): 2.50; Neck Dia x Height OD (mm): 42 215x475",
+        "specsText": "Capacity (ml): 5000; Neck Size: 34/35; Tolerance (±mL): 2.50; Neck: 42; Dia x Height OD (mm): 215x475",
         "pack": 1,
         "price": 9900,
         "priceLabel": "9900.00",
@@ -7676,9 +7721,10 @@
           "Capacity (ml)": "5",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.02",
-          "Neck Dia x Height OD (mm)": "13 22x70"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5; Neck Size: 10/19; Tolerance (±mL): 0.02; Neck Dia x Height OD (mm): 13 22x70",
+        "specsText": "Capacity (ml): 5; Neck Size: 10/19; Tolerance (±mL): 0.02; Neck: 13; Dia x Height OD (mm): 22x70",
         "pack": 1,
         "price": 548,
         "priceLabel": "548.00",
@@ -7696,9 +7742,10 @@
           "Capacity (ml)": "10",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.02",
-          "Neck Dia x Height OD (mm)": "13 27x90"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "27x90"
         },
-        "specsText": "Capacity (ml): 10; Neck Size: 10/19; Tolerance (±mL): 0.02; Neck Dia x Height OD (mm): 13 27x90",
+        "specsText": "Capacity (ml): 10; Neck Size: 10/19; Tolerance (±mL): 0.02; Neck: 13; Dia x Height OD (mm): 27x90",
         "pack": 1,
         "price": 548,
         "priceLabel": "548.00",
@@ -7716,9 +7763,10 @@
           "Capacity (ml)": "20",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.03",
-          "Neck Dia x Height OD (mm)": "13 39x110"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "39x110"
         },
-        "specsText": "Capacity (ml): 20; Neck Size: 10/19; Tolerance (±mL): 0.03; Neck Dia x Height OD (mm): 13 39x110",
+        "specsText": "Capacity (ml): 20; Neck Size: 10/19; Tolerance (±mL): 0.03; Neck: 13; Dia x Height OD (mm): 39x110",
         "pack": 1,
         "price": 530,
         "priceLabel": "530.00",
@@ -7736,9 +7784,10 @@
           "Capacity (ml)": "25",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.03",
-          "Neck Dia x Height OD (mm)": "13 40x110"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "40x110"
         },
-        "specsText": "Capacity (ml): 25; Neck Size: 10/19; Tolerance (±mL): 0.03; Neck Dia x Height OD (mm): 13 40x110",
+        "specsText": "Capacity (ml): 25; Neck Size: 10/19; Tolerance (±mL): 0.03; Neck: 13; Dia x Height OD (mm): 40x110",
         "pack": 1,
         "price": 530,
         "priceLabel": "530.00",
@@ -7756,9 +7805,10 @@
           "Capacity (ml)": "50",
           "Neck Size": "12/21",
           "Tolerance (±mL)": "0.05",
-          "Neck Dia x Height OD (mm)": "16 50x140"
+          "Neck": "16",
+          "Dia x Height OD (mm)": "50x140"
         },
-        "specsText": "Capacity (ml): 50; Neck Size: 12/21; Tolerance (±mL): 0.05; Neck Dia x Height OD (mm): 16 50x140",
+        "specsText": "Capacity (ml): 50; Neck Size: 12/21; Tolerance (±mL): 0.05; Neck: 16; Dia x Height OD (mm): 50x140",
         "pack": 1,
         "price": 550,
         "priceLabel": "550.00",
@@ -7776,9 +7826,10 @@
           "Capacity (ml)": "100",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.08",
-          "Neck Dia x Height OD (mm)": "19 60x170"
+          "Neck": "19",
+          "Dia x Height OD (mm)": "60x170"
         },
-        "specsText": "Capacity (ml): 100; Neck Size: 14/23; Tolerance (±mL): 0.08; Neck Dia x Height OD (mm): 19 60x170",
+        "specsText": "Capacity (ml): 100; Neck Size: 14/23; Tolerance (±mL): 0.08; Neck: 19; Dia x Height OD (mm): 60x170",
         "pack": 1,
         "price": 583,
         "priceLabel": "583.00",
@@ -7796,9 +7847,10 @@
           "Capacity (ml)": "200",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.10",
-          "Neck Dia x Height OD (mm)": "18 75x210"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "75x210"
         },
-        "specsText": "Capacity (ml): 200; Neck Size: 14/23; Tolerance (±mL): 0.10; Neck Dia x Height OD (mm): 18 75x210",
+        "specsText": "Capacity (ml): 200; Neck Size: 14/23; Tolerance (±mL): 0.10; Neck: 18; Dia x Height OD (mm): 75x210",
         "pack": 1,
         "price": 752,
         "priceLabel": "752.00",
@@ -7816,9 +7868,10 @@
           "Capacity (ml)": "250",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.12",
-          "Neck Dia x Height OD (mm)": "18 80x220"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "80x220"
         },
-        "specsText": "Capacity (ml): 250; Neck Size: 14/23; Tolerance (±mL): 0.12; Neck Dia x Height OD (mm): 18 80x220",
+        "specsText": "Capacity (ml): 250; Neck Size: 14/23; Tolerance (±mL): 0.12; Neck: 18; Dia x Height OD (mm): 80x220",
         "pack": 1,
         "price": 752,
         "priceLabel": "752.00",
@@ -7836,9 +7889,10 @@
           "Capacity (ml)": "500",
           "Neck Size": "19/26",
           "Tolerance (±mL)": "0.15",
-          "Neck Dia x Height OD (mm)": "22 100x260"
+          "Neck": "22",
+          "Dia x Height OD (mm)": "100x260"
         },
-        "specsText": "Capacity (ml): 500; Neck Size: 19/26; Tolerance (±mL): 0.15; Neck Dia x Height OD (mm): 22 100x260",
+        "specsText": "Capacity (ml): 500; Neck Size: 19/26; Tolerance (±mL): 0.15; Neck: 22; Dia x Height OD (mm): 100x260",
         "pack": 1,
         "price": 1071,
         "priceLabel": "1071.00",
@@ -7856,9 +7910,10 @@
           "Capacity (ml)": "1000",
           "Neck Size": "24/29",
           "Tolerance (±mL)": "0.30",
-          "Neck Dia x Height OD (mm)": "28 125x300"
+          "Neck": "28",
+          "Dia x Height OD (mm)": "125x300"
         },
-        "specsText": "Capacity (ml): 1000; Neck Size: 24/29; Tolerance (±mL): 0.30; Neck Dia x Height OD (mm): 28 125x300",
+        "specsText": "Capacity (ml): 1000; Neck Size: 24/29; Tolerance (±mL): 0.30; Neck: 28; Dia x Height OD (mm): 125x300",
         "pack": 1,
         "price": 1430,
         "priceLabel": "1430.00",
@@ -7876,9 +7931,10 @@
           "Capacity (ml)": "2000",
           "Neck Size": "29/32",
           "Tolerance (±mL)": "0.50",
-          "Neck Dia x Height OD (mm)": "34 160x370"
+          "Neck": "34",
+          "Dia x Height OD (mm)": "160x370"
         },
-        "specsText": "Capacity (ml): 2000; Neck Size: 29/32; Tolerance (±mL): 0.50; Neck Dia x Height OD (mm): 34 160x370",
+        "specsText": "Capacity (ml): 2000; Neck Size: 29/32; Tolerance (±mL): 0.50; Neck: 34; Dia x Height OD (mm): 160x370",
         "pack": 1,
         "price": 3113,
         "priceLabel": "3113.00",
@@ -7920,9 +7976,10 @@
           "Capacity (ml)": "5",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.02",
-          "Neck Dia x Height OD (mm)": "13 22x70"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5; Neck Size: 10/19; Tolerance (±mL): 0.02; Neck Dia x Height OD (mm): 13 22x70",
+        "specsText": "Capacity (ml): 5; Neck Size: 10/19; Tolerance (±mL): 0.02; Neck: 13; Dia x Height OD (mm): 22x70",
         "pack": 1,
         "price": 748,
         "priceLabel": "748.00",
@@ -7940,9 +7997,10 @@
           "Capacity (ml)": "10",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.02",
-          "Neck Dia x Height OD (mm)": "13 27x90"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "27x90"
         },
-        "specsText": "Capacity (ml): 10; Neck Size: 10/19; Tolerance (±mL): 0.02; Neck Dia x Height OD (mm): 13 27x90",
+        "specsText": "Capacity (ml): 10; Neck Size: 10/19; Tolerance (±mL): 0.02; Neck: 13; Dia x Height OD (mm): 27x90",
         "pack": 1,
         "price": 748,
         "priceLabel": "748.00",
@@ -7960,9 +8018,10 @@
           "Capacity (ml)": "20",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.03",
-          "Neck Dia x Height OD (mm)": "13 39x110"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "39x110"
         },
-        "specsText": "Capacity (ml): 20; Neck Size: 10/19; Tolerance (±mL): 0.03; Neck Dia x Height OD (mm): 13 39x110",
+        "specsText": "Capacity (ml): 20; Neck Size: 10/19; Tolerance (±mL): 0.03; Neck: 13; Dia x Height OD (mm): 39x110",
         "pack": 1,
         "price": 726,
         "priceLabel": "726.00",
@@ -7980,9 +8039,10 @@
           "Capacity (ml)": "25",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.03",
-          "Neck Dia x Height OD (mm)": "13 40x110"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "40x110"
         },
-        "specsText": "Capacity (ml): 25; Neck Size: 10/19; Tolerance (±mL): 0.03; Neck Dia x Height OD (mm): 13 40x110",
+        "specsText": "Capacity (ml): 25; Neck Size: 10/19; Tolerance (±mL): 0.03; Neck: 13; Dia x Height OD (mm): 40x110",
         "pack": 1,
         "price": 726,
         "priceLabel": "726.00",
@@ -8000,9 +8060,10 @@
           "Capacity (ml)": "50",
           "Neck Size": "12/21",
           "Tolerance (±mL)": "0.05",
-          "Neck Dia x Height OD (mm)": "16 50x140"
+          "Neck": "16",
+          "Dia x Height OD (mm)": "50x140"
         },
-        "specsText": "Capacity (ml): 50; Neck Size: 12/21; Tolerance (±mL): 0.05; Neck Dia x Height OD (mm): 16 50x140",
+        "specsText": "Capacity (ml): 50; Neck Size: 12/21; Tolerance (±mL): 0.05; Neck: 16; Dia x Height OD (mm): 50x140",
         "pack": 1,
         "price": 737,
         "priceLabel": "737.00",
@@ -8020,9 +8081,10 @@
           "Capacity (ml)": "100",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.08",
-          "Neck Dia x Height OD (mm)": "19 60x170"
+          "Neck": "19",
+          "Dia x Height OD (mm)": "60x170"
         },
-        "specsText": "Capacity (ml): 100; Neck Size: 14/23; Tolerance (±mL): 0.08; Neck Dia x Height OD (mm): 19 60x170",
+        "specsText": "Capacity (ml): 100; Neck Size: 14/23; Tolerance (±mL): 0.08; Neck: 19; Dia x Height OD (mm): 60x170",
         "pack": 1,
         "price": 754,
         "priceLabel": "754.00",
@@ -8040,9 +8102,10 @@
           "Capacity (ml)": "200",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.10",
-          "Neck Dia x Height OD (mm)": "18 75x210"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "75x210"
         },
-        "specsText": "Capacity (ml): 200; Neck Size: 14/23; Tolerance (±mL): 0.10; Neck Dia x Height OD (mm): 18 75x210",
+        "specsText": "Capacity (ml): 200; Neck Size: 14/23; Tolerance (±mL): 0.10; Neck: 18; Dia x Height OD (mm): 75x210",
         "pack": 1,
         "price": 902,
         "priceLabel": "902.00",
@@ -8060,9 +8123,10 @@
           "Capacity (ml)": "250",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.12",
-          "Neck Dia x Height OD (mm)": "18 80x220"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "80x220"
         },
-        "specsText": "Capacity (ml): 250; Neck Size: 14/23; Tolerance (±mL): 0.12; Neck Dia x Height OD (mm): 18 80x220",
+        "specsText": "Capacity (ml): 250; Neck Size: 14/23; Tolerance (±mL): 0.12; Neck: 18; Dia x Height OD (mm): 80x220",
         "pack": 1,
         "price": 902,
         "priceLabel": "902.00",
@@ -8080,9 +8144,10 @@
           "Capacity (ml)": "500",
           "Neck Size": "19/26",
           "Tolerance (±mL)": "0.15",
-          "Neck Dia x Height OD (mm)": "22 100x260"
+          "Neck": "22",
+          "Dia x Height OD (mm)": "100x260"
         },
-        "specsText": "Capacity (ml): 500; Neck Size: 19/26; Tolerance (±mL): 0.15; Neck Dia x Height OD (mm): 22 100x260",
+        "specsText": "Capacity (ml): 500; Neck Size: 19/26; Tolerance (±mL): 0.15; Neck: 22; Dia x Height OD (mm): 100x260",
         "pack": 1,
         "price": 1298,
         "priceLabel": "1298.00",
@@ -8100,9 +8165,10 @@
           "Capacity (ml)": "1000",
           "Neck Size": "24/29",
           "Tolerance (±mL)": "0.30",
-          "Neck Dia x Height OD (mm)": "28 125x300"
+          "Neck": "28",
+          "Dia x Height OD (mm)": "125x300"
         },
-        "specsText": "Capacity (ml): 1000; Neck Size: 24/29; Tolerance (±mL): 0.30; Neck Dia x Height OD (mm): 28 125x300",
+        "specsText": "Capacity (ml): 1000; Neck Size: 24/29; Tolerance (±mL): 0.30; Neck: 28; Dia x Height OD (mm): 125x300",
         "pack": 1,
         "price": 1683,
         "priceLabel": "1683.00",
@@ -8120,9 +8186,10 @@
           "Capacity (ml)": "2000",
           "Neck Size": "29/32",
           "Tolerance (±mL)": "0.50",
-          "Neck Dia x Height OD (mm)": "34 160x370"
+          "Neck": "34",
+          "Dia x Height OD (mm)": "160x370"
         },
-        "specsText": "Capacity (ml): 2000; Neck Size: 29/32; Tolerance (±mL): 0.50; Neck Dia x Height OD (mm): 34 160x370",
+        "specsText": "Capacity (ml): 2000; Neck Size: 29/32; Tolerance (±mL): 0.50; Neck: 34; Dia x Height OD (mm): 160x370",
         "pack": 1,
         "price": 3883,
         "priceLabel": "3883.00",
@@ -8164,9 +8231,10 @@
           "Capacity (ml)": "5",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 22x70"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 22x70",
+        "specsText": "Capacity (ml): 5; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 22x70",
         "pack": 1,
         "price": 312,
         "priceLabel": "312.00",
@@ -8184,9 +8252,10 @@
           "Capacity (ml)": "10",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 27x90"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "27x90"
         },
-        "specsText": "Capacity (ml): 10; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 27x90",
+        "specsText": "Capacity (ml): 10; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 27x90",
         "pack": 1,
         "price": 343,
         "priceLabel": "343.00",
@@ -8204,9 +8273,10 @@
           "Capacity (ml)": "10",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 27x90"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "27x90"
         },
-        "specsText": "Capacity (ml): 10; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 27x90",
+        "specsText": "Capacity (ml): 10; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 27x90",
         "pack": 1,
         "price": 343,
         "priceLabel": "343.00",
@@ -8224,9 +8294,10 @@
           "Capacity (ml)": "10*",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.080",
-          "Neck Dia x Height OD (mm)": "18 27x90"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "27x90"
         },
-        "specsText": "Capacity (ml): 10*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck Dia x Height OD (mm): 18 27x90",
+        "specsText": "Capacity (ml): 10*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck: 18; Dia x Height OD (mm): 27x90",
         "pack": 1,
         "price": 581,
         "priceLabel": "581.00",
@@ -8244,9 +8315,10 @@
           "Capacity (ml)": "20",
           "Neck Size": "12/21",
           "Tolerance (±mL)": "0.060",
-          "Neck Dia x Height OD (mm)": "16 39x110"
+          "Neck": "16",
+          "Dia x Height OD (mm)": "39x110"
         },
-        "specsText": "Capacity (ml): 20; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck Dia x Height OD (mm): 16 39x110",
+        "specsText": "Capacity (ml): 20; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck: 16; Dia x Height OD (mm): 39x110",
         "pack": 1,
         "price": 550,
         "priceLabel": "550.00",
@@ -8264,9 +8336,10 @@
           "Capacity (ml)": "20*",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.080",
-          "Neck Dia x Height OD (mm)": "18 39x110"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "39x110"
         },
-        "specsText": "Capacity (ml): 20*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck Dia x Height OD (mm): 18 39x110",
+        "specsText": "Capacity (ml): 20*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck: 18; Dia x Height OD (mm): 39x110",
         "pack": 1,
         "price": 581,
         "priceLabel": "581.00",
@@ -8284,9 +8357,10 @@
           "Capacity (ml)": "25",
           "Neck Size": "12/21",
           "Tolerance (±mL)": "0.060",
-          "Neck Dia x Height OD (mm)": "16 40x110"
+          "Neck": "16",
+          "Dia x Height OD (mm)": "40x110"
         },
-        "specsText": "Capacity (ml): 25; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck Dia x Height OD (mm): 16 40x110",
+        "specsText": "Capacity (ml): 25; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck: 16; Dia x Height OD (mm): 40x110",
         "pack": 1,
         "price": 550,
         "priceLabel": "550.00",
@@ -8304,9 +8378,10 @@
           "Capacity (ml)": "25*",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.080",
-          "Neck Dia x Height OD (mm)": "18 40x110"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "40x110"
         },
-        "specsText": "Capacity (ml): 25*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck Dia x Height OD (mm): 18 40x110",
+        "specsText": "Capacity (ml): 25*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck: 18; Dia x Height OD (mm): 40x110",
         "pack": 1,
         "price": 581,
         "priceLabel": "581.00",
@@ -8324,9 +8399,10 @@
           "Capacity (ml)": "50",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.100",
-          "Neck Dia x Height OD (mm)": "18 50x140"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "50x140"
         },
-        "specsText": "Capacity (ml): 50; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck Dia x Height OD (mm): 18 50x140",
+        "specsText": "Capacity (ml): 50; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck: 18; Dia x Height OD (mm): 50x140",
         "pack": 1,
         "price": 581,
         "priceLabel": "581.00",
@@ -8344,9 +8420,10 @@
           "Capacity (ml)": "100*",
           "Neck Size": "19/26",
           "Tolerance (±mL)": "0.100",
-          "Neck Dia x Height OD (mm)": "22 60x170"
+          "Neck": "22",
+          "Dia x Height OD (mm)": "60x170"
         },
-        "specsText": "Capacity (ml): 100*; Neck Size: 19/26; Tolerance (±mL): 0.100; Neck Dia x Height OD (mm): 22 60x170",
+        "specsText": "Capacity (ml): 100*; Neck Size: 19/26; Tolerance (±mL): 0.100; Neck: 22; Dia x Height OD (mm): 60x170",
         "pack": 1,
         "price": 607,
         "priceLabel": "607.00",
@@ -8364,9 +8441,10 @@
           "Capacity (ml)": "200*",
           "Neck Size": "19/26",
           "Tolerance (±mL)": "0.150",
-          "Neck Dia x Height OD (mm)": "22 75x210"
+          "Neck": "22",
+          "Dia x Height OD (mm)": "75x210"
         },
-        "specsText": "Capacity (ml): 200*; Neck Size: 19/26; Tolerance (±mL): 0.150; Neck Dia x Height OD (mm): 22 75x210",
+        "specsText": "Capacity (ml): 200*; Neck Size: 19/26; Tolerance (±mL): 0.150; Neck: 22; Dia x Height OD (mm): 75x210",
         "pack": 1,
         "price": 777,
         "priceLabel": "777.00",
@@ -8384,9 +8462,10 @@
           "Capacity (ml)": "250*",
           "Neck Size": "19/26",
           "Tolerance (±mL)": "0.150",
-          "Neck Dia x Height OD (mm)": "22 80x220"
+          "Neck": "22",
+          "Dia x Height OD (mm)": "80x220"
         },
-        "specsText": "Capacity (ml): 250*; Neck Size: 19/26; Tolerance (±mL): 0.150; Neck Dia x Height OD (mm): 22 80x220",
+        "specsText": "Capacity (ml): 250*; Neck Size: 19/26; Tolerance (±mL): 0.150; Neck: 22; Dia x Height OD (mm): 80x220",
         "pack": 1,
         "price": 777,
         "priceLabel": "777.00",
@@ -8404,9 +8483,10 @@
           "Capacity (ml)": "5",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 22x70"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 22x70",
+        "specsText": "Capacity (ml): 5; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 22x70",
         "pack": 1,
         "price": 312,
         "priceLabel": "312.00",
@@ -8424,9 +8504,10 @@
           "Capacity (ml)": "5*",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.080",
-          "Neck Dia x Height OD (mm)": "18 22x70"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck Dia x Height OD (mm): 18 22x70",
+        "specsText": "Capacity (ml): 5*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck: 18; Dia x Height OD (mm): 22x70",
         "pack": 1,
         "price": 581,
         "priceLabel": "581.00",
@@ -8444,9 +8525,10 @@
           "Capacity (ml)": "5*",
           "Neck Size": "12/21",
           "Tolerance (±mL)": "0.060",
-          "Neck Dia x Height OD (mm)": "16 22x70"
+          "Neck": "16",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5*; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck Dia x Height OD (mm): 16 22x70",
+        "specsText": "Capacity (ml): 5*; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck: 16; Dia x Height OD (mm): 22x70",
         "pack": 1,
         "price": 581,
         "priceLabel": "581.00",
@@ -8464,9 +8546,10 @@
           "Capacity (ml)": "500*",
           "Neck Size": "24/29",
           "Tolerance (±mL)": "0.400",
-          "Neck Dia x Height OD (mm)": "28 100x260"
+          "Neck": "28",
+          "Dia x Height OD (mm)": "100x260"
         },
-        "specsText": "Capacity (ml): 500*; Neck Size: 24/29; Tolerance (±mL): 0.400; Neck Dia x Height OD (mm): 28 100x260",
+        "specsText": "Capacity (ml): 500*; Neck Size: 24/29; Tolerance (±mL): 0.400; Neck: 28; Dia x Height OD (mm): 100x260",
         "pack": 1,
         "price": 1232,
         "priceLabel": "1232.00",
@@ -8484,9 +8567,10 @@
           "Capacity (ml)": "1000",
           "Neck Size": "29/32",
           "Tolerance (±mL)": "0.600",
-          "Neck Dia x Height OD (mm)": "34 125x300"
+          "Neck": "34",
+          "Dia x Height OD (mm)": "125x300"
         },
-        "specsText": "Capacity (ml): 1000; Neck Size: 29/32; Tolerance (±mL): 0.600; Neck Dia x Height OD (mm): 34 125x300",
+        "specsText": "Capacity (ml): 1000; Neck Size: 29/32; Tolerance (±mL): 0.600; Neck: 34; Dia x Height OD (mm): 125x300",
         "pack": 1,
         "price": 1870,
         "priceLabel": "1870.00",
@@ -8528,9 +8612,10 @@
           "Capacity (ml)": "5",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 22x70"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 22x70",
+        "specsText": "Capacity (ml): 5; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 22x70",
         "pack": 1,
         "price": 880,
         "priceLabel": "880.00",
@@ -8548,9 +8633,10 @@
           "Capacity (ml)": "10",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 27x90"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "27x90"
         },
-        "specsText": "Capacity (ml): 10; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 27x90",
+        "specsText": "Capacity (ml): 10; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 27x90",
         "pack": 1,
         "price": 880,
         "priceLabel": "880.00",
@@ -8568,9 +8654,10 @@
           "Capacity (ml)": "10",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 27x90"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "27x90"
         },
-        "specsText": "Capacity (ml): 10; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 27x90",
+        "specsText": "Capacity (ml): 10; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 27x90",
         "pack": 1,
         "price": 880,
         "priceLabel": "880.00",
@@ -8588,9 +8675,10 @@
           "Capacity (ml)": "10*",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.080",
-          "Neck Dia x Height OD (mm)": "18 27x90"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "27x90"
         },
-        "specsText": "Capacity (ml): 10*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck Dia x Height OD (mm): 18 27x90",
+        "specsText": "Capacity (ml): 10*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck: 18; Dia x Height OD (mm): 27x90",
         "pack": 1,
         "price": 880,
         "priceLabel": "880.00",
@@ -8608,9 +8696,10 @@
           "Capacity (ml)": "20",
           "Neck Size": "12/21",
           "Tolerance (±mL)": "0.060",
-          "Neck Dia x Height OD (mm)": "16 39x110"
+          "Neck": "16",
+          "Dia x Height OD (mm)": "39x110"
         },
-        "specsText": "Capacity (ml): 20; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck Dia x Height OD (mm): 16 39x110",
+        "specsText": "Capacity (ml): 20; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck: 16; Dia x Height OD (mm): 39x110",
         "pack": 1,
         "price": 880,
         "priceLabel": "880.00",
@@ -8628,9 +8717,10 @@
           "Capacity (ml)": "20*",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.080",
-          "Neck Dia x Height OD (mm)": "18 39x110"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "39x110"
         },
-        "specsText": "Capacity (ml): 20*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck Dia x Height OD (mm): 18 39x110",
+        "specsText": "Capacity (ml): 20*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck: 18; Dia x Height OD (mm): 39x110",
         "pack": 1,
         "price": 880,
         "priceLabel": "880.00",
@@ -8648,9 +8738,10 @@
           "Capacity (ml)": "25",
           "Neck Size": "12/21",
           "Tolerance (±mL)": "0.060",
-          "Neck Dia x Height OD (mm)": "16 40x110"
+          "Neck": "16",
+          "Dia x Height OD (mm)": "40x110"
         },
-        "specsText": "Capacity (ml): 25; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck Dia x Height OD (mm): 16 40x110",
+        "specsText": "Capacity (ml): 25; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck: 16; Dia x Height OD (mm): 40x110",
         "pack": 1,
         "price": 880,
         "priceLabel": "880.00",
@@ -8668,9 +8759,10 @@
           "Capacity (ml)": "25*",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.080",
-          "Neck Dia x Height OD (mm)": "18 40x110"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "40x110"
         },
-        "specsText": "Capacity (ml): 25*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck Dia x Height OD (mm): 18 40x110",
+        "specsText": "Capacity (ml): 25*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck: 18; Dia x Height OD (mm): 40x110",
         "pack": 1,
         "price": 880,
         "priceLabel": "880.00",
@@ -8688,9 +8780,10 @@
           "Capacity (ml)": "50",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.100",
-          "Neck Dia x Height OD (mm)": "18 50x140"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "50x140"
         },
-        "specsText": "Capacity (ml): 50; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck Dia x Height OD (mm): 18 50x140",
+        "specsText": "Capacity (ml): 50; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck: 18; Dia x Height OD (mm): 50x140",
         "pack": 1,
         "price": 880,
         "priceLabel": "880.00",
@@ -8708,9 +8801,10 @@
           "Capacity (ml)": "100*",
           "Neck Size": "19/26",
           "Tolerance (±mL)": "0.100",
-          "Neck Dia x Height OD (mm)": "22 60x170"
+          "Neck": "22",
+          "Dia x Height OD (mm)": "60x170"
         },
-        "specsText": "Capacity (ml): 100*; Neck Size: 19/26; Tolerance (±mL): 0.100; Neck Dia x Height OD (mm): 22 60x170",
+        "specsText": "Capacity (ml): 100*; Neck Size: 19/26; Tolerance (±mL): 0.100; Neck: 22; Dia x Height OD (mm): 60x170",
         "pack": 1,
         "price": 946,
         "priceLabel": "946.00",
@@ -8728,9 +8822,10 @@
           "Capacity (ml)": "200*",
           "Neck Size": "19/26",
           "Tolerance (±mL)": "0.150",
-          "Neck Dia x Height OD (mm)": "22 75x210"
+          "Neck": "22",
+          "Dia x Height OD (mm)": "75x210"
         },
-        "specsText": "Capacity (ml): 200*; Neck Size: 19/26; Tolerance (±mL): 0.150; Neck Dia x Height OD (mm): 22 75x210",
+        "specsText": "Capacity (ml): 200*; Neck Size: 19/26; Tolerance (±mL): 0.150; Neck: 22; Dia x Height OD (mm): 75x210",
         "pack": 1,
         "price": 1239,
         "priceLabel": "1239.00",
@@ -8748,9 +8843,10 @@
           "Capacity (ml)": "250*",
           "Neck Size": "19/26",
           "Tolerance (±mL)": "0.150",
-          "Neck Dia x Height OD (mm)": "22 80x220"
+          "Neck": "22",
+          "Dia x Height OD (mm)": "80x220"
         },
-        "specsText": "Capacity (ml): 250*; Neck Size: 19/26; Tolerance (±mL): 0.150; Neck Dia x Height OD (mm): 22 80x220",
+        "specsText": "Capacity (ml): 250*; Neck Size: 19/26; Tolerance (±mL): 0.150; Neck: 22; Dia x Height OD (mm): 80x220",
         "pack": 1,
         "price": 1239,
         "priceLabel": "1239.00",
@@ -8768,9 +8864,10 @@
           "Capacity (ml)": "5",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 22x70"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 22x70",
+        "specsText": "Capacity (ml): 5; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 22x70",
         "pack": 1,
         "price": 880,
         "priceLabel": "880.00",
@@ -8788,9 +8885,10 @@
           "Capacity (ml)": "5*",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.080",
-          "Neck Dia x Height OD (mm)": "18 22x70"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck Dia x Height OD (mm): 18 22x70",
+        "specsText": "Capacity (ml): 5*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck: 18; Dia x Height OD (mm): 22x70",
         "pack": 1,
         "price": 880,
         "priceLabel": "880.00",
@@ -8808,9 +8906,10 @@
           "Capacity (ml)": "5*",
           "Neck Size": "12/21",
           "Tolerance (±mL)": "0.060",
-          "Neck Dia x Height OD (mm)": "16 22x70"
+          "Neck": "16",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5*; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck Dia x Height OD (mm): 16 22x70",
+        "specsText": "Capacity (ml): 5*; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck: 16; Dia x Height OD (mm): 22x70",
         "pack": 1,
         "price": 880,
         "priceLabel": "880.00",
@@ -8828,9 +8927,10 @@
           "Capacity (ml)": "500*",
           "Neck Size": "24/29",
           "Tolerance (±mL)": "0.400",
-          "Neck Dia x Height OD (mm)": "28 100x260"
+          "Neck": "28",
+          "Dia x Height OD (mm)": "100x260"
         },
-        "specsText": "Capacity (ml): 500*; Neck Size: 24/29; Tolerance (±mL): 0.400; Neck Dia x Height OD (mm): 28 100x260",
+        "specsText": "Capacity (ml): 500*; Neck Size: 24/29; Tolerance (±mL): 0.400; Neck: 28; Dia x Height OD (mm): 100x260",
         "pack": 1,
         "price": 1540,
         "priceLabel": "1540.00",
@@ -8848,9 +8948,10 @@
           "Capacity (ml)": "1000",
           "Neck Size": "29/32",
           "Tolerance (±mL)": "0.600",
-          "Neck Dia x Height OD (mm)": "34 125x300"
+          "Neck": "34",
+          "Dia x Height OD (mm)": "125x300"
         },
-        "specsText": "Capacity (ml): 1000; Neck Size: 29/32; Tolerance (±mL): 0.600; Neck Dia x Height OD (mm): 34 125x300",
+        "specsText": "Capacity (ml): 1000; Neck Size: 29/32; Tolerance (±mL): 0.600; Neck: 34; Dia x Height OD (mm): 125x300",
         "pack": 1,
         "price": 2640,
         "priceLabel": "2640.00",
@@ -9147,9 +9248,10 @@
           "Capacity (ml)": "1",
           "Neck Size": "7/16",
           "Tolerance (±mL)": "0.025",
-          "Neck Dia x Height OD (mm)": "10 13x65"
+          "Neck": "10",
+          "Dia x Height OD (mm)": "13x65"
         },
-        "specsText": "Capacity (ml): 1; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck Dia x Height OD (mm): 10 13x65",
+        "specsText": "Capacity (ml): 1; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck: 10; Dia x Height OD (mm): 13x65",
         "pack": 2,
         "price": 528,
         "priceLabel": "528.00",
@@ -9167,9 +9269,10 @@
           "Capacity (ml)": "2",
           "Neck Size": "7/16",
           "Tolerance (±mL)": "0.025",
-          "Neck Dia x Height OD (mm)": "10 17x70"
+          "Neck": "10",
+          "Dia x Height OD (mm)": "17x70"
         },
-        "specsText": "Capacity (ml): 2; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck Dia x Height OD (mm): 10 17x70",
+        "specsText": "Capacity (ml): 2; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck: 10; Dia x Height OD (mm): 17x70",
         "pack": 2,
         "price": 528,
         "priceLabel": "528.00",
@@ -9187,9 +9290,10 @@
           "Capacity (ml)": "5",
           "Neck Size": "7/16",
           "Tolerance (±mL)": "0.025",
-          "Neck Dia x Height OD (mm)": "13 22x70"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck Dia x Height OD (mm): 13 22x70",
+        "specsText": "Capacity (ml): 5; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck: 13; Dia x Height OD (mm): 22x70",
         "pack": 1,
         "price": 541,
         "priceLabel": "541.00",
@@ -9207,9 +9311,10 @@
           "Capacity (ml)": "10",
           "Neck Size": "7/16",
           "Tolerance (±mL)": "0.025",
-          "Neck Dia x Height OD (mm)": "13 27x90"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "27x90"
         },
-        "specsText": "Capacity (ml): 10; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck Dia x Height OD (mm): 13 27x90",
+        "specsText": "Capacity (ml): 10; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck: 13; Dia x Height OD (mm): 27x90",
         "pack": 1,
         "price": 557,
         "priceLabel": "557.00",
@@ -9227,9 +9332,10 @@
           "Capacity (ml)": "20",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 39x110"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "39x110"
         },
-        "specsText": "Capacity (ml): 20; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 39x110",
+        "specsText": "Capacity (ml): 20; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 39x110",
         "pack": 1,
         "price": 581,
         "priceLabel": "581.00",
@@ -9247,9 +9353,10 @@
           "Capacity (ml)": "25",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 40x110"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "40x110"
         },
-        "specsText": "Capacity (ml): 25; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 40x110",
+        "specsText": "Capacity (ml): 25; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 40x110",
         "pack": 1,
         "price": 581,
         "priceLabel": "581.00",
@@ -9267,9 +9374,10 @@
           "Capacity (ml)": "50",
           "Neck Size": "12/21",
           "Tolerance (±mL)": "0.060",
-          "Neck Dia x Height OD (mm)": "16 50x140"
+          "Neck": "16",
+          "Dia x Height OD (mm)": "50x140"
         },
-        "specsText": "Capacity (ml): 50; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck Dia x Height OD (mm): 16 50x140",
+        "specsText": "Capacity (ml): 50; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck: 16; Dia x Height OD (mm): 50x140",
         "pack": 1,
         "price": 594,
         "priceLabel": "594.00",
@@ -9287,9 +9395,10 @@
           "Capacity (ml)": "100",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.100",
-          "Neck Dia x Height OD (mm)": "19 60x170"
+          "Neck": "19",
+          "Dia x Height OD (mm)": "60x170"
         },
-        "specsText": "Capacity (ml): 100; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck Dia x Height OD (mm): 19 60x170",
+        "specsText": "Capacity (ml): 100; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck: 19; Dia x Height OD (mm): 60x170",
         "pack": 1,
         "price": 634,
         "priceLabel": "634.00",
@@ -9307,9 +9416,10 @@
           "Capacity (ml)": "150*",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.100",
-          "Neck Dia x Height OD (mm)": "18 69x200"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "69x200"
         },
-        "specsText": "Capacity (ml): 150*; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck Dia x Height OD (mm): 18 69x200",
+        "specsText": "Capacity (ml): 150*; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck: 18; Dia x Height OD (mm): 69x200",
         "pack": 1,
         "price": 792,
         "priceLabel": "792.00",
@@ -9327,9 +9437,10 @@
           "Capacity (ml)": "200",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.150",
-          "Neck Dia x Height OD (mm)": "18 75x210"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "75x210"
         },
-        "specsText": "Capacity (ml): 200; Neck Size: 14/23; Tolerance (±mL): 0.150; Neck Dia x Height OD (mm): 18 75x210",
+        "specsText": "Capacity (ml): 200; Neck Size: 14/23; Tolerance (±mL): 0.150; Neck: 18; Dia x Height OD (mm): 75x210",
         "pack": 1,
         "price": 858,
         "priceLabel": "858.00",
@@ -9347,9 +9458,10 @@
           "Capacity (ml)": "250",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.150",
-          "Neck Dia x Height OD (mm)": "18 80x220"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "80x220"
         },
-        "specsText": "Capacity (ml): 250; Neck Size: 14/23; Tolerance (±mL): 0.150; Neck Dia x Height OD (mm): 18 80x220",
+        "specsText": "Capacity (ml): 250; Neck Size: 14/23; Tolerance (±mL): 0.150; Neck: 18; Dia x Height OD (mm): 80x220",
         "pack": 1,
         "price": 858,
         "priceLabel": "858.00",
@@ -9367,9 +9479,10 @@
           "Capacity (ml)": "500",
           "Neck Size": "19/26",
           "Tolerance (±mL)": "0.250",
-          "Neck Dia x Height OD (mm)": "22 100x260"
+          "Neck": "22",
+          "Dia x Height OD (mm)": "100x260"
         },
-        "specsText": "Capacity (ml): 500; Neck Size: 19/26; Tolerance (±mL): 0.250; Neck Dia x Height OD (mm): 22 100x260",
+        "specsText": "Capacity (ml): 500; Neck Size: 19/26; Tolerance (±mL): 0.250; Neck: 22; Dia x Height OD (mm): 100x260",
         "pack": 1,
         "price": 1423,
         "priceLabel": "1423.00",
@@ -9387,9 +9500,10 @@
           "Capacity (ml)": "1000",
           "Neck Size": "24/29",
           "Tolerance (±mL)": "0.400",
-          "Neck Dia x Height OD (mm)": "28 125x300"
+          "Neck": "28",
+          "Dia x Height OD (mm)": "125x300"
         },
-        "specsText": "Capacity (ml): 1000; Neck Size: 24/29; Tolerance (±mL): 0.400; Neck Dia x Height OD (mm): 28 125x300",
+        "specsText": "Capacity (ml): 1000; Neck Size: 24/29; Tolerance (±mL): 0.400; Neck: 28; Dia x Height OD (mm): 125x300",
         "pack": 1,
         "price": 2083,
         "priceLabel": "2083.00",
@@ -9407,9 +9521,10 @@
           "Capacity (ml)": "2000",
           "Neck Size": "29/32",
           "Tolerance (±mL)": "0.600",
-          "Neck Dia x Height OD (mm)": "34 160x370"
+          "Neck": "34",
+          "Dia x Height OD (mm)": "160x370"
         },
-        "specsText": "Capacity (ml): 2000; Neck Size: 29/32; Tolerance (±mL): 0.600; Neck Dia x Height OD (mm): 34 160x370",
+        "specsText": "Capacity (ml): 2000; Neck Size: 29/32; Tolerance (±mL): 0.600; Neck: 34; Dia x Height OD (mm): 160x370",
         "pack": 1,
         "price": 3652,
         "priceLabel": "3652.00",
@@ -9427,9 +9542,10 @@
           "Capacity (ml)": "5000",
           "Neck Size": "34/35",
           "Tolerance (±mL)": "1.200",
-          "Neck Dia x Height OD (mm)": "42 215x475"
+          "Neck": "42",
+          "Dia x Height OD (mm)": "215x475"
         },
-        "specsText": "Capacity (ml): 5000; Neck Size: 34/35; Tolerance (±mL): 1.200; Neck Dia x Height OD (mm): 42 215x475",
+        "specsText": "Capacity (ml): 5000; Neck Size: 34/35; Tolerance (±mL): 1.200; Neck: 42; Dia x Height OD (mm): 215x475",
         "pack": 1,
         "price": 22253,
         "priceLabel": "22253.00",
@@ -9471,9 +9587,10 @@
           "Capacity (ml)": "1",
           "Neck Size": "7/16",
           "Tolerance (±mL)": "0.025",
-          "Neck Dia x Height OD (mm)": "10 13x65"
+          "Neck": "10",
+          "Dia x Height OD (mm)": "13x65"
         },
-        "specsText": "Capacity (ml): 1; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck Dia x Height OD (mm): 10 13x65",
+        "specsText": "Capacity (ml): 1; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck: 10; Dia x Height OD (mm): 13x65",
         "pack": 2,
         "price": 792,
         "priceLabel": "792.00",
@@ -9491,9 +9608,10 @@
           "Capacity (ml)": "2",
           "Neck Size": "7/16",
           "Tolerance (±mL)": "0.025",
-          "Neck Dia x Height OD (mm)": "10 17x70"
+          "Neck": "10",
+          "Dia x Height OD (mm)": "17x70"
         },
-        "specsText": "Capacity (ml): 2; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck Dia x Height OD (mm): 10 17x70",
+        "specsText": "Capacity (ml): 2; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck: 10; Dia x Height OD (mm): 17x70",
         "pack": 2,
         "price": 792,
         "priceLabel": "792.00",
@@ -9511,9 +9629,10 @@
           "Capacity (ml)": "5",
           "Neck Size": "7/16",
           "Tolerance (±mL)": "0.025",
-          "Neck Dia x Height OD (mm)": "13 22x70"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck Dia x Height OD (mm): 13 22x70",
+        "specsText": "Capacity (ml): 5; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck: 13; Dia x Height OD (mm): 22x70",
         "pack": 1,
         "price": 858,
         "priceLabel": "858.00",
@@ -9531,9 +9650,10 @@
           "Capacity (ml)": "10",
           "Neck Size": "7/16",
           "Tolerance (±mL)": "0.025",
-          "Neck Dia x Height OD (mm)": "13 27x90"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "27x90"
         },
-        "specsText": "Capacity (ml): 10; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck Dia x Height OD (mm): 13 27x90",
+        "specsText": "Capacity (ml): 10; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck: 13; Dia x Height OD (mm): 27x90",
         "pack": 1,
         "price": 869,
         "priceLabel": "869.00",
@@ -9551,9 +9671,10 @@
           "Capacity (ml)": "20",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 39x110"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "39x110"
         },
-        "specsText": "Capacity (ml): 20; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 39x110",
+        "specsText": "Capacity (ml): 20; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 39x110",
         "pack": 1,
         "price": 898,
         "priceLabel": "898.00",
@@ -9571,9 +9692,10 @@
           "Capacity (ml)": "25",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 40x110"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "40x110"
         },
-        "specsText": "Capacity (ml): 25; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 40x110",
+        "specsText": "Capacity (ml): 25; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 40x110",
         "pack": 1,
         "price": 898,
         "priceLabel": "898.00",
@@ -9591,9 +9713,10 @@
           "Capacity (ml)": "50",
           "Neck Size": "12/21",
           "Tolerance (±mL)": "0.060",
-          "Neck Dia x Height OD (mm)": "16 50x140"
+          "Neck": "16",
+          "Dia x Height OD (mm)": "50x140"
         },
-        "specsText": "Capacity (ml): 50; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck Dia x Height OD (mm): 16 50x140",
+        "specsText": "Capacity (ml): 50; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck: 16; Dia x Height OD (mm): 50x140",
         "pack": 1,
         "price": 922,
         "priceLabel": "922.00",
@@ -9611,9 +9734,10 @@
           "Capacity (ml)": "100",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.100",
-          "Neck Dia x Height OD (mm)": "19 60x170"
+          "Neck": "19",
+          "Dia x Height OD (mm)": "60x170"
         },
-        "specsText": "Capacity (ml): 100; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck Dia x Height OD (mm): 19 60x170",
+        "specsText": "Capacity (ml): 100; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck: 19; Dia x Height OD (mm): 60x170",
         "pack": 1,
         "price": 990,
         "priceLabel": "990.00",
@@ -9631,9 +9755,10 @@
           "Capacity (ml)": "150*",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.100",
-          "Neck Dia x Height OD (mm)": "18 69x200"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "69x200"
         },
-        "specsText": "Capacity (ml): 150*; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck Dia x Height OD (mm): 18 69x200",
+        "specsText": "Capacity (ml): 150*; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck: 18; Dia x Height OD (mm): 69x200",
         "pack": 1,
         "price": 1056,
         "priceLabel": "1056.00",
@@ -9651,9 +9776,10 @@
           "Capacity (ml)": "200",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.150",
-          "Neck Dia x Height OD (mm)": "18 75x210"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "75x210"
         },
-        "specsText": "Capacity (ml): 200; Neck Size: 14/23; Tolerance (±mL): 0.150; Neck Dia x Height OD (mm): 18 75x210",
+        "specsText": "Capacity (ml): 200; Neck Size: 14/23; Tolerance (±mL): 0.150; Neck: 18; Dia x Height OD (mm): 75x210",
         "pack": 1,
         "price": 1318,
         "priceLabel": "1318.00",
@@ -9671,9 +9797,10 @@
           "Capacity (ml)": "250",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.150",
-          "Neck Dia x Height OD (mm)": "18 80x220"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "80x220"
         },
-        "specsText": "Capacity (ml): 250; Neck Size: 14/23; Tolerance (±mL): 0.150; Neck Dia x Height OD (mm): 18 80x220",
+        "specsText": "Capacity (ml): 250; Neck Size: 14/23; Tolerance (±mL): 0.150; Neck: 18; Dia x Height OD (mm): 80x220",
         "pack": 1,
         "price": 1318,
         "priceLabel": "1318.00",
@@ -9691,9 +9818,10 @@
           "Capacity (ml)": "500",
           "Neck Size": "19/26",
           "Tolerance (±mL)": "0.250",
-          "Neck Dia x Height OD (mm)": "22 100x260"
+          "Neck": "22",
+          "Dia x Height OD (mm)": "100x260"
         },
-        "specsText": "Capacity (ml): 500; Neck Size: 19/26; Tolerance (±mL): 0.250; Neck Dia x Height OD (mm): 22 100x260",
+        "specsText": "Capacity (ml): 500; Neck Size: 19/26; Tolerance (±mL): 0.250; Neck: 22; Dia x Height OD (mm): 100x260",
         "pack": 1,
         "price": 1846,
         "priceLabel": "1846.00",
@@ -9711,9 +9839,10 @@
           "Capacity (ml)": "1000",
           "Neck Size": "24/29",
           "Tolerance (±mL)": "0.400",
-          "Neck Dia x Height OD (mm)": "28 125x300"
+          "Neck": "28",
+          "Dia x Height OD (mm)": "125x300"
         },
-        "specsText": "Capacity (ml): 1000; Neck Size: 24/29; Tolerance (±mL): 0.400; Neck Dia x Height OD (mm): 28 125x300",
+        "specsText": "Capacity (ml): 1000; Neck Size: 24/29; Tolerance (±mL): 0.400; Neck: 28; Dia x Height OD (mm): 125x300",
         "pack": 1,
         "price": 2611,
         "priceLabel": "2611.00",
@@ -9731,9 +9860,10 @@
           "Capacity (ml)": "2000",
           "Neck Size": "29/32",
           "Tolerance (±mL)": "0.600",
-          "Neck Dia x Height OD (mm)": "34 160x370"
+          "Neck": "34",
+          "Dia x Height OD (mm)": "160x370"
         },
-        "specsText": "Capacity (ml): 2000; Neck Size: 29/32; Tolerance (±mL): 0.600; Neck Dia x Height OD (mm): 34 160x370",
+        "specsText": "Capacity (ml): 2000; Neck Size: 29/32; Tolerance (±mL): 0.600; Neck: 34; Dia x Height OD (mm): 160x370",
         "pack": 1,
         "price": 4481,
         "priceLabel": "4481.00",
@@ -9751,9 +9881,10 @@
           "Capacity (ml)": "5000",
           "Neck Size": "34/35",
           "Tolerance (±mL)": "1.200",
-          "Neck Dia x Height OD (mm)": "42 215x475"
+          "Neck": "42",
+          "Dia x Height OD (mm)": "215x475"
         },
-        "specsText": "Capacity (ml): 5000; Neck Size: 34/35; Tolerance (±mL): 1.200; Neck Dia x Height OD (mm): 42 215x475",
+        "specsText": "Capacity (ml): 5000; Neck Size: 34/35; Tolerance (±mL): 1.200; Neck: 42; Dia x Height OD (mm): 215x475",
         "pack": 1,
         "price": 25047,
         "priceLabel": "25047.00",
@@ -9796,9 +9927,10 @@
           "Capacity (ml)": "1",
           "Neck Size": "7/16",
           "Tolerance (±mL)": "0.050",
-          "Neck Dia x Height OD (mm)": "10 13x65"
+          "Neck": "10",
+          "Dia x Height OD (mm)": "13x65"
         },
-        "specsText": "Capacity (ml): 1; Neck Size: 7/16; Tolerance (±mL): 0.050; Neck Dia x Height OD (mm): 10 13x65",
+        "specsText": "Capacity (ml): 1; Neck Size: 7/16; Tolerance (±mL): 0.050; Neck: 10; Dia x Height OD (mm): 13x65",
         "pack": 2,
         "price": 293,
         "priceLabel": "293.00",
@@ -9816,9 +9948,10 @@
           "Capacity (ml)": "2",
           "Neck Size": "7/16",
           "Tolerance (±mL)": "0.050",
-          "Neck Dia x Height OD (mm)": "10 17x70"
+          "Neck": "10",
+          "Dia x Height OD (mm)": "17x70"
         },
-        "specsText": "Capacity (ml): 2; Neck Size: 7/16; Tolerance (±mL): 0.050; Neck Dia x Height OD (mm): 10 17x70",
+        "specsText": "Capacity (ml): 2; Neck Size: 7/16; Tolerance (±mL): 0.050; Neck: 10; Dia x Height OD (mm): 17x70",
         "pack": 2,
         "price": 293,
         "priceLabel": "293.00",
@@ -9836,9 +9969,10 @@
           "Capacity (ml)": "5",
           "Neck Size": "7/16",
           "Tolerance (±mL)": "0.050",
-          "Neck Dia x Height OD (mm)": "13 22x70"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5; Neck Size: 7/16; Tolerance (±mL): 0.050; Neck Dia x Height OD (mm): 13 22x70",
+        "specsText": "Capacity (ml): 5; Neck Size: 7/16; Tolerance (±mL): 0.050; Neck: 13; Dia x Height OD (mm): 22x70",
         "pack": 2,
         "price": 326,
         "priceLabel": "326.00",
@@ -9856,9 +9990,10 @@
           "Capacity (ml)": "10",
           "Neck Size": "7/16",
           "Tolerance (±mL)": "0.050",
-          "Neck Dia x Height OD (mm)": "13 27x90"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "27x90"
         },
-        "specsText": "Capacity (ml): 10; Neck Size: 7/16; Tolerance (±mL): 0.050; Neck Dia x Height OD (mm): 13 27x90",
+        "specsText": "Capacity (ml): 10; Neck Size: 7/16; Tolerance (±mL): 0.050; Neck: 13; Dia x Height OD (mm): 27x90",
         "pack": 2,
         "price": 343,
         "priceLabel": "343.00",
@@ -9876,9 +10011,10 @@
           "Capacity (ml)": "20",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.080",
-          "Neck Dia x Height OD (mm)": "13 39x110"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "39x110"
         },
-        "specsText": "Capacity (ml): 20; Neck Size: 10/19; Tolerance (±mL): 0.080; Neck Dia x Height OD (mm): 13 39x110",
+        "specsText": "Capacity (ml): 20; Neck Size: 10/19; Tolerance (±mL): 0.080; Neck: 13; Dia x Height OD (mm): 39x110",
         "pack": 2,
         "price": 398,
         "priceLabel": "398.00",
@@ -9896,9 +10032,10 @@
           "Capacity (ml)": "25",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.080",
-          "Neck Dia x Height OD (mm)": "13 40x110"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "40x110"
         },
-        "specsText": "Capacity (ml): 25; Neck Size: 10/19; Tolerance (±mL): 0.080; Neck Dia x Height OD (mm): 13 40x110",
+        "specsText": "Capacity (ml): 25; Neck Size: 10/19; Tolerance (±mL): 0.080; Neck: 13; Dia x Height OD (mm): 40x110",
         "pack": 2,
         "price": 398,
         "priceLabel": "398.00",
@@ -9916,9 +10053,10 @@
           "Capacity (ml)": "50",
           "Neck Size": "12/21",
           "Tolerance (±mL)": "0.120",
-          "Neck Dia x Height OD (mm)": "16 50x140"
+          "Neck": "16",
+          "Dia x Height OD (mm)": "50x140"
         },
-        "specsText": "Capacity (ml): 50; Neck Size: 12/21; Tolerance (±mL): 0.120; Neck Dia x Height OD (mm): 16 50x140",
+        "specsText": "Capacity (ml): 50; Neck Size: 12/21; Tolerance (±mL): 0.120; Neck: 16; Dia x Height OD (mm): 50x140",
         "pack": 2,
         "price": 438,
         "priceLabel": "438.00",
@@ -9936,9 +10074,10 @@
           "Capacity (ml)": "100",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.200",
-          "Neck Dia x Height OD (mm)": "19 60x170"
+          "Neck": "19",
+          "Dia x Height OD (mm)": "60x170"
         },
-        "specsText": "Capacity (ml): 100; Neck Size: 14/23; Tolerance (±mL): 0.200; Neck Dia x Height OD (mm): 19 60x170",
+        "specsText": "Capacity (ml): 100; Neck Size: 14/23; Tolerance (±mL): 0.200; Neck: 19; Dia x Height OD (mm): 60x170",
         "pack": 2,
         "price": 486,
         "priceLabel": "486.00",
@@ -9956,9 +10095,10 @@
           "Capacity (ml)": "200",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.300",
-          "Neck Dia x Height OD (mm)": "18 75x210"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "75x210"
         },
-        "specsText": "Capacity (ml): 200; Neck Size: 14/23; Tolerance (±mL): 0.300; Neck Dia x Height OD (mm): 18 75x210",
+        "specsText": "Capacity (ml): 200; Neck Size: 14/23; Tolerance (±mL): 0.300; Neck: 18; Dia x Height OD (mm): 75x210",
         "pack": 2,
         "price": 726,
         "priceLabel": "726.00",
@@ -9976,9 +10116,10 @@
           "Capacity (ml)": "250",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.300",
-          "Neck Dia x Height OD (mm)": "18 80x220"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "80x220"
         },
-        "specsText": "Capacity (ml): 250; Neck Size: 14/23; Tolerance (±mL): 0.300; Neck Dia x Height OD (mm): 18 80x220",
+        "specsText": "Capacity (ml): 250; Neck Size: 14/23; Tolerance (±mL): 0.300; Neck: 18; Dia x Height OD (mm): 80x220",
         "pack": 2,
         "price": 726,
         "priceLabel": "726.00",
@@ -9996,9 +10137,10 @@
           "Capacity (ml)": "500",
           "Neck Size": "19/26",
           "Tolerance (±mL)": "0.500",
-          "Neck Dia x Height OD (mm)": "22 100x260"
+          "Neck": "22",
+          "Dia x Height OD (mm)": "100x260"
         },
-        "specsText": "Capacity (ml): 500; Neck Size: 19/26; Tolerance (±mL): 0.500; Neck Dia x Height OD (mm): 22 100x260",
+        "specsText": "Capacity (ml): 500; Neck Size: 19/26; Tolerance (±mL): 0.500; Neck: 22; Dia x Height OD (mm): 100x260",
         "pack": 2,
         "price": 1210,
         "priceLabel": "1210.00",
@@ -10016,9 +10158,10 @@
           "Capacity (ml)": "1000",
           "Neck Size": "24/29",
           "Tolerance (±mL)": "0.800",
-          "Neck Dia x Height OD (mm)": "28 125x300"
+          "Neck": "28",
+          "Dia x Height OD (mm)": "125x300"
         },
-        "specsText": "Capacity (ml): 1000; Neck Size: 24/29; Tolerance (±mL): 0.800; Neck Dia x Height OD (mm): 28 125x300",
+        "specsText": "Capacity (ml): 1000; Neck Size: 24/29; Tolerance (±mL): 0.800; Neck: 28; Dia x Height OD (mm): 125x300",
         "pack": 2,
         "price": 1701,
         "priceLabel": "1701.00",
@@ -10036,9 +10179,10 @@
           "Capacity (ml)": "2000",
           "Neck Size": "29/32",
           "Tolerance (±mL)": "1.200",
-          "Neck Dia x Height OD (mm)": "34 160x370"
+          "Neck": "34",
+          "Dia x Height OD (mm)": "160x370"
         },
-        "specsText": "Capacity (ml): 2000; Neck Size: 29/32; Tolerance (±mL): 1.200; Neck Dia x Height OD (mm): 34 160x370",
+        "specsText": "Capacity (ml): 2000; Neck Size: 29/32; Tolerance (±mL): 1.200; Neck: 34; Dia x Height OD (mm): 160x370",
         "pack": 1,
         "price": 3300,
         "priceLabel": "3300.00",
@@ -10056,9 +10200,10 @@
           "Capacity (ml)": "5000",
           "Neck Size": "34/35",
           "Tolerance (±mL)": "2.500",
-          "Neck Dia x Height OD (mm)": "42 215x475"
+          "Neck": "42",
+          "Dia x Height OD (mm)": "215x475"
         },
-        "specsText": "Capacity (ml): 5000; Neck Size: 34/35; Tolerance (±mL): 2.500; Neck Dia x Height OD (mm): 42 215x475",
+        "specsText": "Capacity (ml): 5000; Neck Size: 34/35; Tolerance (±mL): 2.500; Neck: 42; Dia x Height OD (mm): 215x475",
         "pack": 1,
         "price": 12654,
         "priceLabel": "12654.00",
@@ -59029,9 +59174,10 @@
           "Capacity (ml)": "1",
           "Neck Size": "7/16",
           "Tolerance (±mL)": "0.025",
-          "Neck Dia x Height OD (mm)": "10 13x65"
+          "Neck": "10",
+          "Dia x Height OD (mm)": "13x65"
         },
-        "specsText": "Capacity (ml): 1; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck Dia x Height OD (mm): 10 13x65",
+        "specsText": "Capacity (ml): 1; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck: 10; Dia x Height OD (mm): 13x65",
         "pack": 2,
         "price": 416,
         "priceLabel": "416.00",
@@ -59046,9 +59192,10 @@
           "Capacity (ml)": "2",
           "Neck Size": "7/16",
           "Tolerance (±mL)": "0.025",
-          "Neck Dia x Height OD (mm)": "10 17x70"
+          "Neck": "10",
+          "Dia x Height OD (mm)": "17x70"
         },
-        "specsText": "Capacity (ml): 2; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck Dia x Height OD (mm): 10 17x70",
+        "specsText": "Capacity (ml): 2; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck: 10; Dia x Height OD (mm): 17x70",
         "pack": 2,
         "price": 416,
         "priceLabel": "416.00",
@@ -59063,9 +59210,10 @@
           "Capacity (ml)": "5",
           "Neck Size": "7/16",
           "Tolerance (±mL)": "0.025",
-          "Neck Dia x Height OD (mm)": "13 22x70"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck Dia x Height OD (mm): 13 22x70",
+        "specsText": "Capacity (ml): 5; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck: 13; Dia x Height OD (mm): 22x70",
         "pack": 1,
         "price": 310,
         "priceLabel": "310.00",
@@ -59080,9 +59228,10 @@
           "Capacity (ml)": "10",
           "Neck Size": "7/16",
           "Tolerance (±mL)": "0.025",
-          "Neck Dia x Height OD (mm)": "13 27x90"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "27x90"
         },
-        "specsText": "Capacity (ml): 10; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck Dia x Height OD (mm): 13 27x90",
+        "specsText": "Capacity (ml): 10; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck: 13; Dia x Height OD (mm): 27x90",
         "pack": 1,
         "price": 328,
         "priceLabel": "328.00",
@@ -59097,9 +59246,10 @@
           "Capacity (ml)": "20",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 39x110"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "39x110"
         },
-        "specsText": "Capacity (ml): 20; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 39x110",
+        "specsText": "Capacity (ml): 20; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 39x110",
         "pack": 1,
         "price": 361,
         "priceLabel": "361.00",
@@ -59114,9 +59264,10 @@
           "Capacity (ml)": "25",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 40x110"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "40x110"
         },
-        "specsText": "Capacity (ml): 25; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 40x110",
+        "specsText": "Capacity (ml): 25; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 40x110",
         "pack": 1,
         "price": 361,
         "priceLabel": "361.00",
@@ -59131,9 +59282,10 @@
           "Capacity (ml)": "50",
           "Neck Size": "12/21",
           "Tolerance (±mL)": "0.060",
-          "Neck Dia x Height OD (mm)": "16 50x140"
+          "Neck": "16",
+          "Dia x Height OD (mm)": "50x140"
         },
-        "specsText": "Capacity (ml): 50; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck Dia x Height OD (mm): 16 50x140",
+        "specsText": "Capacity (ml): 50; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck: 16; Dia x Height OD (mm): 50x140",
         "pack": 1,
         "price": 343,
         "priceLabel": "343.00",
@@ -59148,9 +59300,10 @@
           "Capacity (ml)": "100",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.100",
-          "Neck Dia x Height OD (mm)": "19 60x170"
+          "Neck": "19",
+          "Dia x Height OD (mm)": "60x170"
         },
-        "specsText": "Capacity (ml): 100; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck Dia x Height OD (mm): 19 60x170",
+        "specsText": "Capacity (ml): 100; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck: 19; Dia x Height OD (mm): 60x170",
         "pack": 1,
         "price": 460,
         "priceLabel": "460.00",
@@ -59165,9 +59318,10 @@
           "Capacity (ml)": "150*",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.100",
-          "Neck Dia x Height OD (mm)": "18 69x200"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "69x200"
         },
-        "specsText": "Capacity (ml): 150*; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck Dia x Height OD (mm): 18 69x200",
+        "specsText": "Capacity (ml): 150*; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck: 18; Dia x Height OD (mm): 69x200",
         "pack": 1,
         "price": 526,
         "priceLabel": "526.00",
@@ -59182,9 +59336,10 @@
           "Capacity (ml)": "200",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.150",
-          "Neck Dia x Height OD (mm)": "18 75x210"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "75x210"
         },
-        "specsText": "Capacity (ml): 200; Neck Size: 14/23; Tolerance (±mL): 0.150; Neck Dia x Height OD (mm): 18 75x210",
+        "specsText": "Capacity (ml): 200; Neck Size: 14/23; Tolerance (±mL): 0.150; Neck: 18; Dia x Height OD (mm): 75x210",
         "pack": 1,
         "price": 612,
         "priceLabel": "612.00",
@@ -59199,9 +59354,10 @@
           "Capacity (ml)": "250",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.150",
-          "Neck Dia x Height OD (mm)": "18 80x220"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "80x220"
         },
-        "specsText": "Capacity (ml): 250; Neck Size: 14/23; Tolerance (±mL): 0.150; Neck Dia x Height OD (mm): 18 80x220",
+        "specsText": "Capacity (ml): 250; Neck Size: 14/23; Tolerance (±mL): 0.150; Neck: 18; Dia x Height OD (mm): 80x220",
         "pack": 1,
         "price": 629,
         "priceLabel": "629.00",
@@ -59216,9 +59372,10 @@
           "Capacity (ml)": "500",
           "Neck Size": "19/26",
           "Tolerance (±mL)": "0.250",
-          "Neck Dia x Height OD (mm)": "22 100x260"
+          "Neck": "22",
+          "Dia x Height OD (mm)": "100x260"
         },
-        "specsText": "Capacity (ml): 500; Neck Size: 19/26; Tolerance (±mL): 0.250; Neck Dia x Height OD (mm): 22 100x260",
+        "specsText": "Capacity (ml): 500; Neck Size: 19/26; Tolerance (±mL): 0.250; Neck: 22; Dia x Height OD (mm): 100x260",
         "pack": 1,
         "price": 968,
         "priceLabel": "968.00",
@@ -59233,9 +59390,10 @@
           "Capacity (ml)": "1000",
           "Neck Size": "24/29",
           "Tolerance (±mL)": "0.400",
-          "Neck Dia x Height OD (mm)": "28 125x300"
+          "Neck": "28",
+          "Dia x Height OD (mm)": "125x300"
         },
-        "specsText": "Capacity (ml): 1000; Neck Size: 24/29; Tolerance (±mL): 0.400; Neck Dia x Height OD (mm): 28 125x300",
+        "specsText": "Capacity (ml): 1000; Neck Size: 24/29; Tolerance (±mL): 0.400; Neck: 28; Dia x Height OD (mm): 125x300",
         "pack": 1,
         "price": 1496,
         "priceLabel": "1496.00",
@@ -59250,9 +59408,10 @@
           "Capacity (ml)": "2000",
           "Neck Size": "29/32",
           "Tolerance (±mL)": "0.600",
-          "Neck Dia x Height OD (mm)": "34 160x370"
+          "Neck": "34",
+          "Dia x Height OD (mm)": "160x370"
         },
-        "specsText": "Capacity (ml): 2000; Neck Size: 29/32; Tolerance (±mL): 0.600; Neck Dia x Height OD (mm): 34 160x370",
+        "specsText": "Capacity (ml): 2000; Neck Size: 29/32; Tolerance (±mL): 0.600; Neck: 34; Dia x Height OD (mm): 160x370",
         "pack": 1,
         "price": 2977,
         "priceLabel": "2977.00",
@@ -59283,9 +59442,10 @@
           "Capacity (ml)": "5",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 22x70"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 22x70",
+        "specsText": "Capacity (ml): 5; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 22x70",
         "pack": 1,
         "price": 343,
         "priceLabel": "343.00",
@@ -59300,9 +59460,10 @@
           "Capacity (ml)": "10",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 27x90"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "27x90"
         },
-        "specsText": "Capacity (ml): 10; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 27x90",
+        "specsText": "Capacity (ml): 10; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 27x90",
         "pack": 1,
         "price": 378,
         "priceLabel": "378.00",
@@ -59317,9 +59478,10 @@
           "Capacity (ml)": "10",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 27x90"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "27x90"
         },
-        "specsText": "Capacity (ml): 10; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 27x90",
+        "specsText": "Capacity (ml): 10; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 27x90",
         "pack": 1,
         "price": 378,
         "priceLabel": "378.00",
@@ -59334,9 +59496,10 @@
           "Capacity (ml)": "10*",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.080",
-          "Neck Dia x Height OD (mm)": "18 27x90"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "27x90"
         },
-        "specsText": "Capacity (ml): 10*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck Dia x Height OD (mm): 18 27x90",
+        "specsText": "Capacity (ml): 10*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck: 18; Dia x Height OD (mm): 27x90",
         "pack": 1,
         "price": 638,
         "priceLabel": "638.00",
@@ -59351,9 +59514,10 @@
           "Capacity (ml)": "20",
           "Neck Size": "12/21",
           "Tolerance (±mL)": "0.060",
-          "Neck Dia x Height OD (mm)": "16 39x110"
+          "Neck": "16",
+          "Dia x Height OD (mm)": "39x110"
         },
-        "specsText": "Capacity (ml): 20; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck Dia x Height OD (mm): 16 39x110",
+        "specsText": "Capacity (ml): 20; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck: 16; Dia x Height OD (mm): 39x110",
         "pack": 1,
         "price": 605,
         "priceLabel": "605.00",
@@ -59368,9 +59532,10 @@
           "Capacity (ml)": "20*",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.080",
-          "Neck Dia x Height OD (mm)": "18 39x110"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "39x110"
         },
-        "specsText": "Capacity (ml): 20*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck Dia x Height OD (mm): 18 39x110",
+        "specsText": "Capacity (ml): 20*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck: 18; Dia x Height OD (mm): 39x110",
         "pack": 1,
         "price": 638,
         "priceLabel": "638.00",
@@ -59385,9 +59550,10 @@
           "Capacity (ml)": "25",
           "Neck Size": "12/21",
           "Tolerance (±mL)": "0.060",
-          "Neck Dia x Height OD (mm)": "16 40x110"
+          "Neck": "16",
+          "Dia x Height OD (mm)": "40x110"
         },
-        "specsText": "Capacity (ml): 25; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck Dia x Height OD (mm): 16 40x110",
+        "specsText": "Capacity (ml): 25; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck: 16; Dia x Height OD (mm): 40x110",
         "pack": 1,
         "price": 605,
         "priceLabel": "605.00",
@@ -59402,9 +59568,10 @@
           "Capacity (ml)": "25*",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.080",
-          "Neck Dia x Height OD (mm)": "18 40x110"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "40x110"
         },
-        "specsText": "Capacity (ml): 25*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck Dia x Height OD (mm): 18 40x110",
+        "specsText": "Capacity (ml): 25*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck: 18; Dia x Height OD (mm): 40x110",
         "pack": 1,
         "price": 638,
         "priceLabel": "638.00",
@@ -59419,9 +59586,10 @@
           "Capacity (ml)": "50",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.100",
-          "Neck Dia x Height OD (mm)": "18 50x140"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "50x140"
         },
-        "specsText": "Capacity (ml): 50; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck Dia x Height OD (mm): 18 50x140",
+        "specsText": "Capacity (ml): 50; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck: 18; Dia x Height OD (mm): 50x140",
         "pack": 1,
         "price": 638,
         "priceLabel": "638.00",
@@ -59436,9 +59604,10 @@
           "Capacity (ml)": "100*",
           "Neck Size": "19/26",
           "Tolerance (±mL)": "0.100",
-          "Neck Dia x Height OD (mm)": "22 60x170"
+          "Neck": "22",
+          "Dia x Height OD (mm)": "60x170"
         },
-        "specsText": "Capacity (ml): 100*; Neck Size: 19/26; Tolerance (±mL): 0.100; Neck Dia x Height OD (mm): 22 60x170",
+        "specsText": "Capacity (ml): 100*; Neck Size: 19/26; Tolerance (±mL): 0.100; Neck: 22; Dia x Height OD (mm): 60x170",
         "pack": 1,
         "price": 671,
         "priceLabel": "671.00",
@@ -59453,9 +59622,10 @@
           "Capacity (ml)": "200*",
           "Neck Size": "19/26",
           "Tolerance (±mL)": "0.150",
-          "Neck Dia x Height OD (mm)": "22 75x210"
+          "Neck": "22",
+          "Dia x Height OD (mm)": "75x210"
         },
-        "specsText": "Capacity (ml): 200*; Neck Size: 19/26; Tolerance (±mL): 0.150; Neck Dia x Height OD (mm): 22 75x210",
+        "specsText": "Capacity (ml): 200*; Neck Size: 19/26; Tolerance (±mL): 0.150; Neck: 22; Dia x Height OD (mm): 75x210",
         "pack": 1,
         "price": 847,
         "priceLabel": "847.00",
@@ -59470,9 +59640,10 @@
           "Capacity (ml)": "250*",
           "Neck Size": "19/26",
           "Tolerance (±mL)": "0.150",
-          "Neck Dia x Height OD (mm)": "22 80x220"
+          "Neck": "22",
+          "Dia x Height OD (mm)": "80x220"
         },
-        "specsText": "Capacity (ml): 250*; Neck Size: 19/26; Tolerance (±mL): 0.150; Neck Dia x Height OD (mm): 22 80x220",
+        "specsText": "Capacity (ml): 250*; Neck Size: 19/26; Tolerance (±mL): 0.150; Neck: 22; Dia x Height OD (mm): 80x220",
         "pack": 1,
         "price": 847,
         "priceLabel": "847.00",
@@ -59487,9 +59658,10 @@
           "Capacity (ml)": "5",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 22x70"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 22x70",
+        "specsText": "Capacity (ml): 5; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 22x70",
         "pack": 1,
         "price": 343,
         "priceLabel": "343.00",
@@ -59504,9 +59676,10 @@
           "Capacity (ml)": "5*",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.080",
-          "Neck Dia x Height OD (mm)": "18 22x70"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck Dia x Height OD (mm): 18 22x70",
+        "specsText": "Capacity (ml): 5*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck: 18; Dia x Height OD (mm): 22x70",
         "pack": 1,
         "price": 638,
         "priceLabel": "638.00",
@@ -59521,9 +59694,10 @@
           "Capacity (ml)": "5*",
           "Neck Size": "12/21",
           "Tolerance (±mL)": "0.060",
-          "Neck Dia x Height OD (mm)": "16 22x70"
+          "Neck": "16",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5*; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck Dia x Height OD (mm): 16 22x70",
+        "specsText": "Capacity (ml): 5*; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck: 16; Dia x Height OD (mm): 22x70",
         "pack": 1,
         "price": 638,
         "priceLabel": "638.00",
@@ -59538,9 +59712,10 @@
           "Capacity (ml)": "500*",
           "Neck Size": "24/29",
           "Tolerance (±mL)": "0.400",
-          "Neck Dia x Height OD (mm)": "28 100x260"
+          "Neck": "28",
+          "Dia x Height OD (mm)": "100x260"
         },
-        "specsText": "Capacity (ml): 500*; Neck Size: 24/29; Tolerance (±mL): 0.400; Neck Dia x Height OD (mm): 28 100x260",
+        "specsText": "Capacity (ml): 500*; Neck Size: 24/29; Tolerance (±mL): 0.400; Neck: 28; Dia x Height OD (mm): 100x260",
         "pack": 1,
         "price": 1355,
         "priceLabel": "1355.00",
@@ -59555,9 +59730,10 @@
           "Capacity (ml)": "1000",
           "Neck Size": "29/32",
           "Tolerance (±mL)": "0.600",
-          "Neck Dia x Height OD (mm)": "34 125x300"
+          "Neck": "34",
+          "Dia x Height OD (mm)": "125x300"
         },
-        "specsText": "Capacity (ml): 1000; Neck Size: 29/32; Tolerance (±mL): 0.600; Neck Dia x Height OD (mm): 34 125x300",
+        "specsText": "Capacity (ml): 1000; Neck Size: 29/32; Tolerance (±mL): 0.600; Neck: 34; Dia x Height OD (mm): 125x300",
         "pack": 1,
         "price": 2057,
         "priceLabel": "2057.00",
@@ -59588,9 +59764,10 @@
           "Capacity (ml)": "1",
           "Neck Size": "7/16",
           "Tolerance (±mL)": "0.025",
-          "Neck Dia x Height OD (mm)": "10 13x65"
+          "Neck": "10",
+          "Dia x Height OD (mm)": "13x65"
         },
-        "specsText": "Capacity (ml): 1; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck Dia x Height OD (mm): 10 13x65",
+        "specsText": "Capacity (ml): 1; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck: 10; Dia x Height OD (mm): 13x65",
         "pack": 2,
         "price": 552,
         "priceLabel": "552.00",
@@ -59605,9 +59782,10 @@
           "Capacity (ml)": "2",
           "Neck Size": "7/16",
           "Tolerance (±mL)": "0.025",
-          "Neck Dia x Height OD (mm)": "10 17x70"
+          "Neck": "10",
+          "Dia x Height OD (mm)": "17x70"
         },
-        "specsText": "Capacity (ml): 2; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck Dia x Height OD (mm): 10 17x70",
+        "specsText": "Capacity (ml): 2; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck: 10; Dia x Height OD (mm): 17x70",
         "pack": 2,
         "price": 552,
         "priceLabel": "552.00",
@@ -59622,9 +59800,10 @@
           "Capacity (ml)": "5",
           "Neck Size": "7/16",
           "Tolerance (±mL)": "0.025",
-          "Neck Dia x Height OD (mm)": "13 22x70"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck Dia x Height OD (mm): 13 22x70",
+        "specsText": "Capacity (ml): 5; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck: 13; Dia x Height OD (mm): 22x70",
         "pack": 1,
         "price": 568,
         "priceLabel": "568.00",
@@ -59639,9 +59818,10 @@
           "Capacity (ml)": "10",
           "Neck Size": "7/16",
           "Tolerance (±mL)": "0.025",
-          "Neck Dia x Height OD (mm)": "13 27x90"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "27x90"
         },
-        "specsText": "Capacity (ml): 10; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck Dia x Height OD (mm): 13 27x90",
+        "specsText": "Capacity (ml): 10; Neck Size: 7/16; Tolerance (±mL): 0.025; Neck: 13; Dia x Height OD (mm): 27x90",
         "pack": 1,
         "price": 568,
         "priceLabel": "568.00",
@@ -59656,9 +59836,10 @@
           "Capacity (ml)": "20",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 39x110"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "39x110"
         },
-        "specsText": "Capacity (ml): 20; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 39x110",
+        "specsText": "Capacity (ml): 20; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 39x110",
         "pack": 1,
         "price": 609,
         "priceLabel": "609.00",
@@ -59673,9 +59854,10 @@
           "Capacity (ml)": "25",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 40x110"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "40x110"
         },
-        "specsText": "Capacity (ml): 25; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 40x110",
+        "specsText": "Capacity (ml): 25; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 40x110",
         "pack": 1,
         "price": 609,
         "priceLabel": "609.00",
@@ -59690,9 +59872,10 @@
           "Capacity (ml)": "50",
           "Neck Size": "12/21",
           "Tolerance (±mL)": "0.060",
-          "Neck Dia x Height OD (mm)": "16 50x140"
+          "Neck": "16",
+          "Dia x Height OD (mm)": "50x140"
         },
-        "specsText": "Capacity (ml): 50; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck Dia x Height OD (mm): 16 50x140",
+        "specsText": "Capacity (ml): 50; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck: 16; Dia x Height OD (mm): 50x140",
         "pack": 1,
         "price": 623,
         "priceLabel": "623.00",
@@ -59707,9 +59890,10 @@
           "Capacity (ml)": "100",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.100",
-          "Neck Dia x Height OD (mm)": "19 60x170"
+          "Neck": "19",
+          "Dia x Height OD (mm)": "60x170"
         },
-        "specsText": "Capacity (ml): 100; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck Dia x Height OD (mm): 19 60x170",
+        "specsText": "Capacity (ml): 100; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck: 19; Dia x Height OD (mm): 60x170",
         "pack": 1,
         "price": 664,
         "priceLabel": "664.00",
@@ -59724,9 +59908,10 @@
           "Capacity (ml)": "150*",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.100",
-          "Neck Dia x Height OD (mm)": "18 69x200"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "69x200"
         },
-        "specsText": "Capacity (ml): 150*; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck Dia x Height OD (mm): 18 69x200",
+        "specsText": "Capacity (ml): 150*; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck: 18; Dia x Height OD (mm): 69x200",
         "pack": 1,
         "price": 829,
         "priceLabel": "829.00",
@@ -59741,9 +59926,10 @@
           "Capacity (ml)": "200",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.150",
-          "Neck Dia x Height OD (mm)": "18 75x210"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "75x210"
         },
-        "specsText": "Capacity (ml): 200; Neck Size: 14/23; Tolerance (±mL): 0.150; Neck Dia x Height OD (mm): 18 75x210",
+        "specsText": "Capacity (ml): 200; Neck Size: 14/23; Tolerance (±mL): 0.150; Neck: 18; Dia x Height OD (mm): 75x210",
         "pack": 1,
         "price": 900,
         "priceLabel": "900.00",
@@ -59758,9 +59944,10 @@
           "Capacity (ml)": "250",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.150",
-          "Neck Dia x Height OD (mm)": "18 80x220"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "80x220"
         },
-        "specsText": "Capacity (ml): 250; Neck Size: 14/23; Tolerance (±mL): 0.150; Neck Dia x Height OD (mm): 18 80x220",
+        "specsText": "Capacity (ml): 250; Neck Size: 14/23; Tolerance (±mL): 0.150; Neck: 18; Dia x Height OD (mm): 80x220",
         "pack": 1,
         "price": 900,
         "priceLabel": "900.00",
@@ -59775,9 +59962,10 @@
           "Capacity (ml)": "500",
           "Neck Size": "19/26",
           "Tolerance (±mL)": "0.250",
-          "Neck Dia x Height OD (mm)": "22 100x260"
+          "Neck": "22",
+          "Dia x Height OD (mm)": "100x260"
         },
-        "specsText": "Capacity (ml): 500; Neck Size: 19/26; Tolerance (±mL): 0.250; Neck Dia x Height OD (mm): 22 100x260",
+        "specsText": "Capacity (ml): 500; Neck Size: 19/26; Tolerance (±mL): 0.250; Neck: 22; Dia x Height OD (mm): 100x260",
         "pack": 1,
         "price": 1496,
         "priceLabel": "1496.00",
@@ -59792,9 +59980,10 @@
           "Capacity (ml)": "1000",
           "Neck Size": "24/29",
           "Tolerance (±mL)": "0.400",
-          "Neck Dia x Height OD (mm)": "28 125x300"
+          "Neck": "28",
+          "Dia x Height OD (mm)": "125x300"
         },
-        "specsText": "Capacity (ml): 1000; Neck Size: 24/29; Tolerance (±mL): 0.400; Neck Dia x Height OD (mm): 28 125x300",
+        "specsText": "Capacity (ml): 1000; Neck Size: 24/29; Tolerance (±mL): 0.400; Neck: 28; Dia x Height OD (mm): 125x300",
         "pack": 1,
         "price": 2189,
         "priceLabel": "2189.00",
@@ -59809,9 +59998,10 @@
           "Capacity (ml)": "2000",
           "Neck Size": "29/32",
           "Tolerance (±mL)": "0.600",
-          "Neck Dia x Height OD (mm)": "34 160x370"
+          "Neck": "34",
+          "Dia x Height OD (mm)": "160x370"
         },
-        "specsText": "Capacity (ml): 2000; Neck Size: 29/32; Tolerance (±mL): 0.600; Neck Dia x Height OD (mm): 34 160x370",
+        "specsText": "Capacity (ml): 2000; Neck Size: 29/32; Tolerance (±mL): 0.600; Neck: 34; Dia x Height OD (mm): 160x370",
         "pack": 1,
         "price": 3835,
         "priceLabel": "3835.00",
@@ -59850,9 +60040,10 @@
           "Capacity (ml)": "5",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 22x70"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 22x70",
+        "specsText": "Capacity (ml): 5; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 22x70",
         "pack": 1,
         "price": 585,
         "priceLabel": "585.00",
@@ -59870,9 +60061,10 @@
           "Capacity (ml)": "10",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 27x90"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "27x90"
         },
-        "specsText": "Capacity (ml): 10; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 27x90",
+        "specsText": "Capacity (ml): 10; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 27x90",
         "pack": 1,
         "price": 585,
         "priceLabel": "585.00",
@@ -59890,9 +60082,10 @@
           "Capacity (ml)": "10",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 27x90"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "27x90"
         },
-        "specsText": "Capacity (ml): 10; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 27x90",
+        "specsText": "Capacity (ml): 10; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 27x90",
         "pack": 1,
         "price": 585,
         "priceLabel": "585.00",
@@ -59910,9 +60103,10 @@
           "Capacity (ml)": "10*",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.080",
-          "Neck Dia x Height OD (mm)": "18 27x90"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "27x90"
         },
-        "specsText": "Capacity (ml): 10*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck Dia x Height OD (mm): 18 27x90",
+        "specsText": "Capacity (ml): 10*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck: 18; Dia x Height OD (mm): 27x90",
         "pack": 1,
         "price": 803,
         "priceLabel": "803.00",
@@ -59930,9 +60124,10 @@
           "Capacity (ml)": "20",
           "Neck Size": "12/21",
           "Tolerance (±mL)": "0.060",
-          "Neck Dia x Height OD (mm)": "16 39x110"
+          "Neck": "16",
+          "Dia x Height OD (mm)": "39x110"
         },
-        "specsText": "Capacity (ml): 20; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck Dia x Height OD (mm): 16 39x110",
+        "specsText": "Capacity (ml): 20; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck: 16; Dia x Height OD (mm): 39x110",
         "pack": 1,
         "price": 748,
         "priceLabel": "748.00",
@@ -59950,9 +60145,10 @@
           "Capacity (ml)": "20*",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.080",
-          "Neck Dia x Height OD (mm)": "18 39x110"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "39x110"
         },
-        "specsText": "Capacity (ml): 20*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck Dia x Height OD (mm): 18 39x110",
+        "specsText": "Capacity (ml): 20*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck: 18; Dia x Height OD (mm): 39x110",
         "pack": 1,
         "price": 803,
         "priceLabel": "803.00",
@@ -59970,9 +60166,10 @@
           "Capacity (ml)": "25",
           "Neck Size": "12/21",
           "Tolerance (±mL)": "0.060",
-          "Neck Dia x Height OD (mm)": "16 40x110"
+          "Neck": "16",
+          "Dia x Height OD (mm)": "40x110"
         },
-        "specsText": "Capacity (ml): 25; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck Dia x Height OD (mm): 16 40x110",
+        "specsText": "Capacity (ml): 25; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck: 16; Dia x Height OD (mm): 40x110",
         "pack": 1,
         "price": 748,
         "priceLabel": "748.00",
@@ -59990,9 +60187,10 @@
           "Capacity (ml)": "25*",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.080",
-          "Neck Dia x Height OD (mm)": "18 40x110"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "40x110"
         },
-        "specsText": "Capacity (ml): 25*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck Dia x Height OD (mm): 18 40x110",
+        "specsText": "Capacity (ml): 25*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck: 18; Dia x Height OD (mm): 40x110",
         "pack": 1,
         "price": 803,
         "priceLabel": "803.00",
@@ -60010,9 +60208,10 @@
           "Capacity (ml)": "50",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.100",
-          "Neck Dia x Height OD (mm)": "18 50x140"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "50x140"
         },
-        "specsText": "Capacity (ml): 50; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck Dia x Height OD (mm): 18 50x140",
+        "specsText": "Capacity (ml): 50; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck: 18; Dia x Height OD (mm): 50x140",
         "pack": 1,
         "price": 774,
         "priceLabel": "774.00",
@@ -60030,9 +60229,10 @@
           "Capacity (ml)": "100*",
           "Neck Size": "19/26",
           "Tolerance (±mL)": "0.100",
-          "Neck Dia x Height OD (mm)": "22 60x170"
+          "Neck": "22",
+          "Dia x Height OD (mm)": "60x170"
         },
-        "specsText": "Capacity (ml): 100*; Neck Size: 19/26; Tolerance (±mL): 0.100; Neck Dia x Height OD (mm): 22 60x170",
+        "specsText": "Capacity (ml): 100*; Neck Size: 19/26; Tolerance (±mL): 0.100; Neck: 22; Dia x Height OD (mm): 60x170",
         "pack": 1,
         "price": 816,
         "priceLabel": "816.00",
@@ -60050,9 +60250,10 @@
           "Capacity (ml)": "200*",
           "Neck Size": "19/26",
           "Tolerance (±mL)": "0.150",
-          "Neck Dia x Height OD (mm)": "22 75x210"
+          "Neck": "22",
+          "Dia x Height OD (mm)": "75x210"
         },
-        "specsText": "Capacity (ml): 200*; Neck Size: 19/26; Tolerance (±mL): 0.150; Neck Dia x Height OD (mm): 22 75x210",
+        "specsText": "Capacity (ml): 200*; Neck Size: 19/26; Tolerance (±mL): 0.150; Neck: 22; Dia x Height OD (mm): 75x210",
         "pack": 1,
         "price": 1038,
         "priceLabel": "1038.00",
@@ -60070,9 +60271,10 @@
           "Capacity (ml)": "250*",
           "Neck Size": "19/26",
           "Tolerance (±mL)": "0.150",
-          "Neck Dia x Height OD (mm)": "22 80x220"
+          "Neck": "22",
+          "Dia x Height OD (mm)": "80x220"
         },
-        "specsText": "Capacity (ml): 250*; Neck Size: 19/26; Tolerance (±mL): 0.150; Neck Dia x Height OD (mm): 22 80x220",
+        "specsText": "Capacity (ml): 250*; Neck Size: 19/26; Tolerance (±mL): 0.150; Neck: 22; Dia x Height OD (mm): 80x220",
         "pack": 1,
         "price": 1080,
         "priceLabel": "1080.00",
@@ -60090,9 +60292,10 @@
           "Capacity (ml)": "5",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 22x70"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 22x70",
+        "specsText": "Capacity (ml): 5; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 22x70",
         "pack": 1,
         "price": 585,
         "priceLabel": "585.00",
@@ -60110,9 +60313,10 @@
           "Capacity (ml)": "5*",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.080",
-          "Neck Dia x Height OD (mm)": "18 22x70"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck Dia x Height OD (mm): 18 22x70",
+        "specsText": "Capacity (ml): 5*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck: 18; Dia x Height OD (mm): 22x70",
         "pack": 1,
         "price": 691,
         "priceLabel": "691.00",
@@ -60130,9 +60334,10 @@
           "Capacity (ml)": "5*",
           "Neck Size": "12/21",
           "Tolerance (±mL)": "0.060",
-          "Neck Dia x Height OD (mm)": "16 22x70"
+          "Neck": "16",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5*; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck Dia x Height OD (mm): 16 22x70",
+        "specsText": "Capacity (ml): 5*; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck: 16; Dia x Height OD (mm): 22x70",
         "pack": 1,
         "price": 691,
         "priceLabel": "691.00",
@@ -60150,9 +60355,10 @@
           "Capacity (ml)": "500*",
           "Neck Size": "24/29",
           "Tolerance (±mL)": "0.400",
-          "Neck Dia x Height OD (mm)": "28 100x260"
+          "Neck": "28",
+          "Dia x Height OD (mm)": "100x260"
         },
-        "specsText": "Capacity (ml): 500*; Neck Size: 24/29; Tolerance (±mL): 0.400; Neck Dia x Height OD (mm): 28 100x260",
+        "specsText": "Capacity (ml): 500*; Neck Size: 24/29; Tolerance (±mL): 0.400; Neck: 28; Dia x Height OD (mm): 100x260",
         "pack": 1,
         "price": 1828,
         "priceLabel": "1828.00",
@@ -60170,9 +60376,10 @@
           "Capacity (ml)": "1000",
           "Neck Size": "29/32",
           "Tolerance (±mL)": "0.600",
-          "Neck Dia x Height OD (mm)": "34 125x300"
+          "Neck": "34",
+          "Dia x Height OD (mm)": "125x300"
         },
-        "specsText": "Capacity (ml): 1000; Neck Size: 29/32; Tolerance (±mL): 0.600; Neck Dia x Height OD (mm): 34 125x300",
+        "specsText": "Capacity (ml): 1000; Neck Size: 29/32; Tolerance (±mL): 0.600; Neck: 34; Dia x Height OD (mm): 125x300",
         "pack": 1,
         "price": 2627,
         "priceLabel": "2627.00",
@@ -95302,9 +95509,10 @@
           "Capacity (ml)": "5",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 22x70"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 22x70",
+        "specsText": "Capacity (ml): 5; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 22x70",
         "pack": 1,
         "price": 541,
         "priceLabel": "541.00",
@@ -95322,9 +95530,10 @@
           "Capacity (ml)": "10",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 27x90"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "27x90"
         },
-        "specsText": "Capacity (ml): 10; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 27x90",
+        "specsText": "Capacity (ml): 10; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 27x90",
         "pack": 1,
         "price": 557,
         "priceLabel": "557.00",
@@ -95342,9 +95551,10 @@
           "Capacity (ml)": "10",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 27x90"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "27x90"
         },
-        "specsText": "Capacity (ml): 10; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 27x90",
+        "specsText": "Capacity (ml): 10; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 27x90",
         "pack": 1,
         "price": 557,
         "priceLabel": "557.00",
@@ -95362,9 +95572,10 @@
           "Capacity (ml)": "10*",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.080",
-          "Neck Dia x Height OD (mm)": "18 27x90"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "27x90"
         },
-        "specsText": "Capacity (ml): 10*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck Dia x Height OD (mm): 18 27x90",
+        "specsText": "Capacity (ml): 10*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck: 18; Dia x Height OD (mm): 27x90",
         "pack": 1,
         "price": 766,
         "priceLabel": "766.00",
@@ -95382,9 +95593,10 @@
           "Capacity (ml)": "20",
           "Neck Size": "12/21",
           "Tolerance (±mL)": "0.060",
-          "Neck Dia x Height OD (mm)": "16 39x110"
+          "Neck": "16",
+          "Dia x Height OD (mm)": "39x110"
         },
-        "specsText": "Capacity (ml): 20; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck Dia x Height OD (mm): 16 39x110",
+        "specsText": "Capacity (ml): 20; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck: 16; Dia x Height OD (mm): 39x110",
         "pack": 1,
         "price": 660,
         "priceLabel": "660.00",
@@ -95402,9 +95614,10 @@
           "Capacity (ml)": "20*",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.080",
-          "Neck Dia x Height OD (mm)": "18 39x110"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "39x110"
         },
-        "specsText": "Capacity (ml): 20*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck Dia x Height OD (mm): 18 39x110",
+        "specsText": "Capacity (ml): 20*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck: 18; Dia x Height OD (mm): 39x110",
         "pack": 1,
         "price": 766,
         "priceLabel": "766.00",
@@ -95422,9 +95635,10 @@
           "Capacity (ml)": "25",
           "Neck Size": "12/21",
           "Tolerance (±mL)": "0.060",
-          "Neck Dia x Height OD (mm)": "16 40x110"
+          "Neck": "16",
+          "Dia x Height OD (mm)": "40x110"
         },
-        "specsText": "Capacity (ml): 25; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck Dia x Height OD (mm): 16 40x110",
+        "specsText": "Capacity (ml): 25; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck: 16; Dia x Height OD (mm): 40x110",
         "pack": 1,
         "price": 660,
         "priceLabel": "660.00",
@@ -95442,9 +95656,10 @@
           "Capacity (ml)": "25*",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.080",
-          "Neck Dia x Height OD (mm)": "18 40x110"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "40x110"
         },
-        "specsText": "Capacity (ml): 25*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck Dia x Height OD (mm): 18 40x110",
+        "specsText": "Capacity (ml): 25*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck: 18; Dia x Height OD (mm): 40x110",
         "pack": 1,
         "price": 766,
         "priceLabel": "766.00",
@@ -95462,9 +95677,10 @@
           "Capacity (ml)": "50",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.100",
-          "Neck Dia x Height OD (mm)": "18 50x140"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "50x140"
         },
-        "specsText": "Capacity (ml): 50; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck Dia x Height OD (mm): 18 50x140",
+        "specsText": "Capacity (ml): 50; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck: 18; Dia x Height OD (mm): 50x140",
         "pack": 1,
         "price": 737,
         "priceLabel": "737.00",
@@ -95482,9 +95698,10 @@
           "Capacity (ml)": "100*",
           "Neck Size": "19/26",
           "Tolerance (±mL)": "0.100",
-          "Neck Dia x Height OD (mm)": "22 60x170"
+          "Neck": "22",
+          "Dia x Height OD (mm)": "60x170"
         },
-        "specsText": "Capacity (ml): 100*; Neck Size: 19/26; Tolerance (±mL): 0.100; Neck Dia x Height OD (mm): 22 60x170",
+        "specsText": "Capacity (ml): 100*; Neck Size: 19/26; Tolerance (±mL): 0.100; Neck: 22; Dia x Height OD (mm): 60x170",
         "pack": 1,
         "price": 777,
         "priceLabel": "777.00",
@@ -95502,9 +95719,10 @@
           "Capacity (ml)": "200*",
           "Neck Size": "19/26",
           "Tolerance (±mL)": "0.150",
-          "Neck Dia x Height OD (mm)": "22 75x210"
+          "Neck": "22",
+          "Dia x Height OD (mm)": "75x210"
         },
-        "specsText": "Capacity (ml): 200*; Neck Size: 19/26; Tolerance (±mL): 0.150; Neck Dia x Height OD (mm): 22 75x210",
+        "specsText": "Capacity (ml): 200*; Neck Size: 19/26; Tolerance (±mL): 0.150; Neck: 22; Dia x Height OD (mm): 75x210",
         "pack": 1,
         "price": 990,
         "priceLabel": "990.00",
@@ -95522,9 +95740,10 @@
           "Capacity (ml)": "250*",
           "Neck Size": "19/26",
           "Tolerance (±mL)": "0.150",
-          "Neck Dia x Height OD (mm)": "22 80x220"
+          "Neck": "22",
+          "Dia x Height OD (mm)": "80x220"
         },
-        "specsText": "Capacity (ml): 250*; Neck Size: 19/26; Tolerance (±mL): 0.150; Neck Dia x Height OD (mm): 22 80x220",
+        "specsText": "Capacity (ml): 250*; Neck Size: 19/26; Tolerance (±mL): 0.150; Neck: 22; Dia x Height OD (mm): 80x220",
         "pack": 1,
         "price": 1030,
         "priceLabel": "1030.00",
@@ -95542,9 +95761,10 @@
           "Capacity (ml)": "5",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 22x70"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 22x70",
+        "specsText": "Capacity (ml): 5; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 22x70",
         "pack": 1,
         "price": 541,
         "priceLabel": "541.00",
@@ -95562,9 +95782,10 @@
           "Capacity (ml)": "5*",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.080",
-          "Neck Dia x Height OD (mm)": "18 22x70"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck Dia x Height OD (mm): 18 22x70",
+        "specsText": "Capacity (ml): 5*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck: 18; Dia x Height OD (mm): 22x70",
         "pack": 1,
         "price": 766,
         "priceLabel": "766.00",
@@ -95582,9 +95803,10 @@
           "Capacity (ml)": "5*",
           "Neck Size": "12/21",
           "Tolerance (±mL)": "0.060",
-          "Neck Dia x Height OD (mm)": "16 22x70"
+          "Neck": "16",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5*; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck Dia x Height OD (mm): 16 22x70",
+        "specsText": "Capacity (ml): 5*; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck: 16; Dia x Height OD (mm): 22x70",
         "pack": 1,
         "price": 766,
         "priceLabel": "766.00",
@@ -95602,9 +95824,10 @@
           "Capacity (ml)": "500*",
           "Neck Size": "24/29",
           "Tolerance (±mL)": "0.400",
-          "Neck Dia x Height OD (mm)": "28 100x260"
+          "Neck": "28",
+          "Dia x Height OD (mm)": "100x260"
         },
-        "specsText": "Capacity (ml): 500*; Neck Size: 24/29; Tolerance (±mL): 0.400; Neck Dia x Height OD (mm): 28 100x260",
+        "specsText": "Capacity (ml): 500*; Neck Size: 24/29; Tolerance (±mL): 0.400; Neck: 28; Dia x Height OD (mm): 100x260",
         "pack": 1,
         "price": 1661,
         "priceLabel": "1661.00",
@@ -95622,9 +95845,10 @@
           "Capacity (ml)": "1000",
           "Neck Size": "29/32",
           "Tolerance (±mL)": "0.600",
-          "Neck Dia x Height OD (mm)": "34 125x300"
+          "Neck": "34",
+          "Dia x Height OD (mm)": "125x300"
         },
-        "specsText": "Capacity (ml): 1000; Neck Size: 29/32; Tolerance (±mL): 0.600; Neck Dia x Height OD (mm): 34 125x300",
+        "specsText": "Capacity (ml): 1000; Neck Size: 29/32; Tolerance (±mL): 0.600; Neck: 34; Dia x Height OD (mm): 125x300",
         "pack": 1,
         "price": 2387,
         "priceLabel": "2387.00",
@@ -95666,9 +95890,10 @@
           "Capacity (ml)": "5",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 22x70"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 22x70",
+        "specsText": "Capacity (ml): 5; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 22x70",
         "pack": 1,
         "price": 869,
         "priceLabel": "869.00",
@@ -95686,9 +95911,10 @@
           "Capacity (ml)": "10",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 27x90"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "27x90"
         },
-        "specsText": "Capacity (ml): 10; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 27x90",
+        "specsText": "Capacity (ml): 10; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 27x90",
         "pack": 1,
         "price": 869,
         "priceLabel": "869.00",
@@ -95706,9 +95932,10 @@
           "Capacity (ml)": "10",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 27x90"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "27x90"
         },
-        "specsText": "Capacity (ml): 10; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 27x90",
+        "specsText": "Capacity (ml): 10; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 27x90",
         "pack": 1,
         "price": 869,
         "priceLabel": "869.00",
@@ -95726,9 +95953,10 @@
           "Capacity (ml)": "10*",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.080",
-          "Neck Dia x Height OD (mm)": "18 27x90"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "27x90"
         },
-        "specsText": "Capacity (ml): 10*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck Dia x Height OD (mm): 18 27x90",
+        "specsText": "Capacity (ml): 10*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck: 18; Dia x Height OD (mm): 27x90",
         "pack": 1,
         "price": 1162,
         "priceLabel": "1162.00",
@@ -95746,9 +95974,10 @@
           "Capacity (ml)": "20",
           "Neck Size": "12/21",
           "Tolerance (±mL)": "0.060",
-          "Neck Dia x Height OD (mm)": "16 39x110"
+          "Neck": "16",
+          "Dia x Height OD (mm)": "39x110"
         },
-        "specsText": "Capacity (ml): 20; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck Dia x Height OD (mm): 16 39x110",
+        "specsText": "Capacity (ml): 20; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck: 16; Dia x Height OD (mm): 39x110",
         "pack": 1,
         "price": 1162,
         "priceLabel": "1162.00",
@@ -95766,9 +95995,10 @@
           "Capacity (ml)": "20*",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.080",
-          "Neck Dia x Height OD (mm)": "18 39x110"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "39x110"
         },
-        "specsText": "Capacity (ml): 20*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck Dia x Height OD (mm): 18 39x110",
+        "specsText": "Capacity (ml): 20*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck: 18; Dia x Height OD (mm): 39x110",
         "pack": 1,
         "price": 1162,
         "priceLabel": "1162.00",
@@ -95786,9 +96016,10 @@
           "Capacity (ml)": "25",
           "Neck Size": "12/21",
           "Tolerance (±mL)": "0.060",
-          "Neck Dia x Height OD (mm)": "16 40x110"
+          "Neck": "16",
+          "Dia x Height OD (mm)": "40x110"
         },
-        "specsText": "Capacity (ml): 25; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck Dia x Height OD (mm): 16 40x110",
+        "specsText": "Capacity (ml): 25; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck: 16; Dia x Height OD (mm): 40x110",
         "pack": 1,
         "price": 1162,
         "priceLabel": "1162.00",
@@ -95806,9 +96037,10 @@
           "Capacity (ml)": "25*",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.080",
-          "Neck Dia x Height OD (mm)": "18 40x110"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "40x110"
         },
-        "specsText": "Capacity (ml): 25*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck Dia x Height OD (mm): 18 40x110",
+        "specsText": "Capacity (ml): 25*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck: 18; Dia x Height OD (mm): 40x110",
         "pack": 1,
         "price": 1162,
         "priceLabel": "1162.00",
@@ -95826,9 +96058,10 @@
           "Capacity (ml)": "50",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.100",
-          "Neck Dia x Height OD (mm)": "18 50x140"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "50x140"
         },
-        "specsText": "Capacity (ml): 50; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck Dia x Height OD (mm): 18 50x140",
+        "specsText": "Capacity (ml): 50; Neck Size: 14/23; Tolerance (±mL): 0.100; Neck: 18; Dia x Height OD (mm): 50x140",
         "pack": 1,
         "price": 1133,
         "priceLabel": "1133.00",
@@ -95846,9 +96079,10 @@
           "Capacity (ml)": "100*",
           "Neck Size": "19/26",
           "Tolerance (±mL)": "0.100",
-          "Neck Dia x Height OD (mm)": "22 60x170"
+          "Neck": "22",
+          "Dia x Height OD (mm)": "60x170"
         },
-        "specsText": "Capacity (ml): 100*; Neck Size: 19/26; Tolerance (±mL): 0.100; Neck Dia x Height OD (mm): 22 60x170",
+        "specsText": "Capacity (ml): 100*; Neck Size: 19/26; Tolerance (±mL): 0.100; Neck: 22; Dia x Height OD (mm): 60x170",
         "pack": 1,
         "price": 1173,
         "priceLabel": "1173.00",
@@ -95866,9 +96100,10 @@
           "Capacity (ml)": "200*",
           "Neck Size": "19/26",
           "Tolerance (±mL)": "0.150",
-          "Neck Dia x Height OD (mm)": "22 75x210"
+          "Neck": "22",
+          "Dia x Height OD (mm)": "75x210"
         },
-        "specsText": "Capacity (ml): 200*; Neck Size: 19/26; Tolerance (±mL): 0.150; Neck Dia x Height OD (mm): 22 75x210",
+        "specsText": "Capacity (ml): 200*; Neck Size: 19/26; Tolerance (±mL): 0.150; Neck: 22; Dia x Height OD (mm): 75x210",
         "pack": 1,
         "price": 1254,
         "priceLabel": "1254.00",
@@ -95886,9 +96121,10 @@
           "Capacity (ml)": "250*",
           "Neck Size": "19/26",
           "Tolerance (±mL)": "0.150",
-          "Neck Dia x Height OD (mm)": "22 80x220"
+          "Neck": "22",
+          "Dia x Height OD (mm)": "80x220"
         },
-        "specsText": "Capacity (ml): 250*; Neck Size: 19/26; Tolerance (±mL): 0.150; Neck Dia x Height OD (mm): 22 80x220",
+        "specsText": "Capacity (ml): 250*; Neck Size: 19/26; Tolerance (±mL): 0.150; Neck: 22; Dia x Height OD (mm): 80x220",
         "pack": 1,
         "price": 1254,
         "priceLabel": "1254.00",
@@ -95906,9 +96142,10 @@
           "Capacity (ml)": "5",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.040",
-          "Neck Dia x Height OD (mm)": "13 22x70"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck Dia x Height OD (mm): 13 22x70",
+        "specsText": "Capacity (ml): 5; Neck Size: 10/19; Tolerance (±mL): 0.040; Neck: 13; Dia x Height OD (mm): 22x70",
         "pack": 1,
         "price": 869,
         "priceLabel": "869.00",
@@ -95926,9 +96163,10 @@
           "Capacity (ml)": "5*",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.080",
-          "Neck Dia x Height OD (mm)": "18 22x70"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck Dia x Height OD (mm): 18 22x70",
+        "specsText": "Capacity (ml): 5*; Neck Size: 14/23; Tolerance (±mL): 0.080; Neck: 18; Dia x Height OD (mm): 22x70",
         "pack": 1,
         "price": 1162,
         "priceLabel": "1162.00",
@@ -95946,9 +96184,10 @@
           "Capacity (ml)": "5*",
           "Neck Size": "12/21",
           "Tolerance (±mL)": "0.060",
-          "Neck Dia x Height OD (mm)": "16 22x70"
+          "Neck": "16",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5*; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck Dia x Height OD (mm): 16 22x70",
+        "specsText": "Capacity (ml): 5*; Neck Size: 12/21; Tolerance (±mL): 0.060; Neck: 16; Dia x Height OD (mm): 22x70",
         "pack": 1,
         "price": 1162,
         "priceLabel": "1162.00",
@@ -95966,9 +96205,10 @@
           "Capacity (ml)": "500*",
           "Neck Size": "24/29",
           "Tolerance (±mL)": "0.400",
-          "Neck Dia x Height OD (mm)": "28 100x260"
+          "Neck": "28",
+          "Dia x Height OD (mm)": "100x260"
         },
-        "specsText": "Capacity (ml): 500*; Neck Size: 24/29; Tolerance (±mL): 0.400; Neck Dia x Height OD (mm): 28 100x260",
+        "specsText": "Capacity (ml): 500*; Neck Size: 24/29; Tolerance (±mL): 0.400; Neck: 28; Dia x Height OD (mm): 100x260",
         "pack": 1,
         "price": 1980,
         "priceLabel": "1980.00",
@@ -95986,9 +96226,10 @@
           "Capacity (ml)": "1000",
           "Neck Size": "29/32",
           "Tolerance (±mL)": "0.600",
-          "Neck Dia x Height OD (mm)": "34 125x300"
+          "Neck": "34",
+          "Dia x Height OD (mm)": "125x300"
         },
-        "specsText": "Capacity (ml): 1000; Neck Size: 29/32; Tolerance (±mL): 0.600; Neck Dia x Height OD (mm): 34 125x300",
+        "specsText": "Capacity (ml): 1000; Neck Size: 29/32; Tolerance (±mL): 0.600; Neck: 34; Dia x Height OD (mm): 125x300",
         "pack": 1,
         "price": 2860,
         "priceLabel": "2860.00",
@@ -96377,9 +96618,10 @@
           "Capacity (ml)": "5",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.02",
-          "Neck Dia x Height OD (mm)": "13 22x70"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "22x70"
         },
-        "specsText": "Capacity (ml): 5; Neck Size: 10/19; Tolerance (±mL): 0.02; Neck Dia x Height OD (mm): 13 22x70",
+        "specsText": "Capacity (ml): 5; Neck Size: 10/19; Tolerance (±mL): 0.02; Neck: 13; Dia x Height OD (mm): 22x70",
         "pack": 1,
         "price": 770,
         "priceLabel": "770.00",
@@ -96394,9 +96636,10 @@
           "Capacity (ml)": "10",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.02",
-          "Neck Dia x Height OD (mm)": "13 27x90"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "27x90"
         },
-        "specsText": "Capacity (ml): 10; Neck Size: 10/19; Tolerance (±mL): 0.02; Neck Dia x Height OD (mm): 13 27x90",
+        "specsText": "Capacity (ml): 10; Neck Size: 10/19; Tolerance (±mL): 0.02; Neck: 13; Dia x Height OD (mm): 27x90",
         "pack": 1,
         "price": 770,
         "priceLabel": "770.00",
@@ -96411,9 +96654,10 @@
           "Capacity (ml)": "20",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.03",
-          "Neck Dia x Height OD (mm)": "13 39x110"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "39x110"
         },
-        "specsText": "Capacity (ml): 20; Neck Size: 10/19; Tolerance (±mL): 0.03; Neck Dia x Height OD (mm): 13 39x110",
+        "specsText": "Capacity (ml): 20; Neck Size: 10/19; Tolerance (±mL): 0.03; Neck: 13; Dia x Height OD (mm): 39x110",
         "pack": 1,
         "price": 770,
         "priceLabel": "770.00",
@@ -96428,9 +96672,10 @@
           "Capacity (ml)": "25",
           "Neck Size": "10/19",
           "Tolerance (±mL)": "0.03",
-          "Neck Dia x Height OD (mm)": "13 40x110"
+          "Neck": "13",
+          "Dia x Height OD (mm)": "40x110"
         },
-        "specsText": "Capacity (ml): 25; Neck Size: 10/19; Tolerance (±mL): 0.03; Neck Dia x Height OD (mm): 13 40x110",
+        "specsText": "Capacity (ml): 25; Neck Size: 10/19; Tolerance (±mL): 0.03; Neck: 13; Dia x Height OD (mm): 40x110",
         "pack": 1,
         "price": 792,
         "priceLabel": "792.00",
@@ -96445,9 +96690,10 @@
           "Capacity (ml)": "50",
           "Neck Size": "12/21",
           "Tolerance (±mL)": "0.05",
-          "Neck Dia x Height OD (mm)": "16 50x140"
+          "Neck": "16",
+          "Dia x Height OD (mm)": "50x140"
         },
-        "specsText": "Capacity (ml): 50; Neck Size: 12/21; Tolerance (±mL): 0.05; Neck Dia x Height OD (mm): 16 50x140",
+        "specsText": "Capacity (ml): 50; Neck Size: 12/21; Tolerance (±mL): 0.05; Neck: 16; Dia x Height OD (mm): 50x140",
         "pack": 1,
         "price": 781,
         "priceLabel": "781.00",
@@ -96462,9 +96708,10 @@
           "Capacity (ml)": "100",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.08",
-          "Neck Dia x Height OD (mm)": "19 60x170"
+          "Neck": "19",
+          "Dia x Height OD (mm)": "60x170"
         },
-        "specsText": "Capacity (ml): 100; Neck Size: 14/23; Tolerance (±mL): 0.08; Neck Dia x Height OD (mm): 19 60x170",
+        "specsText": "Capacity (ml): 100; Neck Size: 14/23; Tolerance (±mL): 0.08; Neck: 19; Dia x Height OD (mm): 60x170",
         "pack": 1,
         "price": 825,
         "priceLabel": "825.00",
@@ -96479,9 +96726,10 @@
           "Capacity (ml)": "200",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.10",
-          "Neck Dia x Height OD (mm)": "18 75x210"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "75x210"
         },
-        "specsText": "Capacity (ml): 200; Neck Size: 14/23; Tolerance (±mL): 0.10; Neck Dia x Height OD (mm): 18 75x210",
+        "specsText": "Capacity (ml): 200; Neck Size: 14/23; Tolerance (±mL): 0.10; Neck: 18; Dia x Height OD (mm): 75x210",
         "pack": 1,
         "price": 1144,
         "priceLabel": "1144.00",
@@ -96496,9 +96744,10 @@
           "Capacity (ml)": "250",
           "Neck Size": "14/23",
           "Tolerance (±mL)": "0.12",
-          "Neck Dia x Height OD (mm)": "18 80x220"
+          "Neck": "18",
+          "Dia x Height OD (mm)": "80x220"
         },
-        "specsText": "Capacity (ml): 250; Neck Size: 14/23; Tolerance (±mL): 0.12; Neck Dia x Height OD (mm): 18 80x220",
+        "specsText": "Capacity (ml): 250; Neck Size: 14/23; Tolerance (±mL): 0.12; Neck: 18; Dia x Height OD (mm): 80x220",
         "pack": 1,
         "price": 1144,
         "priceLabel": "1144.00",
@@ -96513,9 +96762,10 @@
           "Capacity (ml)": "500",
           "Neck Size": "19/26",
           "Tolerance (±mL)": "0.15",
-          "Neck Dia x Height OD (mm)": "22 100x260"
+          "Neck": "22",
+          "Dia x Height OD (mm)": "100x260"
         },
-        "specsText": "Capacity (ml): 500; Neck Size: 19/26; Tolerance (±mL): 0.15; Neck Dia x Height OD (mm): 22 100x260",
+        "specsText": "Capacity (ml): 500; Neck Size: 19/26; Tolerance (±mL): 0.15; Neck: 22; Dia x Height OD (mm): 100x260",
         "pack": 1,
         "price": 1760,
         "priceLabel": "1760.00",
@@ -96530,9 +96780,10 @@
           "Capacity (ml)": "1000",
           "Neck Size": "24/29",
           "Tolerance (±mL)": "0.30",
-          "Neck Dia x Height OD (mm)": "28 125x300"
+          "Neck": "28",
+          "Dia x Height OD (mm)": "125x300"
         },
-        "specsText": "Capacity (ml): 1000; Neck Size: 24/29; Tolerance (±mL): 0.30; Neck Dia x Height OD (mm): 28 125x300",
+        "specsText": "Capacity (ml): 1000; Neck Size: 24/29; Tolerance (±mL): 0.30; Neck: 28; Dia x Height OD (mm): 125x300",
         "pack": 1,
         "price": 2860,
         "priceLabel": "2860.00",
@@ -96547,9 +96798,10 @@
           "Capacity (ml)": "2000",
           "Neck Size": "29/32",
           "Tolerance (±mL)": "0.50",
-          "Neck Dia x Height OD (mm)": "34 160x370"
+          "Neck": "34",
+          "Dia x Height OD (mm)": "160x370"
         },
-        "specsText": "Capacity (ml): 2000; Neck Size: 29/32; Tolerance (±mL): 0.50; Neck Dia x Height OD (mm): 34 160x370",
+        "specsText": "Capacity (ml): 2000; Neck Size: 29/32; Tolerance (±mL): 0.50; Neck: 34; Dia x Height OD (mm): 160x370",
         "pack": 1,
         "price": 4620,
         "priceLabel": "4620.00",
